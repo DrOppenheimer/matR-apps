@@ -114,7 +114,7 @@ heatmap_dendrogram.from_file <- function (
 ###### sub to import the input_file
 #import_data <- function(file_name)
   {
-    x = data.matrix(read.table(file_in, row.names=1, header=TRUE, sep="\t", comment.char="", quote=""))
+    x = data.matrix(read.table(file_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
   }
   
 ###### get the diensions of the input object  

@@ -1,6 +1,8 @@
 plot_pcoa.from_object <- function(
                      matrix,
                      file_in = "matrix_object",
+                     my_width = 1000,
+                     my_height = 1000,
                      samples = dimnames(matrix)[[2]],
                      input_dir = "./",
                      output_PCoA_dir = "./",
@@ -137,20 +139,22 @@ plot_pcoa.from_object <- function(
 
   write.table(eigen_vectors, file=PCoA_file_out, col.names=FALSE, row.names=TRUE, append = TRUE, sep="\t")
 
-  png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.png")))
+  png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.png")), width = my_width, height = my_height)
   plot(
        x<-eigen_vectors[,PC1],
        y<-eigen_vectors[,PC2],     
-       type="n",
-       xlab = scaled_eigen_values[PC1],
-       ylab = scaled_eigen_values[PC2],
+       type="n",             
+       #xlab = scaled_eigen_values[PC1],          
+       #ylab = scaled_eigen_values[PC2],
+       xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
+       ylab = paste(round(scaled_eigen_values[PC2]*100, digits = 2), "% of variation"),
        cex = 0.8
        )
   my_cex <- 1
                                         #points(x=(my_data[,PC1]), y=(my_data[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
   points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
 
-  title( (paste(file_in,"\n", "PC", PC1, "vs PC", PC2 )), cex.main = 0.8)
+  title( (paste(file_in,"\n", "PC", PC1, "vs PC", PC2 )), cex.main = 1)
   dev.off()
   
 }

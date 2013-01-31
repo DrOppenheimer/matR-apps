@@ -92,7 +92,7 @@ plot_pcoa.from_file <- function(
   input_data_path = gsub(" ", "", paste(input_dir, file_in))
   #writeLines("INPUT-DATA-PATH")
   #writeLines(input_data_path)
-  my_data <<- flipud(rot90(data.matrix(read.table(input_data_path, row.names=1, header=TRUE, sep="\t", comment.char="", quote=""))))
+  my_data <<- flipud(rot90(data.matrix(read.table(input_data_path, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))))
   
   num_data_rows = dim(my_data)[1] # substitute 0 for NA's if they exist in the data
   num_data_cols = dim(my_data)[2]
