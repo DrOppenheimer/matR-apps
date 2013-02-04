@@ -78,8 +78,17 @@ if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":
     write("\n", file = my_log, append = TRUE)
   }
 
-  write.table(my_data$count, file = "my_data.txt", col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+
   
+  ###### replace NA's with 0
+  my_data.matrix <<- my_data$count
+  my_data.matrix[ is.na(my_data.matrix) ]<-0
+  
+  # write output to a file
+  
+  my_output = "my_data.matrix.txt"
+  write.table(my_data.matrix, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  print("data available as matrix my_data.matrix and flat file")
   
 }
 
