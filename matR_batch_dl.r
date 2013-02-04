@@ -83,12 +83,13 @@ if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":
   ###### replace NA's with 0
   my_data.matrix <<- my_data$count
   my_data.matrix[ is.na(my_data.matrix) ]<-0
+  rm(my_data) # get rid of dupilcate data
   
   # write output to a file
   
   my_output = "my_data.matrix.txt"
   write.table(my_data.matrix, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
-  print("data available as matrix my_data.matrix and flat file")
+  print(paste("data available as matrix: my_data.matrix \nand flat file:", my_output))
   
 }
 
