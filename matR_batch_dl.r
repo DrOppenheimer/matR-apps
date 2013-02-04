@@ -1,6 +1,6 @@
 matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE){
 
-  if (identical(mgid_list, "") ){print_usage()} 
+  #if (identical(mgid_list, "") ){print_usage()} 
 
   require(matR)
   source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R")
