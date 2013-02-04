@@ -130,7 +130,7 @@ print_usage <- function() {
   This script perform a batch download using Dan's matR-apps collection-merge
 
   USAGE:
-  matR_batch_dl (mgid_list=\"\", batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE)
+  (mgid_list, sleep_int = 0, my_log = \"my_log.txt\", batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE, verbose=TRUE){
 
   ")
   stop("You are vieiwing the usage because you did not supply an mgid_list")
