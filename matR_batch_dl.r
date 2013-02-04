@@ -1,11 +1,20 @@
-matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE){
+matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE){
 
-  #if (identical(mgid_list, "") ){print_usage()} 
+  if ( nargs() == 0){print_usage()} # give usage if no arguemtsn are supplied
+  if (identical(mgid_list, "") ){print_usage()}  # give usage if empty arguement is supplied for mgid_list
 
-  require(matR)
-  source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R")
+  if ( file.exists(my_log)==TRUE ){ # delete old log if it exist 
+    unlink(my_log)
+    print( paste("deleted old log:", my_log) )
+  }
+  
+  require(matR) # load matR
+  source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R") # get the merge function
 
-  if ( exists("my_data")==TRUE ){rm(my_data)}
+  if ( exists("my_data")==TRUE ){
+    rm(my_data)
+    print("deleted previous object named my_data")
+  } # delete my_data object if it exists
   
   num_batch <- as.integer( length(mgid_list)%/%batch_size )
   if (debug==TRUE) {print(paste("num_batch:", num_batch))}
@@ -14,7 +23,7 @@ matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_anno
         
   for (batch_count in 1:(num_batch)){
     
-    if (batch_count == 1){
+    if (batch_count == 1){ # process first batch
       print.tic()
       batch_start <- 1
       batch_end <- batch_size
@@ -24,9 +33,14 @@ matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_anno
       #first_batch.counts <- first_batch$count
       #my_data <<- first_batch.counts
       my_data <<- first_batch
-      print(paste("finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ))
-      print.toc()
-    }else{
+      write(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
+      Sys.sleep(sleep_int)
+      write("# batch members:", file = my_log, append = TRUE)
+      for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+      write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+      write(print.toc(), file = my_log, append = TRUE)
+      write("\n", file = my_log, append = TRUE)
+    }else{ # process all batches except first and remainder
       print.tic()
       batch_start <- ((batch_count-1)*batch_size)+1
       batch_end <- (batch_count*batch_size)
@@ -34,12 +48,17 @@ matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_anno
       batch_list = mgid_list[batch_start:batch_end]
       next_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
       my_data <<- my_data + next_batch
-      print(paste("finished batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ))
-      print.toc()
+      write(paste("# finished batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
+      Sys.sleep(sleep_int)
+      write("# batch members", file = my_log, append = TRUE)
+      for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+      write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+      write(print.toc(), file = my_log, append = TRUE)
+      write("\n", file = my_log, append = TRUE)
     }
   }
   
-  if ( batch_remainder > 0 ){
+  if ( batch_remainder > 0 ){ # process remainder batch
     print.tic()
     batch_start <- (num_batch*batch_size)+1
     batch_end <- length(mgid_list)
@@ -47,9 +66,16 @@ matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_anno
     batch_list = mgid_list[batch_start:batch_end]
     last_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
     my_data <<- my_data + last_batch
-    print(paste("finished batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ))
-    print.toc()
+    write(paste("# finished batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes"  ), file = my_log, append = TRUE)
+    write("# batch members", file = my_log, append = TRUE)
+    for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+    write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+    write(print.toc(), file = my_log, append = TRUE)
+    write("\n", file = my_log, append = TRUE)
   }
+
+  write.table(my_data$count, file = "my_data.txt", col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  
   
 }
 
@@ -90,10 +116,10 @@ print_usage <- function() {
   This script perform a batch download using Dan's matR-apps collection-merge
 
   USAGE:
-  matR_batch_dl (mgid_list, batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE)
+  matR_batch_dl (mgid_list=\"\", batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE)
 
   ")
-  stop("You are vieiwing the usage because you called this functions without arguments")
+  stop("You are vieiwing the usage because you did not supply an mgid_list")
 }
 
 # quotient 11%/%5
