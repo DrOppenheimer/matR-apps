@@ -1,4 +1,6 @@
-matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=TRUE){
+matR_batch_dl <<- function(mgid_list, batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE){
+
+  if ( nargs() == 0){print_usage()} 
 
   require(matR)
   source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R")
@@ -80,7 +82,19 @@ source_https <- function(url, ...) {
 }
 
 
+print_usage <- function() {
+  writeLines("  ------------------------------------------------------------------------------
+  matR_batch_dl.r
+  ------------------------------------------------------------------------------
+  DESCRIPTION:
+  This script perform a batch download using Dan's matR-apps collection-merge
 
+  USAGE:
+  matR_batch_dl (mgid_list, batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE)
+
+  ")
+  stop("You are vieiwing the usage because you called this functions without arguments")
+}
 
 # quotient 11%/%5
 # remainder 11%%5
