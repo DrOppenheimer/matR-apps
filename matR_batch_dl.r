@@ -1,4 +1,4 @@
-matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE){
+matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE, verbose=TRUE){
 
   if ( nargs() == 0){print_usage()} # give usage if no arguemtsn are supplied
   if (identical(mgid_list, "") ){print_usage()}  # give usage if empty arguement is supplied for mgid_list
@@ -33,6 +33,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       #first_batch.counts <- first_batch$count
       #my_data <<- first_batch.counts
       my_data <<- first_batch
+      if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
       write(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
       Sys.sleep(sleep_int)
       write("# batch members:", file = my_log, append = TRUE)
@@ -48,6 +49,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       batch_list = mgid_list[batch_start:batch_end]
       next_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
       my_data <<- my_data + next_batch
+      if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }    
       write(paste("# finished batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
       Sys.sleep(sleep_int)
       write("# batch members", file = my_log, append = TRUE)
@@ -66,6 +68,8 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
     batch_list = mgid_list[batch_start:batch_end]
     last_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
     my_data <<- my_data + last_batch
+    
+if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
     write(paste("# finished batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes"  ), file = my_log, append = TRUE)
     write("# batch members", file = my_log, append = TRUE)
     for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
@@ -74,8 +78,18 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
     write("\n", file = my_log, append = TRUE)
   }
 
-  write.table(my_data$count, file = "my_data.txt", col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+
   
+  ###### replace NA's with 0
+  my_data.matrix <<- my_data$count
+  my_data.matrix[ is.na(my_data.matrix) ]<-0
+  rm(my_data) # get rid of dupilcate data
+  
+  # write output to a file
+  
+  my_output = "my_data.matrix.txt"
+  write.table(my_data.matrix, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  print(paste("data available as matrix: my_data.matrix \nand flat file:", my_output))
   
 }
 
@@ -116,7 +130,7 @@ print_usage <- function() {
   This script perform a batch download using Dan's matR-apps collection-merge
 
   USAGE:
-  matR_batch_dl (mgid_list=\"\", batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE)
+  (mgid_list, sleep_int = 0, my_log = \"my_log.txt\", batch_size = 50, my_entry=\"count\", my_annot=\"func\", my_source=\"Subsystem\", my_level=\"level3\", debug=FALSE, verbose=TRUE){
 
   ")
   stop("You are vieiwing the usage because you did not supply an mgid_list")
