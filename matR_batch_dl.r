@@ -43,7 +43,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       
       #write("# batch members:", file = my_log, append = TRUE)
       #for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
-      write("# DONE \n#time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+      write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
     }else{ # process all batches except first and remainder
@@ -114,6 +114,7 @@ if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":
   my_output = "my_data.matrix.txt"
   write.table(my_data.matrix, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   print(paste("data available as matrix: my_data.matrix \nand flat file:", my_output))
+  write("### ALL DONE ###", file = my_log, append = TRUE)
   
 }
 
