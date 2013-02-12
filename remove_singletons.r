@@ -58,7 +58,7 @@ remove_singletons <- function(
   filtered.matrix <<- matrix(0, (num_row - zero_row_count), num_col)
   fail.list <<- vector(mode="list", length=zero_row_count)
   #dimnames(filtered.matrix)[[1]] <<- c(1:(num_row - zero_row_count))
-  if(debug=TRUE){print("made it here")}
+  if(debug==TRUE){print("made it here")}
   dimnames(filtered.matrix)[[2]] <<- dimnames(my.matrix)[[2]]
 
   # now build a filtered matrix that tosses any rows entirely populated with zeros (anything with row count < abundance_limit)
