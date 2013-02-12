@@ -43,7 +43,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       
       #write("# batch members:", file = my_log, append = TRUE)
       #for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
-      write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+      write("# DONE \n#time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
     }else{ # process all batches except first and remainder
@@ -66,7 +66,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       Sys.sleep(sleep_int)
       #write("# batch members", file = my_log, append = TRUE)
       #for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
-      write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+      write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
     }
@@ -87,7 +87,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
     write(paste("# API_CALL:", msession$urls()[1] ), file = my_log, append = TRUE)
     my_data <<- my_data + last_batch
 
-    write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+    write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
     write(print.toc(), file = my_log, append = TRUE)
     write("\n", file = my_log, append = TRUE)
     
@@ -95,7 +95,7 @@ if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":
     write(paste("# finished batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes"  ), file = my_log, append = TRUE)
     write("# batch members", file = my_log, append = TRUE)
     for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
-    write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+    write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
     write(print.toc(), file = my_log, append = TRUE)
     write("\n", file = my_log, append = TRUE)
   }
