@@ -58,7 +58,7 @@ remove_singletons <- function(
   filtered.matrix <<- matrix(0, (num_row - zero_row_count), num_col)
   fail.list <<- vector(mode="list", length=zero_row_count)
   #dimnames(filtered.matrix)[[1]] <<- c(1:(num_row - zero_row_count))
-  if(debug==TRUE){print("made it here")}
+  #if(debug==TRUE){print("made it here")}
   dimnames(filtered.matrix)[[2]] <<- dimnames(my.matrix)[[2]]
 
   # now build a filtered matrix that tosses any rows entirely populated with zeros (anything with row count < abundance_limit)
@@ -67,13 +67,14 @@ remove_singletons <- function(
   zero.row_count = 1
   for (i in 1:num_row){
     if (row_sums[i,1] > abundance_limit){
-      for (j in 1:num_col){
-        filtered.matrix[screen.row_count, j] <<- my.matrix[i,j]
-        if(debug==TRUE){print(paste("i: ",i))}
-        if(debug==TRUE){print(paste("screen.row_count: ",screen.row_count))}
-        if(debug==TRUE){print(paste("j: ",j))}
-        dimnames(filtered.matrix)[[1]][screen.row_count] <<- dimnames(my.matrix)[[1]][i]
-      }
+           #for (j in 1:num_col){
+           #filtered.matrix[screen.row_count, j] <<- my.matrix[i,j]
+      filtered.matrix[screen.row_count,] <<- my.matrix[i]
+      if(debug==TRUE){print(paste("i: ",i))}
+      if(debug==TRUE){print(paste("screen.row_count: ",screen.row_count))}
+           #if(debug==TRUE){print(paste("j: ",j))}
+      dimnames(filtered.matrix)[[1]][screen.row_count] <<- dimnames(my.matrix)[[1]][i]
+           #}
       screen.row_count = screen.row_count + 1
     }else{
       fail.list[zero.row_count] <<- dimnames(my.matrix)[[1]][i]
