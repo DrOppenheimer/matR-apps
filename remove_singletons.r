@@ -60,6 +60,7 @@ remove_singletons <- function(
   #dimnames(filtered.matrix)[[1]] <<- c(1:(num_row - zero_row_count))
   #if(debug==TRUE){print("made it here")}
   dimnames(filtered.matrix)[[2]] <<- dimnames(my.matrix)[[2]]
+  if(debug=TRUE){print(paste("num_rows:", (num_row - zero_row_count)))}
   dimnames(filtered.matrix)[[2]] <<- c(rep("", (num_row - zero_row_count))) # Fill this in below
 
   # now build a filtered matrix that tosses any rows entirely populated with zeros (anything with row count < abundance_limit)
