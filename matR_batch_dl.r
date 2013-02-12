@@ -105,7 +105,9 @@ if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":
   ###### replace NA's with 0
   my_data.matrix <<- my_data$count
   my_data.matrix[ is.na(my_data.matrix) ]<-0
-  if ( exists("my_data")==TRUE ){ rm(my_data) } # get rid of dupilcate data
+  if ( exists("my_data")==TRUE ){
+    rm(my_data)
+  } # get rid of dupilcate data
   
   # write output to a file
   
