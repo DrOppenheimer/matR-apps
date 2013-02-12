@@ -69,16 +69,16 @@ remove_singletons <- function(
   zero.row_count = 1
   for (i in 1:num_row){
     if (row_sums[i,1] > abundance_limit){
-           #for (j in 1:num_col){
-           #filtered.matrix[screen.row_count, j] <<- my.matrix[i,j]
-      filtered.matrix[screen.row_count,] <<- my.matrix[i]
-      if(debug==TRUE){print(paste("i: ",i))}
-      if(debug==TRUE){print(paste("screen.row_count: ",screen.row_count))}
-           #if(debug==TRUE){print(paste("j: ",j))}
-      if(debug==TRUE){my.matrix<<-my.matrix; filtered.matrix<<-filtered.matrix}
+      for (j in 1:num_col){
+        filtered.matrix[screen.row_count, j] <<- my.matrix[i,j]
+        #filtered.matrix[screen.row_count,] <<- my.matrix[i]
+        if(debug==TRUE){print(paste("i: ",i))}
+        if(debug==TRUE){print(paste("screen.row_count: ",screen.row_count))}
+        if(debug==TRUE){print(paste("j: ",j))}
+        if(debug==TRUE){my.matrix<<-my.matrix; filtered.matrix<<-filtered.matrix}
       
-      dimnames(filtered.matrix)[[1]][screen.row_count] <<- dimnames(my.matrix)[[1]][i]
-           #}
+        dimnames(filtered.matrix)[[1]][screen.row_count] <<- dimnames(my.matrix)[[1]][i]
+      }
       screen.row_count = screen.row_count + 1
     }else{
       fail.list[zero.row_count] <<- dimnames(my.matrix)[[1]][i]
