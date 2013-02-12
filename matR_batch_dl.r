@@ -33,7 +33,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       write("# batch members:", file = my_log, append = TRUE)
       for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
       first_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-      write(paste("# API_CALL:", msession$urls()[1] ), file = my_log, append = TRUE)
+      write(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE)
       #first_batch.counts <- first_batch$count
       #my_data <<- first_batch.counts
       my_data <<- first_batch
@@ -58,7 +58,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       write("# batch members", file = my_log, append = TRUE)
       for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
       next_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-      write(paste("# API_CALL:", msession$urls()[1] ), file = my_log, append = TRUE)
+      write(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE)
       
       my_data <<- my_data + next_batch
       #if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }    
@@ -84,7 +84,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
     for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
 
     last_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-    write(paste("# API_CALL:", msession$urls()[1] ), file = my_log, append = TRUE)
+    write(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE)
     my_data <<- my_data + last_batch
 
     write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
@@ -105,7 +105,7 @@ if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":
   ###### replace NA's with 0
   my_data.matrix <<- my_data$count
   my_data.matrix[ is.na(my_data.matrix) ]<-0
-  rm(my_data) # get rid of dupilcate data
+  if ( exists("my_data")==TRUE ){ rm(my_data) } # get rid of dupilcate data
   
   # write output to a file
   
