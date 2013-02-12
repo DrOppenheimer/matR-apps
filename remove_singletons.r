@@ -73,6 +73,8 @@ remove_singletons <- function(
       if(debug==TRUE){print(paste("i: ",i))}
       if(debug==TRUE){print(paste("screen.row_count: ",screen.row_count))}
            #if(debug==TRUE){print(paste("j: ",j))}
+      if(debug==TRUE){my.matrix<<-my.matrix; filtered.matrix<<-filtered.matrix}
+      
       dimnames(filtered.matrix)[[1]][screen.row_count] <<- dimnames(my.matrix)[[1]][i]
            #}
       screen.row_count = screen.row_count + 1
