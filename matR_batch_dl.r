@@ -29,15 +29,20 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       batch_end <- batch_size
       if (debug==TRUE) {print(paste("first batch      -- batch_start:", batch_start, ":: batch_end:", batch_end))}
       batch_list = mgid_list[batch_start:batch_end]
+      write(paste("# Starting with with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
+      write("# batch members:", file = my_log, append = TRUE)
+      for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
       first_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
+      write(paste("# API_CALL:", msession$urls[1] ), file = my_log, append = TRUE)
       #first_batch.counts <- first_batch$count
       #my_data <<- first_batch.counts
       my_data <<- first_batch
-      if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
-      write(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
       Sys.sleep(sleep_int)
-      write("# batch members:", file = my_log, append = TRUE)
-      for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+      if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
+      #write(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
+      
+      #write("# batch members:", file = my_log, append = TRUE)
+      #for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
       write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
@@ -47,13 +52,20 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
       batch_end <- (batch_count*batch_size)
       if (debug==TRUE) {print(paste("continuing batch -- batch_start:", batch_start, ":: batch_end:", batch_end))}
       batch_list = mgid_list[batch_start:batch_end]
-      next_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-      my_data <<- my_data + next_batch
+
       if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }    
-      write(paste("# finished batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
-      Sys.sleep(sleep_int)
+      write(paste("# Starting batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
       write("# batch members", file = my_log, append = TRUE)
       for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+      next_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
+      write(paste("# API_CALL:", msession$urls[1] ), file = my_log, append = TRUE)
+      
+      my_data <<- my_data + next_batch
+      #if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }    
+      #write(paste("# finished batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
+      Sys.sleep(sleep_int)
+      #write("# batch members", file = my_log, append = TRUE)
+      #for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
       write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
@@ -66,8 +78,18 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
     batch_end <- length(mgid_list)
     if (debug==TRUE) {print(paste("last batch         -- batch_start:", batch_start, ":: batch_end:", batch_end))}
     batch_list = mgid_list[batch_start:batch_end]
+
+    write(paste("# Starting batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
+    write("# batch members", file = my_log, append = TRUE)
+    for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+
     last_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
+    write(paste("# API_CALL:", msession$urls[1] ), file = my_log, append = TRUE)
     my_data <<- my_data + last_batch
+
+    write("# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+    write(print.toc(), file = my_log, append = TRUE)
+    write("\n", file = my_log, append = TRUE)
     
 if ( verbose==TRUE ){ print(paste("# finished with batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
     write(paste("# finished batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes"  ), file = my_log, append = TRUE)
@@ -116,9 +138,7 @@ print.toc <- function(x,...) {
 
 source_https <- function(url, ...) {
   require(RCurl)
-  sapply(c(url, ...), function(u) {
-    eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv)
-  })
+  sapply(c(url, ...), function(u) { eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv) } )
 }
 
 
