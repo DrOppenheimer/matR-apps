@@ -1,4 +1,4 @@
-predict_depth <- function(abundance_matrix, input_type = "object", file_out = "my_depth_prediction.txt", genome_size=5000000, coverage=100, num_to_show=10, create_figure=TRUE){
+predict_depth <- function(abundance_matrix, input_type = "object", file_out_prefix = "depth_prediction", genome_size=5000000, coverage=100, num_to_show=10, create_figure=TRUE){
 
 # Print usage if
    if (nargs() == 0){print_usage()}
@@ -25,24 +25,29 @@ predict_depth <- function(abundance_matrix, input_type = "object", file_out = "m
 # create matrix to hold calcualted depths
   my_coverage_matrix <- matrix("",dim(sorted_matrix)[1],2)
   dimnames(my_coverage_matrix)[[1]] <- dimnames(sorted_matrix)[[1]] # label rows
-  dimnames(my_coverage_matrix)[[2]] <- c("16s abundance","WGS depth to assemble") # label columns
+  dimnames(my_coverage_matrix)[[2]] <- c("16s abundance","WGS depth to assemble (bp)") # label columns
   my_coverage_matrix[,1] <- sorted_matrix[,1] # place abundance in first column
 
 # calculate sequencing depth for each taxon
   for (i in 1:dim(sorted_matrix)[1]){
-    my_coverage_matrix[i,2] <- ( genome_size * coverage ) / ( sorted_matrix[i,1] / sum(sorted_matrix[,1]) ) 
+    my_coverage_matrix[i,2] <- round( ( genome_size * coverage ) / ( sorted_matrix[i,1] / sum(sorted_matrix[,1]) ) )
   }
 
 # generate tab delimited output
+  file_out <- gsub(" ", "", paste(file_out_prefix, ".txt"))
   write.table(my_coverage_matrix, file = "my_depth_prediction.txt", col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   
 # generate a figure 
   if (create_figure == TRUE){
-    pdf(file="WGS_depth_prediction.pdf", width = 10, height = 5)
+    image_out <- gsub(" ", "", paste(file_out_prefix, ".pdf"))
+    pdf(file=image_out, width = 10, height = 5)
     par(mar=c(15,5,1,5))
-    barplot( as.numeric(sorted_matrix[1:num_to_show,1]), las=2, axisnames=(1:10), names.arg = dimnames(my_coverage_matrix)[[1]][1:num_to_show], ylab="Taxon Abundance" ) # mar=c(1,1,1,50))
+    barplot( as.numeric(sorted_matrix[1:num_to_show,1]), las=2, axisnames=(1:10), names.arg = dimnames(my_coverage_matrix)[[1]][1:num_to_show], ylab="" ) # mar=c(1,1,1,50))
+    mtext("Taxon Abundance", side=2, line=4 )
     par(new=TRUE)
     plot((1:num_to_show), my_coverage_matrix[1:num_to_show,2], type="o", col="red", lwd=3, lty=1, xlab="", ylab="", xaxt="n", axes=F)
+    #axis(2, las=1)
+    #mtext("Taxon Abundance", side=2, line=1 )
     axis(4, las=1, col="red")
     mtext( paste("Predicted BPs of sequencing for (", coverage, ") x coverage"),side=4, line=4, adj=1.3, col = "red")
     dev.off()
@@ -61,7 +66,7 @@ print_usage <- function() {
   coverage based on relative organism abundance determined from 16s data. 
 
   USAGE:
-  predict_depth <- function(abundance_matrix, input_type = c(\"file\", \"object\"), file_out = \"my_depth_prediction.txt\", genome_size=5000000, coverage=100, num_to_show=10, create_figure=TRUE)
+  predict_depth <- function(abundance_matrix, input_type = c(\"file\", \"object\"), file_out_prefix= \"depth_prediction\", genome_size=5000000, coverage=100, num_to_show=10, create_figure=TRUE)
 
 
   NOTES:
