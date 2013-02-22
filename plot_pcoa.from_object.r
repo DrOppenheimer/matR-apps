@@ -155,7 +155,7 @@ plot_pcoa.from_object <- function(
   my_cex <- 1
                                         #points(x=(my_data[,PC1]), y=(my_data[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
   points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
-                     if ( !(identical(legend,"NA")){
+                     if ( !(identical(legend,"NA")) ){
                                           legend(0,0, legend = legend_text, pch=19, col = legend_colors)
                      }
                      
