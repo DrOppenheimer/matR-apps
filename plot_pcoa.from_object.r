@@ -16,7 +16,8 @@ plot_pcoa.from_object <- function(
                      legend_x = 0,
                      legend_y = 0,
                      PC1 = 1,
-                     PC2 = 2
+                     PC2 = 2,
+                     PC3 = 3
                      )
   
 {
@@ -143,7 +144,9 @@ plot_pcoa.from_object <- function(
 
   write.table(eigen_vectors, file=PCoA_file_out, col.names=FALSE, row.names=TRUE, append = TRUE, sep="\t")
 
-  png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.png")), width = my_width, height = my_height)
+
+  # make 2d plot
+  png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.2d.png")), width = my_width, height = my_height)
   plot(
        x<-eigen_vectors[,PC1],
        y<-eigen_vectors[,PC2],     
@@ -161,8 +164,39 @@ plot_pcoa.from_object <- function(
                                           legend(legend_x, legend_y, legend = legend_text, pch=19, col = legend_colors)
                      }
                      
-
   title( (paste(file_in,"\n", "PC", PC1, "vs PC", PC2 )), cex.main = 1)
   dev.off()
+
+
+  # make 3d plot
+  png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.3d.png")), width = my_width, height = my_height)
+  scatterplot3d(
+       x<-eigen_vectors[,PC1],
+       y<-eigen_vectors[,PC2],
+       y<-eigen_vectors[,PC3],     
+       type="n",             
+       #xlab = scaled_eigen_values[PC1],          
+       #ylab = scaled_eigen_values[PC2],
+       xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
+       ylab = paste(round(scaled_eigen_values[PC2]*100, digits = 2), "% of variation"),
+zlab = paste(round(scaled_eigen_values[PC3]*100, digits = 2), "% of variation"),                     
+       cex = 0.8
+       )
+  my_cex <- 1
+                                        #points(x=(my_data[,PC1]), y=(my_data[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
+  points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), z=(eigen_vectors[,PC3]),  pch=23, col = colors, bg = colors, cex=my_cex) #C
+                     if ( !(identical(legend,"NA")) ){
+                                          legend(legend_x, legend_y, legend = legend_text, pch=19, col = legend_colors)
+                     }
+                     
+  title( (paste(file_in,"\n", "PC", PC1, "vs PC", PC2 )), cex.main = 1)
+  dev.off()
+
+
+  
+
+
+
+
   
 }
