@@ -169,6 +169,8 @@ plot_pcoa.from_object <- function(
 
 
   # make 3d plot
+
+  require(scatterplot3d)
   png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.3d.png")), width = my_width, height = my_height)
   scatterplot3d(
        x<-eigen_vectors[,PC1],
