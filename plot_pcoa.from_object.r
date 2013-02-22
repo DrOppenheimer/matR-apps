@@ -11,7 +11,7 @@ plot_pcoa.from_object <- function(
                      dist_method = "euclidean",
                      headers = 1,
                      colors = "blue",
-                     legend = "NA",
+                     my_legend = "NA",
                      PC1 = 1,
                      PC2 = 2
                      )
@@ -156,7 +156,7 @@ plot_pcoa.from_object <- function(
   points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
 
 if ( !(legend=="NA") ){
-                     legend(legend)
+                     legend(my_legend)
                      }    
                      
 
