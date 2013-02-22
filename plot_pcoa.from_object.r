@@ -187,7 +187,7 @@ plot_pcoa.from_object <- function(
   my_cex <- 1
 
   #points(x=(my_data[,PC1]), y=(my_data[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
-  points3d(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), z=(eigen_vectors[,PC3]),  pch=19, col = colors, bg = colors, cex=my_cex) #C
+  points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), z=(eigen_vectors[,PC3]),  pch=19, col = colors, bg = colors, cex=my_cex) #C
                      if ( !(identical(legend,"NA")) ){
                                           #legend(legend_x, legend_y, legend = legend_text, pch=19, col = legend_colors)
                                           legend("topright", legend = legend_text, pch=19, col = legend_colors)
