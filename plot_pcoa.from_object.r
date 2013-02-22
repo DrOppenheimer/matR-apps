@@ -174,18 +174,20 @@ labels=my_labels,
   scatterplot3d(
        x<-eigen_vectors[,PC1],
        y<-eigen_vectors[,PC2],
-       y<-eigen_vectors[,PC3],     
-       type="p",
-       pch<-19,
-       color<-colors,                 
+       y<-eigen_vectors[,PC3],
+       labels=my_labels,     
+       type="n",
+       #pch<-19,
+       #color<-colors,                 
        xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
        ylab = paste(round(scaled_eigen_values[PC2]*100, digits = 2), "% of variation"),
        zlab = paste(round(scaled_eigen_values[PC3]*100, digits = 2), "% of variation"),                     
        cex.lab = 0.8
        )
   my_cex <- 1
+
   #points(x=(my_data[,PC1]), y=(my_data[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
-  #points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), z=(eigen_vectors[,PC3]),  pch=19, col = colors, bg = colors, cex=my_cex) #C
+  points3d(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), z=(eigen_vectors[,PC3]),  pch=19, col = colors, bg = colors, cex=my_cex) #C
                      if ( !(identical(legend,"NA")) ){
                                           #legend(legend_x, legend_y, legend = legend_text, pch=19, col = legend_colors)
                                           legend("topright", legend = legend_text, pch=19, col = legend_colors)
