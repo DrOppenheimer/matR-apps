@@ -11,7 +11,7 @@ plot_pcoa.from_object <- function(
                      dist_method = "euclidean",
                      headers = 1,
                      colors = "blue",         
-                     my_labels=""
+                     my_labels="",
                      legend_text = "NA",  
                      legend_colors = "NA",                     
                      legend_x = 0,
