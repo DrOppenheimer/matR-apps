@@ -188,10 +188,11 @@ zlab = paste(round(scaled_eigen_values[PC3]*100, digits = 2), "% of variation"),
                                         #points(x=(my_data[,PC1]), y=(my_data[,PC2]), pch=23, col = colors, bg = colors, cex=my_cex) #C
   points(x=(eigen_vectors[,PC1]), y=(eigen_vectors[,PC2]), z=(eigen_vectors[,PC3]),  pch=23, col = colors, bg = colors, cex=my_cex) #C
                      if ( !(identical(legend,"NA")) ){
-                                          legend(legend_x, legend_y, legend = legend_text, pch=19, col = legend_colors)
+                                          #legend(legend_x, legend_y, legend = legend_text, pch=19, col = legend_colors)
+                                          legend("topright", legend = legend_text, pch=19, col = legend_colors)
                      }
                      
-  title( (paste(file_in,"\n", "PC", PC1, "vs PC", PC2 )), cex.main = 1)
+  title( (paste(file_in,"\n", "PC", PC1, "vs PC", PC2, "vs PC", PC3 )), cex.main = 1)
   dev.off()
 
 
