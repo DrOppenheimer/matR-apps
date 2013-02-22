@@ -10,7 +10,8 @@ plot_pcoa.from_object <- function(
                      output_DIST_dir = "./",
                      dist_method = "euclidean",
                      headers = 1,
-                     colors = "blue",
+                     colors = "blue",         
+                     my_labels=""
                      legend_text = "NA",  
                      legend_colors = "NA",                     
                      legend_x = 0,
@@ -150,7 +151,8 @@ plot_pcoa.from_object <- function(
   plot(
        x<-eigen_vectors[,PC1],
        y<-eigen_vectors[,PC2],     
-       type="n",             
+       type="n",    
+labels=my_labels,             
        xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
        ylab = paste(round(scaled_eigen_values[PC2]*100, digits = 2), "% of variation"),
        cex = 0.8
