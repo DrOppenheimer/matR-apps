@@ -174,9 +174,9 @@ plot_pcoa.from_object <- function(
   scatterplot3d(
        x<-eigen_vectors[,PC1],
        y<-eigen_vectors[,PC2],
-       y<-eigen_vectors[,PC3],
+       z<-eigen_vectors[,PC3],
        #labels=my_labels,     
-       type="p",
+       #type="p",
        pch<-19,
        color<-colors,                 
        xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
