@@ -176,7 +176,7 @@ plot_pcoa.from_object <- function(
        y<-eigen_vectors[,PC2],
        y<-eigen_vectors[,PC3],
        #labels=my_labels,     
-       type="n",
+       type="p",
        pch<-19,
        color<-colors,                 
        xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
