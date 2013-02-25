@@ -149,8 +149,8 @@ plot_pcoa.from_object <- function(
   # make 2d plot
   png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.2d.png")), width = my_width, height = my_height)
   plot(
-       x<-eigen_vectors[,PC1],
-       y<-eigen_vectors[,PC2],     
+       x = eigen_vectors[,PC1],
+       y = eigen_vectors[,PC2],     
        type="n",    
 #labels=my_labels,             
        xlab = paste(round(scaled_eigen_values[PC1]*100, digits = 2), "% of variation"),
@@ -172,9 +172,9 @@ plot_pcoa.from_object <- function(
   require(scatterplot3d)
   png(file = gsub(" ", "", paste(file_in, ".", dist_method,".PCoA.3d.png")), width = my_width, height = my_height)
   scatterplot3d(
-       x<-eigen_vectors[,PC1],
-       y<-eigen_vectors[,PC2],
-       z<-eigen_vectors[,PC3],
+       x = eigen_vectors[,PC1],
+       y = eigen_vectors[,PC2],
+       z = eigen_vectors[,PC3],
        #labels=my_labels,     
        #type="p",
        pch<-19,
