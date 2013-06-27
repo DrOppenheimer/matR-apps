@@ -545,5 +545,14 @@ heatmap_dendrogram.from_file <- function (
   for ( j in 1:(dim(data.matrix(labCol))[1]) ){ 
     write( labCol[j], file = Col_labels_file, append=TRUE )
   }
+
+  #x_out <<- x
+  #t(mat[3:1,])
+  rot_x <- t(x[1:nrow(x),])
+  rowsort_rot_x <- rot_x[nrow(rot_x):1,]
+
+  output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
+  
+  write.table(rot_x, file = output_filename, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
     
 }

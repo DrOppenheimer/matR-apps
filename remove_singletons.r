@@ -87,6 +87,7 @@ remove_singletons <- function(
   }
 
   return(filtered.matrix)
+
   
 }
 # dimnames(filtered.matrix)[[1]][screen.row_count] <<- dimnames(my.matrix)[[1]][i]
