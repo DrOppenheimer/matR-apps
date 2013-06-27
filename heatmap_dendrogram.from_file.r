@@ -554,5 +554,6 @@ heatmap_dendrogram.from_file <- function (
   output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
   
   write.table(rot_x, file = output_filename, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  
     
 }
