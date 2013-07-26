@@ -8,7 +8,13 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
     print( paste("deleted old log:", my_log) )
   }
   
-  require(matR) # load matR
+  #require(matR) # load matR
+  require(matRdevel) # load matR devel
+  #remove.packages("matR")
+  #install.packages("matRdevel", repo="http://dunkirk.mcs.anl.gov/~braithwaite/R", type="source")
+  
+  source("~/bin/source_https.r") # source script that enables additional sourcing from git
+  
   source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R") # get the merge function
 
   if ( exists("my_data")==TRUE ){
