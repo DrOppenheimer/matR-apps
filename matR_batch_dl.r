@@ -28,6 +28,8 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
   if (debug==TRUE) {print(paste("batch_remainder:", batch_remainder))}
         
   for (batch_count in 1:(num_batch)){
+
+    #http://api.metagenomics.anl.gov/api2.cgi/matrix/function?id=mgm4472361.3&id=mgm4472360.3&result_type=abundance&group_level=level3&source=Subsystems&hit_type=na&auth=
     
     if (batch_count == 1){ # process first batch
       print.tic()
@@ -118,7 +120,7 @@ matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batc
   
   # write output to a file
   
-  my_output = "my_data.matrix.txt"
+  my_output = gsub(" ", "", paste("my_data_matrix.", my_entry, ".txt"))
   write.table(my_data.matrix, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   print(paste("data available as matrix: my_data.matrix \nand flat file:", my_output))
   write("### ALL DONE ###", file = my_log, append = TRUE)
