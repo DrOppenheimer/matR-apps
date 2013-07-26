@@ -8,8 +8,8 @@ matR_batch_dl <- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batch
     print( paste("deleted old log:", my_log) )
   }
   
-  #require(matR) # load matR
-  require(matRdevel) # load matR devel
+  require(matR) # load matR
+  #require(matRdevel) # load matR devel
   #remove.packages("matR")
   #install.packages("matRdevel", repo="http://dunkirk.mcs.anl.gov/~braithwaite/R", type="source")
   
