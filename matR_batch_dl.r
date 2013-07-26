@@ -1,4 +1,4 @@
-matR_batch_dl <<- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE, verbose=TRUE){
+matR_batch_dl <- function(mgid_list, sleep_int = 0, my_log = "my_log.txt", batch_size = 50, my_entry="count", my_annot="func", my_source="Subsystem", my_level="level3", debug=FALSE, verbose=TRUE){
 
   if ( nargs() == 0){print_usage()} # give usage if no arguemtsn are supplied
   if (identical(mgid_list, "") ){print_usage()}  # give usage if empty arguement is supplied for mgid_list
