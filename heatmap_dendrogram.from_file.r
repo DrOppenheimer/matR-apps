@@ -2,6 +2,7 @@ heatmap_dendrogram.from_file <- function (
 
                                  file_in,
                                         #file_out,
+                                 scale_0_to_1 = TRUE,
                                  figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                  image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
                                  image_title = image_out, # image_out
@@ -116,10 +117,28 @@ heatmap_dendrogram.from_file <- function (
   {
     x = data.matrix(read.table(file_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
   }
-  
+
 ###### get the diensions of the input object  
   number_entries = (dim(x)[1]) # number rows
   number_samples = (dim(x)[2]) # number columns
+
+###### Scale all values in matrix from 0 to 1 if that default (scale_0_to_1) is TRUE
+
+if( scale_0_to_1 == TRUE ){
+
+min_value <- min(x)
+max_value <- max(x)
+
+for ( sample_col in 1:number_samples ){
+                                 for ( entry_row in 1:number_entries ){
+                                 x[sample_col, entry_row] <- (( x[sample_col, entry_row] - min_value)/( max_value - min_value)) 
+                                                                  }
+                                 }
+}
+
+
+
+
   
 ###### create the "main" or title for the figure - also used as the name of the output file
   main = gsub(" ", "", paste(image_title, "::", hclustfun_method, "_clustering"))
