@@ -1,0 +1,39 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww23200\viewh8360\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+
+\f0\fs38 \cf0 data_location	/Users/kevin/Documents/Projects/Stuff_for_Others/Dion/tax_filtering_func.Oct_2013\
+data_file			dion_SS_data.tax_filtered.terminal_annotation_only.txt\
+colors_file		test_colors.txt\
+\
+# go to the directory with the data\
+setwd("/Users/kevin/Documents/Projects/Stuff_for_Others/Dion/tax_filtering_func.Oct_2013")\
+\
+\
+\
+# import the data\
+my_data <- data.matrix(read.table("dion_SS_data.tax_filtered.terminal_annotation_only.txt", row.names=1, header=TRUE, sep="\\t", comment.char="", quote="", check.names=FALSE))\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 # import the script to generate the colors\
+source("~/bin/create_colors2.r")\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural
+\cf0 \
+# generate the colors matrix\
+create_colors("test_colors.txt")\
+\
+# make sure that colors are in the same order as the data # VERY IMPORTANT\
+my_data.color <- my_data.color[ colnames(my_data), ]\
+\
+# Generate pcoa colored by first column in colors matrix\
+pco(my_data,col=my_data.color[,1],comp=c(1,2),labels="",main="")\
+pco(my_data,color=my_data.color[,1]=c(1,2,3),labels="",main="")\
+\
+\
+# had to do this - matR pco would not work for some reason\
+plot_pcoa.from_object(my_data, colors=my_data.color[,2])\
+\
+\
+}
