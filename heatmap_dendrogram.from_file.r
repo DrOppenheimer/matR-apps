@@ -124,20 +124,17 @@ heatmap_dendrogram.from_file <- function (
 
 ###### Scale all values in matrix from 0 to 1 if that default (scale_0_to_1) is TRUE
 
-if( scale_0_to_1 == TRUE ){
+  if( scale_0_to_1 == TRUE ){
 
-min_value <- min(x)
-max_value <- max(x)
-
-for ( sample_col in 1:number_samples ){
-                                 for ( entry_row in 1:number_entries ){
-                                 x[sample_col, entry_row] <- (( x[sample_col, entry_row] - min_value)/( max_value - min_value)) 
-                                                                  }
-                                 }
-}
-
-
-
+    min_value <- min(x)
+    max_value <- max(x)
+    
+    for ( entry_row in 1:number_entries ){
+    for ( sample_col in 1:number_samples ){
+      x[entry_row,sample_col] <- (( x[entry_row,sample_col] - min_value)/( max_value - min_value)) 
+    }
+  }
+  }
 
   
 ###### create the "main" or title for the figure - also used as the name of the output file
