@@ -5,16 +5,21 @@ create_colors <- function(file_name, color_mode = "auto"){
 # color_mode set to anything other than "auto" will try to use the text in the table
 # as colors.
 # output of this script is a table hard coded as my_data.color
-# use column referencing of this table to color PCoA
-# Example
+# use column referencing of this table to color PCoA e.g.:
+# pco(my_data,col=my_data.color[,1],comp=c(1,2),labels="",main="")
+# BE SURE TO CHECK THAT ORDER OF COLORS IS SAME AS DATA e.g.:
+# create_colors("test_colors.txt")  
+# my_data.color <- my_data.color[ colnames(my_data), ]
+#
+#
+#  
+## Example
 # data_location	/Users/kevin/Documents/Projects/Stuff_for_Others/Dion/tax_filtering_func.Oct_2013
 ## data_file			dion_SS_data.tax_filtered.terminal_annotation_only.txt
 ## colors_file		test_colors.txt
 
 ## # go to the directory with the data
 ## setwd("/Users/kevin/Documents/Projects/Stuff_for_Others/Dion/tax_filtering_func.Oct_2013")
-
-
 
 ## # import the data
 ## my_data <- data.matrix(read.table("dion_SS_data.tax_filtered.terminal_annotation_only.txt", row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
