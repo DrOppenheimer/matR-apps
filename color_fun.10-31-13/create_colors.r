@@ -77,7 +77,7 @@ create_colors <- function(file_name, color_mode = "auto"){
   
 # MAIN  
 ############################################################################  
-  my_data <- read.table(file_name, header=TRUE, stringsAsFactors=FALSE )
+  my_data <- read.table(file_name, header=TRUE, stringsAsFactors=FALSE, sep="\t", comment.char="", quote="", check.names=FALSE )
   
   my_data.color <<- my_data
   
