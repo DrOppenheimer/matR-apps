@@ -175,7 +175,7 @@ barplot_tool <- function(
           my_stats.summary.ordered.subset.rot_90, 
           beside=TRUE, 
           col=my_data.color,
-          las=2
+          las=2,
           )
   dev.off()
 
