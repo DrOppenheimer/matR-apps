@@ -1,12 +1,13 @@
 group_stats <- function(
-                         file_in = "sample_time_series_data.groups_in_file.txt",
-                         file_out = "my_stats.summary.txt",
-                         stat_test = "Kruskal-Wallis", # (an matR stat test)
-                         order_by = NULL, # column to order by - integer column index (1 based) or column header -- paste(stat_test, "::fdr", sep="") - NULL is the default behavior - to sort by the fdr.  If you don't know the number of the column you want to sort by - run with default settings first time, figure out the column number, then specify it the second time round. Columns are base 1 indexed.
-                         group_lines = 1,           # if groupings are in the file
-                         group_line_to_process = 1, # if groupings are in the file
-                         my_grouping = NA           # to supply groupings with a list                 
-                         )
+                        file_in = "sample_time_series_data.groups_in_file.txt",
+                        file_out = "my_stats.summary.txt",
+                        stat_test = "Kruskal-Wallis", # (an matR stat test)
+                        order_by = NULL, # column to order by - integer column index (1 based) or column header -- paste(stat_test, "::fdr", sep="") - NULL is the default behavior - to sort by the fdr.  If you don't know the number of the column you want to sort by - run with default settings first time, figure out the column number, then specify it the second time round. Columns are base 1 indexed.
+                        order_decreasing = TRUE,
+                        group_lines = 1,           # if groupings are in the file
+                        group_line_to_process = 1, # if groupings are in the file
+                        my_grouping = NA           # to supply groupings with a list                 
+                        )
 {
 
 # Check to make sure either that groupings are in the data file, or that a groupings argument
@@ -24,17 +25,14 @@ group_stats <- function(
 
 #################################### MAIN ##################################
 ############################################################################
-
 # import groupings from the data file or input arguments
-  if ( group_lines > 0 ){ # if groupings are in the data file, get the one specified in the input args
+  if ( is.na(my_grouping)[1]==TRUE ){ # if groupings are in the data file, get the one specified in the input args
     groups_raw <- strsplit( x=readLines( con=file_in, n=group_lines ), split="\t" ) 
     my_groups <- groups_raw[[1]][ 2:(length(groups_raw[[1]])) ] # skip first -- should be empty -- field
   }else{
-    if ( is.na(my_grouping) ){
-      stop("entry for groupings is not valid - you need group_lines and group_line_to_proces (groupings are in the data file) or my_grouping with a list that specifies the groupings")
-      my_groups <- my_grouping
-    }
+    my_groups <- my_grouping
   }
+  #}
 
 # import data
   my_data <- read.table(
@@ -88,14 +86,14 @@ group_stats <- function(
 # generate a summary object - used to generate the plots, and can be used to create a flat file output
   my_stats.summary <- cbind(my_data, my_stats$mean, my_stats$sd, my_stats.statistic, my_stats.p, my_stats.fdr)
 
-# make sure that order_by value, if other than NULL is supplied, is valid
+  # make sure that order_by value, if other than NULL is supplied, is valid
   if (is.null(order_by)){ # use last column by default, or specified column otherwise
     order_by <- ( ncol(my_stats.summary) )
   } else {
     if (is.integer(order_by)){
       if ( order_by > ncol(my_stats.summary) ){
         stop( paste(
-                    "\n\norder_by must be an integer between 1 and ",
+                    "\n\norder_by (", order_by,") must be an integer between 1 and ",
                     ncol(my_stats.summary),
                     " (max number of columns in the output)\n\n",
                     sep="",
@@ -104,7 +102,7 @@ group_stats <- function(
       }
     }else{
       stop( paste(
-                  "\n\norder_by must be an integer between 1 and ",
+                  "\n\norder_by (", order_by,") must be an integer between 1 and ",
                   ncol(my_stats.summary),
                   " (max number of columns in the output)\n\n",
                   sep="",
@@ -114,7 +112,7 @@ group_stats <- function(
   }
     
   # order the data by the selected column - placing ordered data in a new object
-  my_stats.summary.ordered <- my_stats.summary[ order(my_stats.summary[,order_by], decreasing=TRUE), ]
+  my_stats.summary.ordered <- my_stats.summary[ order(my_stats.summary[,order_by], decreasing=order_decreasing), ]
 
 # flat file output of the summary file
   write.table(my_stats.summary.ordered, file = file_out, col.names=NA, row.names = rownames(my_stats.summary), sep="\t", quote=FALSE)
