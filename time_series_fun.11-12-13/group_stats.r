@@ -1,5 +1,6 @@
 group_stats <- function(
                          file_in = "sample_time_series_data.groups_in_file.txt",
+                         file_out = "my_stats.summary.txt",
                          stat_test = "Kruskal-Wallis", # (an matR stat test)
                          order_by = NULL, # column to order by - integer column index (1 based) or column header -- paste(stat_test, "::fdr", sep="") - NULL is the default behavior - to sort by the fdr.  If you don't know the number of the column you want to sort by - run with default settings first time, figure out the column number, then specify it the second time round. Columns are base 1 indexed.
                          group_lines = 1,           # if groupings are in the file
@@ -116,6 +117,6 @@ group_stats <- function(
   my_stats.summary.ordered <- my_stats.summary[ order(my_stats.summary[,order_by], decreasing=TRUE), ]
 
 # flat file output of the summary file
-  write.table(my_stats.summary.ordered, file = "my_stats.summary.txt", col.names=NA, row.names = rownames(my_stats.summary), sep="\t", quote=FALSE)
+  write.table(my_stats.summary.ordered, file = file_out, col.names=NA, row.names = rownames(my_stats.summary), sep="\t", quote=FALSE)
 
 }
