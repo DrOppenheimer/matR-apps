@@ -1,10 +1,10 @@
 download_sequence <- function(
                          mgid = "mgm4473069.3",
                          mg_key = NULL,
-                         log = "my.download_sequence.log"
+                         log = "download_sequence.log"
                          )
 {
-
+  
   require(RCurl)
   require(RJSONIO)
   
@@ -28,13 +28,15 @@ download_sequence <- function(
 
   write(
         paste(
-              "migid            : ",mgid, "\n",
+              "migid            : ", mgid, "\n",
               "download_api_call: ", my_call.downloads, "\n",
               "seq_mgid         : ", seq_mgid, "\n",
               "seq_type         : ", seq_type, "\n",
               "seq_url          : ", seq_url, "\n",
               "seq_filename     : ", seq_filename, "\n",
-              "unzipped_filename: ", "\n"
+              "unzipped_filename: ", unzipped_filename, "\n",
+              sep="",
+              collapse=""
               ),
         file = log
         )
@@ -43,7 +45,7 @@ download_sequence <- function(
   
   system(system_command)
   
-  write("\nDownload Done\n", file=log, append=TRUE)
+  write("Download Done\n", file=log, append=TRUE)
 
 }
 
