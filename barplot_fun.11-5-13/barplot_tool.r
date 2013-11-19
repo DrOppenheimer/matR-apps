@@ -189,27 +189,26 @@ barplot_tool <- function(
 # create the barplot - as pdf - legend on left, barplot on right
   #my_pdf = paste(file_in, ".barplot.pdf", sep="")
   #pdf ( file=my_pdf, width=8.5, height=4 )
-  #suppressMessages(
-                   pdf ( file=figure_out, width=8.5, height=4 )
-                   split.screen(c(1,2))
-                   screen(1)
-                   text( x=0.5, y=0.9 ,labels=paste(
-                                         "file in:  ",file_in, "\n",
-                                         "file out: ",file_out, "\n",
-                                         "sorted by output column ", order_by, ", \"",colnames(my_stats.summary.ordered)[order_by], "\"", "\n",
-                                         "Number of categories: ", my_n,
-                                         sep=""
-                                         ) )
+  pdf ( file=figure_out, width=8.5, height=4 )
+  split.screen(c(1,2))
+  screen(1)
+  text( x=0.5, y=0.9 ,labels=paste(
+                        "file in:  ",file_in, "\n",
+                        "file out: ",file_out, "\n",
+                        "sorted by output column ", order_by, ", \"",colnames(my_stats.summary.ordered)[order_by], "\"", "\n",
+                        "Number of categories: ", my_n,
+                        sep=""
+                        ) )
                                         #plot.new(  )
-                   legend( x="center", legend=rownames(my_stats.summary.ordered.subset.rot_90), pch=15, col=my_data.color )
-                   screen(2)
-                   barplot( 
-                           my_stats.summary.ordered.subset.rot_90, 
-                           beside=TRUE, 
-                           col=my_data.color,
-                           las=2,
-                           )
-                   dev.off()
-   #                )
+  legend( x="center", legend=rownames(my_stats.summary.ordered.subset.rot_90), pch=15, col=my_data.color )
+  screen(2)
+  barplot( 
+          my_stats.summary.ordered.subset.rot_90, 
+          beside=TRUE, 
+          col=my_data.color,
+          las=2
+          )
+  
+dev.off()
 
 }

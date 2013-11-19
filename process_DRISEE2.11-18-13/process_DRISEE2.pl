@@ -6,16 +6,17 @@ use Getopt::Long;
 
 
 # Default for variables
-my $script_path = "/Users/kevin/git/matR-apps.DrOppenheimer/matR-apps/time_series_fun.11-12-13/";
-my $file_in = "sample_time_series_data.groups_in_file.txt";
-my $file_out = "my_stats.summary.txt";
-my $stat_test = "Kruskal-Wallis";
-my $order_by = "NULL";
-my $order_decreasing = "TRUE";
-my $group_lines = 1;
-my $group_line_to_process = 1;
-my $my_grouping = "NA";
-
+my $drisee_path = "/home/ubuntu/DRISEE/drisee.py";
+my $file_in;
+my $file_type = "fastq"; # fasta or fastq
+#my $percent = 1;
+#my $verbose = 1;
+my $stat_file;
+my $drisee_log;
+my $drisee_stdout;
+my $cummulative_log; = "cummulative_log.txt"
+my $help;
+my $debug;
 
 my($help, $verbose, $debug);
 
@@ -25,62 +26,97 @@ if( $debug ){ print STDOUT "made it here"."\n"; }
 # if ( (@ARGV > 0) && ($ARGV[0] =~ /-h/) ) { &usage(); }
 if ( $ARGV[0] =~ /-h/ ) { &usage(); }
 
-#unless ( @ARGV > 0 || $file_in ) { &usage(); }
+unless ( @ARGV > 0 || $file_in ) { &usage(); }
 unless ( @ARGV > 0 ) { &usage(); }
 
 if ( ! GetOptions (
-		   "s|script_path=s"           => \$script_path,
-		   "f|file_in=s"               => \$file_in,
-		   "o|file_out=s"              => \$file_out,
-		   "t|stat_test=s"             => \$stat_test,
-		   "b|order_by=s"              => \$order_by,
-                   "d|order_decreasing=s"      => \$order_decreasing,
-		   "l|group_lines=s"           => \$group_lines, 
-		   "p|group_line_to_process=s" => \$group_line_to_process,
-		   "g|my_grouping=s"           => \$my_grouping,
-		   "h|help!"                   => \$help,
-		   "v|verbose!"                => \$verbose,
-		   "d|debug!"                  => \$debug
-		   
+		   "d|drisee_path=s"   => \$drisee_path,
+		   "f|file_in=s"       => \$file_in,
+		   "t|file_type=s"     => \$file_type,
+		   #"p|percent!"        => \$percent,
+		   #"v|verbose!"        => \$verbose,
+		   "s|stat_file=s"     => \$stat_file,
+		   "l|drisee_log=s"    => \$drisee_log,
+		   "o|drisee_stdout"   => \$drisee_stdout,
+		   "c|cummulative_log" => \$cummulative_log,		   
+		   "h|help!"           => \$help,
+		   "d|debug!"          => \$debug
 		  )
    ) { &usage(); }
 
-# time stamp to add to the name of the temporary script to make it unique
-my $time_stamp = time();
 
-# a little bit of parsing if user supplies groups string
-$my_grouping =~ s/\"//;
+# generate default names for output files 
 
-# a little bit of parsing to deal with R NULL properly
-# my $order_by_value = "NULL";
-# unless ( $order_by eq "default" ){ $order_by_value = $order_by; }
+unless ( $stat_file )       { $file_in."."."STAT.txt" };
+unless ( $drisee_log )      { $file_in."."."drisee_log.txt" };
+unless ( $drisee_stdout )   { $file_in."."."drisee_stdout.txt" };
+unless ( $cummulative_log ) { "DRISEE_cummulative_log.txt" };
 
-# write a temporary R script that will be executed to perform the analysis
-my $temp_script = "group_stats_r_script.".$time_stamp.".r";
-open(R_SCRIPT, ">", $temp_script);
-print R_SCRIPT "# This is a perl generated R script to run group_stats.r"."\n";
-print R_SCRIPT "source(\"/".$script_path."/group_stats.r\")"."\n";
-print R_SCRIPT "suppressMessages(group_stats( 
-file_in=\"".$file_in."\", 
-file_out=\"".$file_out."\",
-stat_test=\"".$stat_test."\", 
-order_by=".$order_by.",
-order_decreasing=".$order_decreasing.", 
-group_lines=".$group_lines.", 
-group_line_to_process=".$group_line_to_process.", 
-my_grouping=".$my_grouping.
-"))";
-#suppressMessanges()
-#suppressWarnings()
+my $system_command = (
+		      $drisee_path.
+		      " -t ".$file_type.
+		      " -l ".$drisee_log.
+		      " --percent -v".
+		      " ".$file_in.
+		      " ".$stat_file.
+		      " > ".$drisee_stdout
+		     );
 
-# run the temporary R script
-system "R --vanilla --slave --silent < ".$temp_script;
+system($system_command);
 
-# delete the temprary R script
-unlink $temp_script;
+# create file and add header if the file does not exist
+unless (-e $cummulative_log){ 
+  open(CUMMULATIVE_LOG, ">", $cummulative_log) or die "\n\n"."can't open CUMMULATIVE_LOG $cummulative_log"."\n\n";
+			    
+  # print a header
+  print CUMMULATIVE_LOG ( 
+			 "file_in"."\t".
+			 "Version"."\t".
+			 "bp_count"."\t".
+			 "sequence_count"."\t".
+			 "average_length"."\t".
+			 "standard_deviation_length"."\t".
+			 "length_min"."\t".
+			 "length_max"."\t".
+			 "input_seqs"."\t".
+			 "procesed_bins"."\t".
+			 "processed_seqs"."\t".
+			 "OG_DRISEE_score"."\t".
+			 "Contam_bins"."\t".
+			 "Contam_seqs"."\t".
+			 "Contam_DRISEE_score"."\t".
+			 "Non-contam_bins"."\t".
+			 "Non-contam_seqs"."\t".
+			 "Non-contam-DRISEE_score"."\n";
+			)
+    close (CUMMULATIVE_LOG)
+  }
 
 
-# SUBS
+my @summary_values = ($file_in); # array
+
+while (my $line = <CUMMULATIVE_LOG>){
+    chomp $line;
+    if ($line =~ m/^V||^bp||^se||^av||^st||^le||^In||^Pr||^Dr||^Con||^Dr/){ # skip comment lines
+      my @line_array = split("\t", $line)
+      chomp $line;
+      my @line_array = split("\t", $line);
+      my $array_value = @line_array[1];
+      push (@summary_values, $array_value);
+    }
+  }
+	
+my $summary_line = join("\t", @summary_values);
+
+open(CUMMULATIVE_LOG, ">>", $cummulative_log) or die "\n\n"."can't RE-open CUMMULATIVE_LOG $cummulative_log"."\n\n";
+
+print CUMMULATIVE_LOG $summary_line."\n";
+
+# python ~/DRISEE/drisee.py -t fastq -l v1p5_mgm4473069_log --percent -v mgm4473069.fq mgm4473069.v1p5.STAT> v1.5_mgm4473069_stdout
+
+
+
+ SUBS
 
 sub usage {
   my ($err) = @_;

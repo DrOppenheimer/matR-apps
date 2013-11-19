@@ -81,7 +81,7 @@ my_grouping=".$my_grouping.
 #suppressWarnings()
 
 # run the temporary R script
-system "R --vanilla --slave < ".$temp_script;
+system "R --vanilla --slave --silent < ".$temp_script;
 
 # delete the temprary R script
 unlink $temp_script;
