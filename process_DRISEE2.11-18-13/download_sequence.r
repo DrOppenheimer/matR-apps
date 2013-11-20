@@ -38,7 +38,8 @@ download_sequence <- function(
               sep="",
               collapse=""
               ),
-        file = log
+        file = log,
+        append=TRUE
         )
 
   system_command <- paste( "curl ", "'", seq_url, "'"," | gunzip > ", unzipped_filename, sep="", collapse="")
