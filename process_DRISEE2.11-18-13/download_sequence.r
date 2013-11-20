@@ -34,7 +34,7 @@ download_sequence <- function(
               "seq_type         : ", seq_type, "\n",
               "seq_url          : ", seq_url, "\n",
               "seq_filename     : ", seq_filename, "\n",
-              "unzipped_filename: ", unzipped_filename, "\n",
+              "unzipped_filename: ", unzipped_filename,
               sep="",
               collapse=""
               ),
