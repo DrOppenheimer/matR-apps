@@ -147,15 +147,15 @@ order_by NULL will order data by the calculated false discovery rate.
 Use an integer value for -b|order_by to order the data by any other column in the output data file.
 
 OPTIONS:
-    -s|script_path             (string)          location of group_stats.r        default: $script_path
-    -f|file_in                 (string)          input data file                  default: $file_in
-    -o|file_out                (string)          output results file              default: $file_out
-    -t|stat_test               (string)          matR statisitical tests          default: $stat_test
-    -b|order_by                (NULL or int)     column to order data             default: $order_by
-    -d|order_decreasing        (bool)            order by decreasing              default: $order_decreasing
-    -l|group_lines             (int)             number of lines with groupings   default: $group_lines
-    -p|group_line_to_process   (int)             line of groupings to use         default: $group_line_to_process
-    -g|my_grouping             (string)          R formatted grouping string      default: $my_grouping
+    -s|script_path             (string)          location of group_stats.r        default: 
+    -f|file_in                 (string)          input data file                  default: 
+    -o|file_out                (string)          output results file              default: 
+    -t|stat_test               (string)          matR statisitical tests          default: 
+    -b|order_by                (NULL or int)     column to order data             default:
+    -d|order_decreasing        (bool)            order by decreasing              default: 
+    -l|group_lines             (int)             number of lines with groupings   default:
+    -p|group_line_to_process   (int)             line of groupings to use         default: 
+    -g|my_grouping             (string)          R formatted grouping string      default:
 ________________________________________________________________________________________
  
     -h|help                    (flag)            see the help/usage
