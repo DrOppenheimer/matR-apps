@@ -28,7 +28,7 @@ download_sequence <- function(
 
   write(
         paste(
-              "migid            : ", mgid, "\n",
+              "mgid            : ", mgid, "\n",
               "download_api_call: ", my_call.downloads, "\n",
               "seq_mgid         : ", seq_mgid, "\n",
               "seq_type         : ", seq_type, "\n",
