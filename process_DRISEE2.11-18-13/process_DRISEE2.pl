@@ -70,6 +70,7 @@ unless (-e $data_log){
 		  "standard_deviation_length"."\t".
 		  "length_min"."\t".
 		  "length_max"."\t".
+		  "completed_in"."\t".
 		  "input_seqs"."\t".
 		  "procesed_bins"."\t".
 		  "processed_seqs"."\t".
