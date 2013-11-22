@@ -1,0 +1,3 @@
+Useless use of a constant (DRISEE_data_log.txt) in void context at ./process_DRISEE2.pl line 55.
+Useless use of a constant (DRISEE_command_log.txt) in void context at ./process_DRISEE2.pl line 56.
+Use of uninitialized value $ARGV[0] in pattern match (m//) at ./process_DRISEE2.pl line 27.
