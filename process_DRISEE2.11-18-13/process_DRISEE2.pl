@@ -55,7 +55,7 @@ if ( ! GetOptions (
 
 
 # generate default names for output files 
-my $sequence_file = $migid.".".$file_type;
+my $sequence_file = $mgid.".".$file_type;
 unless ( defined $stat_file && length $stat_file > 0 )         { $stat_file = $sequence_file."."."drisee_STAT.txt" };
 unless ( defined $drisee_log  && length $drisee_log > 0 )      { $drisee_log = $sequence_file."."."drisee_log.txt" };
 unless ( defined $drisee_stdout && length $drisee_stdout > 0 ) { $drisee_stdout = $sequence_file."."."drisee_stdout.txt" };
