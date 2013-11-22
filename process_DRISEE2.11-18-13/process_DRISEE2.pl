@@ -110,7 +110,7 @@ if ( $mgrast_key eq "NULL" ){
 my $r_cmd = qq(source("$scripts_path/download_sequence.r")
 suppressMessages( download_sequence(
     mgid="$mgid",
-    mg_key="$mgrast_key",
+    mg_key=$mgrast_key,
     log="$download_log"
 ))
 );
