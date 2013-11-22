@@ -152,7 +152,8 @@ while (my $line = <DRISEE_STDOUT>){
     }
   }
 	
-my $summary_line = join("\t", @summary_values);
+my $summary_line;
+$summary_line = join("\t", @summary_values);
 
 open(DATA_LOG, ">>", $data_log) or die "\n\n"."can't RE-open DATA_LOG $data_log"."\n\n";
 print DATA_LOG $summary_line."\n";
