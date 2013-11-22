@@ -115,9 +115,9 @@ my @summary_values = ($file_in); # array
 open(DRISEE_STDOUT, "<", $drisee_stdout) or die "\n\n"."can't open DRISEE_STDOUT $drisee_stdout"."\n\n";
 while (my $line = <DRISEE_STDOUT>){
     chomp $line;
-    #if($debug){ print STDOUT "\n"."line: ".$line; }
-    #if ($line =~ /^V|^bp|^se|^av|^st|^le|^In|^Pr|^Dr|^Con|^Dr/){ # skip comment lines
-    if ($line =~ /^Dr/){ # skip comment lines
+    if ($line =~ /^V|^bp|^se|^av|^st|^le|^In|^Pr|^Dr|^Con|^Dr/){ # skip comment lines
+      if($debug){ print STDOUT "\n"."line: ".$line; }
+      #if ($line =~ /^Dr/){ # skip comment lines
       chomp $line;
       my @line_array = split("\t", $line);
       my $array_value = $line_array[1];
