@@ -70,7 +70,6 @@ unless (-e $data_log){
 		  "standard_deviation_length"."\t".
 		  "length_min"."\t".
 		  "length_max"."\t".
-		  "completed_in"."\t".
 		  "input_seqs"."\t".
 		  "procesed_bins"."\t".
 		  "processed_seqs"."\t".
@@ -116,7 +115,7 @@ my @summary_values = ($file_in); # array
 open(DRISEE_STDOUT, "<", $drisee_stdout) or die "\n\n"."can't open DRISEE_STDOUT $drisee_stdout"."\n\n";
 while (my $line = <DRISEE_STDOUT>){
     chomp $line;
-    if ($line =~ /^V|^bp|^se|^av|^st|^le|^Com|^In|^Processed|^Dr|^Con|^Non-contam/){ # skip comment lines
+    if ($line =~ /^V|^bp|^se|^av|^st|^le|^In|^Processed|^Dr|^Con|^Non-contam/){ # skip comment lines
       # Version        
       # bp_count        
       # sequence_count 
