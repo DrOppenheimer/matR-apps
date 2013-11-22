@@ -115,7 +115,28 @@ my @summary_values = ($file_in); # array
 open(DRISEE_STDOUT, "<", $drisee_stdout) or die "\n\n"."can't open DRISEE_STDOUT $drisee_stdout"."\n\n";
 while (my $line = <DRISEE_STDOUT>){
     chomp $line;
-    if ($line =~ /^V|^bp|^se|^av|^st|^le|^In|^Processed|^Dr|^Con|^Dr/){ # skip comment lines
+    if ($line =~ /^V|^bp|^se|^av|^st|^le|^Com|^In|^Processed|^Con|^Non-contam|^Dr/){ # skip comment lines
+      # Version        
+      # bp_count        
+      # sequence_count 
+      # average_length  
+      # standard_deviation_length     
+      # length_min     
+      # length_max     
+      # Completed in
+      # Input seqs     
+      # Processed bins 
+      # Processed seqs  
+      # Drisee score    
+      
+      # Contam bins    
+      # Contam seqs     
+      # Drisee score    
+      
+      # Non-contam bins 
+      # Non-contam seqs
+      # Drisee score    
+      
       if($debug){ print STDOUT "\n"."line: ".$line; }
       #if ($line =~ /^Dr/){ # skip comment lines
       chomp $line;
