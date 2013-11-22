@@ -9,7 +9,7 @@ use Getopt::Long;
 my $script_path = "/Users/kevin/git/matR-apps.DrOppenheimer/matR-apps/barplot_fun.11-5-13/";
 my $file_in = "sample_data2.groups_in_file.txt";
 my $file_out = "my_stats.summary.txt";
-my $figure_out = "my_barplots.pdf";
+my $figure_out = "NULL";
 my $stat_test = "Kruskal-Wallis";
 my $order_by = "NULL";
 my $order_decreasing = "TRUE";
@@ -53,7 +53,9 @@ my $time_stamp = time();
 
 # a little bit of parsing if user supplies groups string
 $my_grouping =~ s/\"//;
-
+if ( $figure_out eq "NULL" ){
+  $figure_out =~ s/\"//;
+}
 # a little bit of parsing to deal with R NULL properly
 # my $order_by_value = "NULL";
 # unless ( $order_by eq "default" ){ $order_by_value = $order_by; }
