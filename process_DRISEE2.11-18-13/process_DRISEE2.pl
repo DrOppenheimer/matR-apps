@@ -111,8 +111,7 @@ my $r_cmd = qq(source("$scripts_path/download_sequence.r")
 suppressMessages( download_sequence(
     mgid="$mgid",
     mg_key="$mgrast_key",
-    log="$download_log",
-    
+    log="$download_log"
 ))
 );
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";
