@@ -148,7 +148,11 @@ while (my $line = <DRISEE_STDOUT>){
       #if($debug){ print STDOUT "\n"."value: ".$array_value."\n";}
       
       push (@summary_values, $array_value);
-      if($debug){ print STDOUT "\n"."Array_size: ".scalar(@summary_values)."\n"; }
+      #if($debug){ print STDOUT "\n"."Array_size: ".scalar(@summary_values)."\n"; }
+      if($debug){ print STDOUT "Array field 6: ".@summary_values[6]."\n"; }
+      if($debug){ print STDOUT "Array field 7: ".@summary_values[7]."\n"; }
+      if($debug){ print STDOUT "Array field 8: ".@summary_values[8]."\n"; }
+      if($debug){ print STDOUT "Array field 9: ".@summary_values[9]."\n"; }
     }
   }
 	
