@@ -119,9 +119,8 @@ print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
 close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
-# wait for the file to exist before proceeding
+# wait for the sequence file to exist before proceeding
 sleep 10 while ( !(-e $sequence_file) );
-
 # make sure that the file not only exists, but is not being modified before proceeding
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
 sleep 10 if ( !( $mtime > 10 ) );
@@ -143,6 +142,13 @@ open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $
 print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
 close(COMMAND_LOG);
 #### system($system_command);
+
+
+# wait for the drisee stdout file to exist before proceeding
+sleep 10 while ( !(-e $drisee_stdout) );
+# make sure that the file not only exists, but is not being modified before proceeding
+($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
+sleep 10 if ( !( $mtime > 10 ) );
 
 
 # COMPILE THE STATS
