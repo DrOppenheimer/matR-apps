@@ -49,11 +49,11 @@ if ( ! GetOptions (
 
 # generate default names for output files 
 
-unless ( defined $stat_file )       { $file_in."."."drisee_STAT.txt" };
-unless ( defined $drisee_log )      { $file_in."."."drisee_log.txt" };
-unless ( defined $drisee_stdout )   { $file_in."."."drisee_stdout.txt" };
-unless ( defined $data_log ) { "DRISEE_data_log.txt" };
-unless ( defined $command_log ) { "DRISEE_command_log.txt" };
+unless ( defined $stat_file && length $stat_file > 0 )       { $file_in."."."drisee_STAT.txt" };
+unless ( defined $drisee_log  && length $drisee_log > 0 )      { $file_in."."."drisee_log.txt" };
+unless ( defined $drisee_stdout && length $drisee_stdout > 0 )   { $file_in."."."drisee_stdout.txt" };
+unless ( defined $data_log  && length $data_log > 0 ) { "DRISEE_data_log.txt" };
+unless ( defined $command_log && length $command_log > 0 ) { "DRISEE_command_log.txt" };
 
 # create a cummulative log of the data - add header if the file does not exist
 unless (-e $data_log){ 
