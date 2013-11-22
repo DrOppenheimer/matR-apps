@@ -96,7 +96,7 @@ unless (-e $data_log){
 unless ( -e $command_log ){
   open(COMMAND_LOG, ">", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";			    
   # print a header
-  print COMMAND_LOG "# This is a log of the system commands that process_DRISEE2.p has produced."."\n";		    
+  print COMMAND_LOG "# This is a log of the system commands that process_DRISEE2.pl has produced."."\n";		    
   close (COMMAND_LOG);
 }
 
