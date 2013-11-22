@@ -141,7 +141,7 @@ my $system_command = (
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
 close(COMMAND_LOG);
-#### system($system_command);
+system($system_command);
 
 
 # wait for the drisee stdout file to exist before proceeding
