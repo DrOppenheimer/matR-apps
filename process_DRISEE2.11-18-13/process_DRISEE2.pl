@@ -138,12 +138,15 @@ while (my $line = <DRISEE_STDOUT>){
       # Non-contam seqs
       # Drisee score    
       
-      if($debug){ print STDOUT "\n"."line: ".$line; }
+      if($debug){ print STDOUT "\n"."Array_size: ".scalar(@summary_values)."\n"; }
+
+      #if($debug){ print STDOUT "\n"."line: ".$line; }
       #if ($line =~ /^Dr/){ # skip comment lines
       chomp $line;
       my @line_array = split("\t", $line);
       my $array_value = $line_array[1];
-      if($debug){ print STDOUT "\n"."value: ".$array_value."\n";}
+      #if($debug){ print STDOUT "\n"."value: ".$array_value."\n";}
+      
       push (@summary_values, $array_value);
     }
   }
