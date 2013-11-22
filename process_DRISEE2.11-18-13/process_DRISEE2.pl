@@ -140,7 +140,7 @@ while (my $line = <DRISEE_STDOUT>){
       
       
 
-      #if($debug){ print STDOUT "\n"."line: ".$line; }
+      if($debug){ print STDOUT "\n"."line: ".$line; }
       #if ($line =~ /^Dr/){ # skip comment lines
       chomp $line;
       my @line_array = split("\t", $line);
@@ -149,10 +149,10 @@ while (my $line = <DRISEE_STDOUT>){
       
       push (@summary_values, $array_value);
       #if($debug){ print STDOUT "\n"."Array_size: ".scalar(@summary_values)."\n"; }
-      if($debug){ print STDOUT "Array field 6: ".@summary_values[6]."\n"; }
-      if($debug){ print STDOUT "Array field 7: ".@summary_values[7]."\n"; }
-      if($debug){ print STDOUT "Array field 8: ".@summary_values[8]."\n"; }
-      if($debug){ print STDOUT "Array field 9: ".@summary_values[9]."\n"; }
+      #if($debug){ print STDOUT "Array field 6: ".@summary_values[6]."\n"; }
+      #if($debug){ print STDOUT "Array field 7: ".@summary_values[7]."\n"; }
+      #if($debug){ print STDOUT "Array field 8: ".@summary_values[8]."\n"; }
+      #if($debug){ print STDOUT "Array field 9: ".@summary_values[9]."\n"; }
     }
   }
 	
