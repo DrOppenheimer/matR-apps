@@ -118,7 +118,7 @@ suppressMessages( download_sequence(
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
 close (COMMAND_LOG);
-#### system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
+system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
 
 
