@@ -149,9 +149,9 @@ open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $
 print COMMAND_LOG "\n"."waiting for the DRISEE stats: start(".time.") end(";
 # wait for the drisee stdout file to exist before proceeding
 sleep 10 while ( !(-e $drisee_stdout) );
-# make sure that the file not only exists, but is not being modified before proceeding
+# make sure that the file not only exists, and it's size is not zero
 ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
-sleep 10 if ( !( $mtime > 10 ) );
+sleep 10 if ( !( $size > 0 ) );
 print COMMAND_LOG time.")"."\n";
 close (COMMAND_LOG);
 
