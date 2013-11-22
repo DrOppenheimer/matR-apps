@@ -120,7 +120,7 @@ while (my $line = <DRISEE_STDOUT>){
       chomp $line;
       my @line_array = split("\t", $line);
       my $array_value = $line_array[1];
-      if($debug){ print STDOUT "value: ".$array_value."\n";}
+      if($debug){ print STDOUT "\n"."value: ".$array_value."\n";}
       push (@summary_values, $array_value);
     }
   }
