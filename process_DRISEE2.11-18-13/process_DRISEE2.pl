@@ -112,7 +112,8 @@ close(COMMAND_LOG);
 
 my @summary_values = ($file_in); # array
 
-while (my $line = <DATA_LOG>){
+open(DRISEE_STDOUT, "<", $drisee_stdout) or die "\n\n"."can't open DRISEE_STDOUT $drisee_stdout"."\n\n";
+while (my $line = <DRISEE_STDOUT>){
     chomp $line;
     if ($line =~ m/^V||^bp||^se||^av||^st||^le||^In||^Pr||^Dr||^Con||^Dr/){ # skip comment lines
       chomp $line;
