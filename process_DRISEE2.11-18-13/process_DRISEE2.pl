@@ -12,11 +12,11 @@ my $file_type = "fastq"; # fasta or fastq
 my $num_proc = 1;
 #my $percent = 1;
 #my $verbose = 1;
-## my $stat_file;
-## my $drisee_log;
-## my $drisee_stdout;
-## my $data_log = "DRISEE_data_log.txt";
-## my $command_log = "DRISEE_command_log.txt";
+my $stat_file;
+my $drisee_log;
+my $drisee_stdout;
+my $data_log = "DRISEE_data_log.txt";
+my $command_log = "DRISEE_command_log.txt";
 my $help;
 my $debug;
 
@@ -49,11 +49,11 @@ if ( ! GetOptions (
 
 # generate default names for output files 
 
-unless ( $stat_file )       { $file_in."."."drisee_STAT.txt" };
-unless ( $drisee_log )      { $file_in."."."drisee_log.txt" };
-unless ( $drisee_stdout )   { $file_in."."."drisee_stdout.txt" };
-unless ( $data_log ) { "DRISEE_data_log.txt" };
-unless ( $command_log ) { "DRISEE_command_log.txt" };
+unless ( defined $stat_file )       { $file_in."."."drisee_STAT.txt" };
+unless ( defined $drisee_log )      { $file_in."."."drisee_log.txt" };
+unless ( defined $drisee_stdout )   { $file_in."."."drisee_stdout.txt" };
+unless ( defined $data_log ) { "DRISEE_data_log.txt" };
+unless ( defined $command_log ) { "DRISEE_command_log.txt" };
 
 # create a cummulative log of the data - add header if the file does not exist
 unless (-e $data_log){ 
