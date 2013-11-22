@@ -115,7 +115,7 @@ my @summary_values = ($file_in); # array
 open(DRISEE_STDOUT, "<", $drisee_stdout) or die "\n\n"."can't open DRISEE_STDOUT $drisee_stdout"."\n\n";
 while (my $line = <DRISEE_STDOUT>){
     chomp $line;
-    if ($line =~ /^V|^bp|^se|^av|^st|^le|^Com|^In|^Processed|^Con|^Non-contam|^Dr/){ # skip comment lines
+    if ($line =~ /^V|^bp|^se|^av|^st|^le|^Com|^In|^Processed|^Dr|^Con|^Non-contam/){ # skip comment lines
       # Version        
       # bp_count        
       # sequence_count 
