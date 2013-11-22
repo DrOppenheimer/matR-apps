@@ -119,12 +119,13 @@ print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
 close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
+print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".time.") end(";
 # wait for the sequence file to exist before proceeding
 sleep 10 while ( !(-e $sequence_file) );
 # make sure that the file not only exists, but is not being modified before proceeding
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
 sleep 10 if ( !( $mtime > 10 ) );
-
+print COMMAND_LOG time.")"."\n";
 
 
 # RUN DRISEE
@@ -144,12 +145,13 @@ close(COMMAND_LOG);
 system($system_command);
 
 
+print COMMAND_LOG "\n"."waiting for the DRISEE stats: start(".time.") end(";
 # wait for the drisee stdout file to exist before proceeding
 sleep 10 while ( !(-e $drisee_stdout) );
 # make sure that the file not only exists, but is not being modified before proceeding
 ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
 sleep 10 if ( !( $mtime > 10 ) );
-
+print COMMAND_LOG time.")"."\n";
 
 # COMPILE THE STATS
 my @summary_values = ($sequence_file); # array
