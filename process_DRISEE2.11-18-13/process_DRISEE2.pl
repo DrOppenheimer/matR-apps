@@ -119,6 +119,7 @@ print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
 close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
+open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".time.") end(";
 # wait for the sequence file to exist before proceeding
 sleep 10 while ( !(-e $sequence_file) );
@@ -126,7 +127,7 @@ sleep 10 while ( !(-e $sequence_file) );
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
 sleep 10 if ( !( $mtime > 10 ) );
 print COMMAND_LOG time.")"."\n";
-
+close (COMMAND_LOG);
 
 # RUN DRISEE
 my $system_command = (
@@ -144,7 +145,7 @@ print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
 close(COMMAND_LOG);
 system($system_command);
 
-
+open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."waiting for the DRISEE stats: start(".time.") end(";
 # wait for the drisee stdout file to exist before proceeding
 sleep 10 while ( !(-e $drisee_stdout) );
@@ -152,6 +153,7 @@ sleep 10 while ( !(-e $drisee_stdout) );
 ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
 sleep 10 if ( !( $mtime > 10 ) );
 print COMMAND_LOG time.")"."\n";
+close (COMMAND_LOG);
 
 # COMPILE THE STATS
 my @summary_values = ($sequence_file); # array
