@@ -119,8 +119,14 @@ print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
 close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
-# wait for the file to exist 
+# wait for the file to exist before proceeding
 sleep 10 while ( !(-e $sequence_file) );
+
+# make sure that the file not only exists, but is not being modified before proceeding
+my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
+sleep 10 if ( !( $mtime > 10 ) );
+
+
 
 # RUN DRISEE
 my $system_command = (
