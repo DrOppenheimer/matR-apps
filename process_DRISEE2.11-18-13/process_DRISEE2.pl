@@ -12,11 +12,11 @@ my $file_type = "fastq"; # fasta or fastq
 my $num_proc = 1;
 #my $percent = 1;
 #my $verbose = 1;
-my $stat_file;
-my $drisee_log;
-my $drisee_stdout;
-my $data_log = "DRISEE_data_log.txt";
-my $command_log = "DRISEE_command_log.txt";
+## my $stat_file;
+## my $drisee_log;
+## my $drisee_stdout;
+## my $data_log = "DRISEE_data_log.txt";
+## my $command_log = "DRISEE_command_log.txt";
 my $help;
 my $debug;
 
@@ -112,7 +112,7 @@ close(COMMAND_LOG);
 
 my @summary_values = ($file_in); # array
 
-while (my $line = <CUMMULATIVE_LOG>){
+while (my $line = <DATA_LOG>){
     chomp $line;
     if ($line =~ m/^V||^bp||^se||^av||^st||^le||^In||^Pr||^Dr||^Con||^Dr/){ # skip comment lines
       chomp $line;
