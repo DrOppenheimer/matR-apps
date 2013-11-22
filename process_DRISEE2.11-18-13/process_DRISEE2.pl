@@ -120,7 +120,8 @@ print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
 close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
-
+# wait for the file to exist 
+sleep 10 while ( !(-e $sequence_file) );
 
 # RUN DRISEE
 my $system_command = (
