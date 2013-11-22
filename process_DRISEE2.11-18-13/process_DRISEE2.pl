@@ -138,7 +138,7 @@ while (my $line = <DRISEE_STDOUT>){
       # Non-contam seqs
       # Drisee score    
       
-      if($debug){ print STDOUT "\n"."Array_size: ".scalar(@summary_values)."\n"; }
+      
 
       #if($debug){ print STDOUT "\n"."line: ".$line; }
       #if ($line =~ /^Dr/){ # skip comment lines
@@ -148,6 +148,7 @@ while (my $line = <DRISEE_STDOUT>){
       #if($debug){ print STDOUT "\n"."value: ".$array_value."\n";}
       
       push (@summary_values, $array_value);
+      if($debug){ print STDOUT "\n"."Array_size: ".scalar(@summary_values)."\n"; }
     }
   }
 	
