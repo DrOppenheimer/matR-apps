@@ -32,7 +32,7 @@ while ($file_done == 0){
   
   if($debug){print STDOUT "\n"."Third to last line:"."\n".(chomp $third_to_last_line) ;}
 
-  if ( $third_to_last_line[1] =~ m/^Non/ ){ # consider the file to be done of the second to last line starts with "Non..-contaminated"
+  if ( $third_to_last_line =~ m/^Non/ ){ # consider the file to be done of the second to last line starts with "Non..-contaminated"
     print STDOUT "\n"."Third to last matches ^Non"."\n";
   }
   
