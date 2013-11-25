@@ -29,6 +29,10 @@ while ($file_done == 0){
   my @file_tail_array = split("\n", $file_tail);
   
   my $third_to_last_line = $file_tail_array[1];
+
+  if($debug){print "Fourth to last line: "."\n".$file_tail_array[0]."\n";}
+  if($debug){print "Third to last line: "."\n".$file_tail_array[1]."\n";}
+
   
   if($debug){print STDOUT "\n"."Third to last line:"."\n".(chomp $third_to_last_line) ;}
 
