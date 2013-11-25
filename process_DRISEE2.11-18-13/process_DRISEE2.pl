@@ -117,10 +117,8 @@ suppressMessages( download_sequence(
 );
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
-close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
-open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 my $start_dl = time;
 print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".$start_dl.") end(";
 # wait for the sequence file to exist before proceeding
@@ -130,7 +128,6 @@ my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$
 sleep 1 while ( !( $mtime > 5 ) );
 my $end_dl = time;
 print COMMAND_LOG time."). It took (".($end_dl-$start_dl).") seconds to complete"."\n";
-close (COMMAND_LOG);
 
 # RUN DRISEE
 my $system_command = (
@@ -143,13 +140,10 @@ my $system_command = (
 		      " ".$stat_file.
 		      " > ".$drisee_stdout
 		     );
-open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
 my $start_drisee = time;
 print COMMAND_LOG "\n"."DRISEE start (".$start_drisee.") end(";
-close(COMMAND_LOG);
 system($system_command);
-open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 # wait for the drisee stdout file to exist before proceeding
 sleep 1 while ( !(-e $drisee_stdout) );
 # make sure that the file not only exists, and it's size is not zero
@@ -170,9 +164,10 @@ while ($file_done == 0){
 }
 my $end_drisee = time;
 print COMMAND_LOG time."). It took (".($end_drisee-$start_drisee).") seconds to complete."."\n";
-close (COMMAND_LOG);
+
 
 # COMPILE THE STATS
+print COMMAND_LOG "\n"."Parsing the DRISEE outputs - should just take a second."."\n";
 my @summary_values = ($sequence_file); # array
 
 open(DRISEE_STDOUT, "<", $drisee_stdout) or die "\n\n"."can't open DRISEE_STDOUT $drisee_stdout"."\n\n";
@@ -200,7 +195,7 @@ close(DATA_LOG);
 unlink $sequence_file;
 my $end_time = time;
 
-print COMMAND_LOG "DONE. It took (".$end_time-$start_time.") seconds to complete."."\n\n";
+print COMMAND_LOG "DONE. It took (".($end_time-$start_time).") seconds to complete analysis of: ".$mgid."."."\n\n";
 
 
 # SUBS
