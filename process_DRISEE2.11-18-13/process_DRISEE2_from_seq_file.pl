@@ -134,6 +134,7 @@ my $system_command = (
 		      " ".$stat_file.
 		      " > ".$drisee_stdout
 		     );
+open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
 my $start_drisee = time;
 print COMMAND_LOG "\n"."DRISEE start (".$start_drisee.") end(";
