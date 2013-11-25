@@ -124,10 +124,10 @@ open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $
 my $start_dl = time;
 print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".$start_dl.") end(";
 # wait for the sequence file to exist before proceeding
-sleep 10 while ( !(-e $sequence_file) );
+sleep 1 while ( !(-e $sequence_file) );
 # make sure that the file not only exists, but is not being modified before proceeding
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
-sleep 10 while ( !( $mtime > 10 ) );
+sleep 1 while ( !( $mtime > 5 ) );
 my $end_dl = time;
 print COMMAND_LOG time."). It took (".($end_dl-$start_dl).") seconds to complete"."\n";
 close (COMMAND_LOG);
@@ -151,14 +151,14 @@ close(COMMAND_LOG);
 system($system_command);
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 # wait for the drisee stdout file to exist before proceeding
-sleep 10 while ( !(-e $drisee_stdout) );
+sleep 1 while ( !(-e $drisee_stdout) );
 # make sure that the file not only exists, and it's size is not zero
 ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
-sleep 10 while ( !( $size > 0 ) );
+sleep 1 while ( !( $size > 0 ) );
 # make sure that the file is complete
 my $file_done = 0;
 while ($file_done == 0){
-  sleep 10; 
+  sleep 1; 
   my $file_tail = `tail -n 3 $drisee_stdout`;
   chomp $file_tail;
   my @file_tail_array = split("\n", $file_tail);
