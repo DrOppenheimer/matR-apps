@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Getopt::Long;
-use File::ReadBackwards;
+#use File::ReadBackwards;
 
 
 # use File::ReadBackwards
