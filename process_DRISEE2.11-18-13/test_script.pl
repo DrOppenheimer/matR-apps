@@ -23,12 +23,12 @@ while ($file_done == 0){
  
   sleep 10;
   
-  my $file_tail = `tail -n 4 $file`;
+  my $file_tail = `tail -n 3 $file`;
   chomp $file_tail;
 
   my @file_tail_array = split("\n", $file_tail);
   
-  my $third_to_last_line = $file_tail_array[1];
+  my $third_to_last_line = $file_tail_array[0];
 
 
   if ( $third_to_last_line =~ /^Non/ ){ # consider the file to be done of the second to last line starts with "Non..-contaminated"
