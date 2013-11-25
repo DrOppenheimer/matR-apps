@@ -17,9 +17,9 @@ my $file = "mgm4473069.3.fastq.drisee_stdout.txt";
 
 my $file_done = 0;
 
-while ($file_done == 0){
+#while ($file_done == 0){
  
-  sleep 10;
+  #sleep 10;
   my $file_tail = system(`tail -n 3 $file`);
   if($debug){ print "\n\n"."last three lines out stdout:"."\n".$file_tail."\n"; }
   #my @file_tail_array = split("\n", $file_tail);
@@ -28,4 +28,4 @@ while ($file_done == 0){
   #  $file_done++;
   #}
   
-}
+#}
