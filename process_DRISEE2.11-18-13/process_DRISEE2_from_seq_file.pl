@@ -59,7 +59,7 @@ unless ( defined $command_log && length $command_log > 0 )     { $command_log = 
 unless ( defined $data_log  && length $data_log > 0 )          { $data_log = $sequence_file."."."data_log.txt" };
 
 #my ($file_type) = $sequence_file =~ /(\.[^.]+)$/; # get the sequence type from the sequence file extension
-my ($file_type) = $sequence_file =~ /(\.+)$/; # get the sequence type from the sequence file extension
+my ($file_type) = $sequence_file =~ /(\.)$/; # get the sequence type from the sequence file extension
  
 unless ( $file_type eq "fasta" || $file_type eq "fastq"){ # stop if extension is not fasta or fastq
   exit "$file_type is not a valid extension/file type -- only fasta and fastq are accepted."
