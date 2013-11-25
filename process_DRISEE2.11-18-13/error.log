@@ -1,3 +1,4 @@
-Useless use of a constant (DRISEE_data_log.txt) in void context at ./process_DRISEE2.pl line 55.
-Useless use of a constant (DRISEE_command_log.txt) in void context at ./process_DRISEE2.pl line 56.
-Use of uninitialized value $ARGV[0] in pattern match (m//) at ./process_DRISEE2.pl line 27.
+String found where operator expected at /Users/kevin/git/matR-apps.DrOppenheimer/matR-apps/process_DRISEE2.11-18-13/download_sequence_r.perl_wrapper.pl line 11, near "$download_log "download_log.txt""
+	(Missing operator before "download_log.txt"?)
+syntax error at /Users/kevin/git/matR-apps.DrOppenheimer/matR-apps/process_DRISEE2.11-18-13/download_sequence_r.perl_wrapper.pl line 11, near "$download_log "download_log.txt""
+Execution of /Users/kevin/git/matR-apps.DrOppenheimer/matR-apps/process_DRISEE2.11-18-13/download_sequence_r.perl_wrapper.pl aborted due to compilation errors.

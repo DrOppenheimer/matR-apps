@@ -13,8 +13,7 @@ download_sequence <- function(
       my_call.downloads <- paste("http://api.metagenomics.anl.gov/download/", mgid, sep="", collapse="")
     }else{
       # not implemented yet - auth is not properlay formatted here
-      # my_call.downloads <- paste("http://api.metagenomics.anl.gov/download/", mgid, "&auth=", mg_key, sep="", collapse="")
-      stop("calls with authentication are not yet supported")
+      my_call.downloads <- paste("http://api.metagenomics.anl.gov/download/", mgid, "?auth=", mg_key, sep="", collapse="")
     } 
 
   # get the information for the uploaded sequence data
