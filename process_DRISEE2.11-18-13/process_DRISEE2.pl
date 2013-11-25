@@ -240,6 +240,8 @@ ________________________________________________________________________________
     -h|help              (flag)    display help for this script
     -d|debug		 (flag)    run the script in debug mode
 
+*Note the "sequence_file" is mgid.file_type
+
 
 );
   exit 1;
