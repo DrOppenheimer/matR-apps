@@ -30,11 +30,9 @@ while ($file_done == 0){
   
   my $third_to_last_line = $file_tail_array[1];
 
-  if($debug){print "\n"."Fourth to last line: "."\n".$file_tail_array[0]."\n";}
+  #if($debug){print "\n"."Fourth to last line: "."\n".$file_tail_array[0]."\n";}
   if($debug){print "\n"."Third to last line: "."\n".$file_tail_array[1]."\n";}
-
-  
-  if($debug){print STDOUT "\n"."Third to last line:"."\n".(chomp $third_to_last_line) ;}
+  if($debug){print STDOUT "Third to last line:"."\n".($third_to_last_line)."\n\n" ;}
 
   if ( $third_to_last_line =~ /^Non/ ){ # consider the file to be done of the second to last line starts with "Non..-contaminated"
     print STDOUT "\n"."Third to last matches ^Non"."\n";
