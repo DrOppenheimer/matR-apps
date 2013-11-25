@@ -6,7 +6,7 @@ use Getopt::Long;
 
 
 # Default for variables
-my $scripts_path = "/home/ubuntu/matR-apps/process_DRISEE2.11-18-13/";
+my $scripts_path = "/home/ubuntu/matR-apps/process_DRISEE2.11-18-13";
 my $mgrast_key = "NULL";
 my $drisee_path = "/home/ubuntu/DRISEE/drisee.py";
 my $mgid;
