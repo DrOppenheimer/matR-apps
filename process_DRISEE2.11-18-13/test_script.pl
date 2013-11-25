@@ -31,6 +31,6 @@ while ($file_done == 0){
  #if ( $file_tail_array[0] =~ m/^Con/ ){ # consider the file to be done of the second to last line starts with "Con..taminated"
     
   #  $file_done++;
-  }
-  
 }
+  
+
