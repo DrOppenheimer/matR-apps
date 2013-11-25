@@ -8,7 +8,7 @@ use Getopt::Long;
 my $scripts_path = "/home/ubuntu/matR-apps/process_DRISEE2.11-18-13/";
 my $mgrast_key = "NULL";
 my $drisee_path = "/home/ubuntu/DRISEE/drisee.py";
-my $download_log "download_log.txt";
+my $download_log = "download_log.txt";
 my $mgid;
 my($help, $debug);
 
