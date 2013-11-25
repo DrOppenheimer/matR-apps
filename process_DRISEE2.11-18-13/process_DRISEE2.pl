@@ -155,15 +155,15 @@ sleep 10 while ( !(-e $drisee_stdout) );
 ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
 sleep 10 while ( !( $size > 0 ) );
 # make sure that the file is complete
-my $file_done = 0
-  while ($file_done == 0){
-    sleep 10;
-    my $file_tail = system("tail -n 3 $drisee_stdout");
-    if($debug){ print "\n\n"."last three lines out stdout:"."\n"; }
-    my @file_tail = split("\n", $file_tail);
-    if ( $file_tail[1] =~ m/^Con/ ){ # consider the file to be done of the second to last line starts with "Con..taminated"
-      $file_done++;
-    }
+my $file_done = 0;
+while ($file_done == 0){
+  sleep 10;
+  my $file_tail = system("tail -n 3 $drisee_stdout");
+  if($debug){ print "\n\n"."last three lines out stdout:"."\n"; }
+  my @file_tail = split("\n", $file_tail);
+  if ( $file_tail[1] =~ m/^Con/ ){ # consider the file to be done of the second to last line starts with "Con..taminated"
+    $file_done++;
+  }
 }
 
 # and it hasn't been changed 
