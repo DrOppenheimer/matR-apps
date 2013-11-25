@@ -215,7 +215,6 @@ OPTIONS:
     -i|file              (string)  sequence file to process            no default
   
     -r|scripts_path      (string)  path of this script                 default: $scripts_path
-    -m|mgrast_key        (string)  mgrast key                          default: $mgrast_key
     -p|drisee_path       (string)  location of DRISEE (/drisee.py)     default: $drisee_path
     -t|file_type         (string)  fasta or fastq                      default: $file_type
     -n|num_proc          (int)     num parallel processes              default: $num_proc
