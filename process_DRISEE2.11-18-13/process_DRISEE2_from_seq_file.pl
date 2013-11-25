@@ -61,7 +61,7 @@ unless ( defined $data_log  && length $data_log > 0 )          { $data_log = $se
 # get the sequence type from the sequence file extension
 my @split_filename = split(".", $sequence_file);
 #my $file_type;
-my $file_type = $split_filename[ scalar(@split_filename)-1 ]; 
+my $file_type = $split_filename[ scalar(@split_filename) ]; 
 print STDOUT "\n\n"."FILE TYPE IS: ". $file_type."\n\n";
  
 unless ( $file_type eq "fasta" || $file_type eq "fastq"){ # stop if extension is not fasta or fastq
