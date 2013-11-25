@@ -100,6 +100,7 @@ unless ( -e $command_log ){
   close (COMMAND_LOG);
 }
 
+my $start_time = time;
 
 # DOWNLOAD THE DATA
 # a little bit of parsing to make the NULL value R friendly
@@ -120,13 +121,15 @@ close (COMMAND_LOG);
 system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
-print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".time.") end(";
+my $start_dl = time;
+print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".$start_dl.") end(";
 # wait for the sequence file to exist before proceeding
 sleep 10 while ( !(-e $sequence_file) );
 # make sure that the file not only exists, but is not being modified before proceeding
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
 sleep 10 while ( !( $mtime > 10 ) );
-print COMMAND_LOG time.")"."\n";
+my $end_dl = time;
+print COMMAND_LOG time."). It took (".($end_dl-$start_dl).") seconds to complete"."\n";
 close (COMMAND_LOG);
 
 # RUN DRISEE
@@ -142,13 +145,11 @@ my $system_command = (
 		     );
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
+my $start_drisee = time;
+print COMMAND_LOG "\n"."DRISEE start (".$start_drisee.") end(";
 close(COMMAND_LOG);
 system($system_command);
-
-
-# won't work - have to use some feature unique to the file
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
-print COMMAND_LOG "\n"."waiting for the DRISEE stats: start(".time.") end(";
 # wait for the drisee stdout file to exist before proceeding
 sleep 10 while ( !(-e $drisee_stdout) );
 # make sure that the file not only exists, and it's size is not zero
@@ -157,19 +158,18 @@ sleep 10 while ( !( $size > 0 ) );
 # make sure that the file is complete
 my $file_done = 0;
 while ($file_done == 0){
-  sleep 10;
-  my $file_tail = system("tail -n 3 $drisee_stdout");
-  if($debug){ print "\n\n"."last three lines out stdout:"."\n"; }
+  sleep 10; 
+  my $file_tail = `tail -n 3 $drisee_stdout`;
+  chomp $file_tail;
   my @file_tail_array = split("\n", $file_tail);
-  if ( $file_tail_array[1] =~ m/^Con/ ){ # consider the file to be done of the second to last line starts with "Con..taminated"
+  my $third_to_last_line = $file_tail_array[0];
+  if ( $third_to_last_line =~ /^Non/ ){ # consider the file to be done of the second to last line starts with "Non..-contaminated"
+    #print COMMAND_LOG "DRISEE STDOUT is done at (.time"."\n\n";
     $file_done++;
-  }
+  }  
 }
-
-# and it hasn't been changed 
-##sleep 10 while ( !( $mtime > 10 ) );
-
-print COMMAND_LOG time.")"."\n";
+my $end_drisee = time;
+print COMMAND_LOG time."). It took (".($end_drisee-$start_drisee).") seconds to complete."."\n";
 close (COMMAND_LOG);
 
 # COMPILE THE STATS
@@ -198,7 +198,9 @@ close(DATA_LOG);
 
 # CLEANUP -- FOR NOW, JUST DELETE THE SEQUENCE FILE
 unlink $sequence_file;
+my $end_time = time;
 
+print COMMAND_LOG "DONE. It took (".$end_time-$start_time.") seconds to complete."."\n\n";
 
 
 # SUBS
