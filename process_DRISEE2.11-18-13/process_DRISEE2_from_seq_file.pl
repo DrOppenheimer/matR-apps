@@ -47,6 +47,7 @@ if ( ! GetOptions (
 		  )
    ) { &usage(); }
 
+my $start_time = time;
 
 # generate default names for output files 
 unless ( defined $stat_file && length $stat_file > 0 )         { $stat_file = $sequence_file."."."drisee_STAT.txt" };
@@ -140,7 +141,7 @@ system($system_command);
 # wait for the drisee stdout file to exist before proceeding
 sleep 1 while ( !(-e $drisee_stdout) );
 # make sure that the file not only exists, and it's size is not zero
-($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
+my($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
 sleep 1 while ( !( $size > 0 ) );
 # make sure that the file is complete
 my $file_done = 0;
