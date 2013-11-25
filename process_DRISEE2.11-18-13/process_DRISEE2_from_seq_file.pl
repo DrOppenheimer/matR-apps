@@ -9,7 +9,7 @@ use Getopt::Long;
 my $scripts_path = "/home/ubuntu/matR-apps/process_DRISEE2.11-18-13";
 my $sequence_file;
 my $drisee_path = "/home/ubuntu/DRISEE/drisee.py";
-my $file_type = "fastq"; # fasta or fastq
+#my $file_type = "fastq"; # fasta or fastq
 my $num_proc = 8;
 my $stat_file;
 my $drisee_log;
@@ -33,7 +33,7 @@ if ( ! GetOptions (
 		   "r|scripts_path=s"  => \$scripts_path,
 		   "p|drisee_path=s"   => \$drisee_path,
 		   "i|sequence_file=s" => \$sequence_file,
-		   "t|file_type=s"     => \$file_type,
+		   #"t|file_type=s"     => \$file_type,
 		   "n|num_proc=i"      => \$num_proc,
 		   "s|stat_file=s"     => \$stat_file,
 		   "l|drisee_log=s"    => \$drisee_log,
@@ -56,6 +56,12 @@ unless ( defined $drisee_stdout && length $drisee_stdout > 0 ) { $drisee_stdout 
 unless ( defined $download_log && length $download_log > 0 )   { $download_log = $sequence_file."."."download_log.txt" };
 unless ( defined $command_log && length $command_log > 0 )     { $command_log = $sequence_file."."."command_log.txt" };
 unless ( defined $data_log  && length $data_log > 0 )          { $data_log = $sequence_file."."."data_log.txt" };
+
+my ($file_type) = $sequence_file =~ /(\.[^.]+)$/; # get the sequence type from the sequence file extension
+
+unless ( $file_type eq "fasta" || $file_type eq "fastq"){ # stop if extension is not fasta or fastq
+  exit "$file_type is not a valid extension/file type -- only fasta and fastq are accepted."
+}
 
 # create a cummulative log of the data - add header if the file does not exist
 unless (-e $data_log){ 
@@ -210,6 +216,8 @@ Is designed to run on one dataset at a time, but write consecutive outputs
 to summary files -- one with a summary of  the downloads, another the data
 summary, and a third with a summary of DRISEE commands issued.
 This version acts on a sequence file that has already been downloaded.
+It assumes that the sequence type is indicated by the file extension which 
+is fasta or fastq - anything else will be rejected.
 
 OPTIONS:
 
@@ -217,7 +225,6 @@ OPTIONS:
   
     -r|scripts_path      (string)  path of this script                 default: $scripts_path
     -p|drisee_path       (string)  location of DRISEE (/drisee.py)     default: $drisee_path
-    -t|file_type         (string)  fasta or fastq                      default: $file_type
     -n|num_proc          (int)     num parallel processes              default: $num_proc
     -s|stat_file         (string)  drisee_stats file                   default: mgid.file_type.drisee_STAT.txt
     -l|drisee_log        (string)  drisee_log                          default: mgid.file_type.drisee_log.txt
