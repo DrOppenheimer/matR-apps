@@ -229,19 +229,16 @@ OPTIONS:
     -p|drisee_path       (string)  location of DRISEE (/drisee.py)     default: $drisee_path
     -t|file_type         (string)  fasta or fastq                      default: $file_type
     -n|num_proc          (int)     num parallel processes              default: $num_proc
-    -s|stat_file         (string)  drisee_stats file                   default: *sequence_file.drisee_STAT.txt
-    -l|drisee_log        (string)  drisee_log                          default: *sequence_file.drisee_log.txt
-    -o|drisee_stdout     (string)  drisee_stdout                       default: *sequence_file.drisee_stdout.txt
-    -a|download_log      (string)  cummulative log of the downloads    default: *sequence_file.download_log.txt
-    -b|command_log       (string)  cummulative log of commands         default: *sequence_file.command_log.txt
-    -c|data_log          (string)  cummulative data log                default: *sequence_file.data_log.txt    
+    -s|stat_file         (string)  drisee_stats file                   default: mgid.file_type.drisee_STAT.txt
+    -l|drisee_log        (string)  drisee_log                          default: mgid.file_type.drisee_log.txt
+    -o|drisee_stdout     (string)  drisee_stdout                       default: mgid.file_type.drisee_stdout.txt
+    -a|download_log      (string)  cummulative log of the downloads    default: mgid.file_type.download_log.txt
+    -b|command_log       (string)  cummulative log of commands         default: mgid.file_type.command_log.txt
+    -c|data_log          (string)  cummulative data log                default: mgid.file_type.data_log.txt    
 ________________________________________________________________________________________
 		   
     -h|help              (flag)    display help for this script
     -d|debug		 (flag)    run the script in debug mode
-
-*Note that "sequence_file" is mgid.file_type
-
 
 );
   exit 1;
