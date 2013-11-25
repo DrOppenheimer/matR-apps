@@ -11,7 +11,7 @@ my $mgrast_key = "NULL";
 my $drisee_path = "/home/ubuntu/DRISEE/drisee.py";
 my $mgid;
 my $file_type = "fastq"; # fasta or fastq
-my $num_proc = 1;
+my $num_proc = 8;
 #my $percent = 1;
 #my $verbose = 1;
 my $stat_file;
