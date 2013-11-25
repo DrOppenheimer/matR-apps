@@ -6,7 +6,7 @@ use Getopt::Long;
 
 my $debug=1;
 
-my $file = "mgm4473069.3.fastq.drisee_stdout.txt"
+my $file = "mgm4473069.3.fastq.drisee_stdout.txt";
 
 my $file_done = 0;
 
