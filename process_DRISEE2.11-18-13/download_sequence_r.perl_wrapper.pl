@@ -5,7 +5,7 @@ use warnings;
 use Getopt::Long;
 
 # Default for variables
-my $scripts_path = "/home/ubuntu/matR-apps/process_DRISEE2.11-18-13/";
+my $scripts_path = "/home/ubuntu/matR-apps/process_DRISEE2.11-18-1/";
 my $mgrast_key = "NULL";
 my $drisee_path = "/home/ubuntu/DRISEE/drisee.py";
 my $download_log = "download_log.txt";
@@ -70,7 +70,7 @@ OPTIONS:
 
     -i|mgid              (string)  mgid of sample                      no default
   
-    -r|scripts_path      (string)  path of this script                 default: $scripts_path
+    -r|scripts_path      (string)  path of R scripts                   default: $scripts_path
     -m|mgrast_key        (string)  mgrast key                          default: $mgrast_key
     -a|download_log      (string)  cummulative log of the downloads    default: mgid.download_log.txt
 ________________________________________________________________________________________
