@@ -125,7 +125,7 @@ print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".time.
 sleep 10 while ( !(-e $sequence_file) );
 # make sure that the file not only exists, but is not being modified before proceeding
 my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($sequence_file);
-sleep 10 if ( !( $mtime > 10 ) );
+sleep 10 while ( !( $mtime > 10 ) );
 print COMMAND_LOG time.")"."\n";
 close (COMMAND_LOG);
 
@@ -145,13 +145,30 @@ print COMMAND_LOG "\n"."DRISEE_command:"."\n".$system_command."\n";
 close(COMMAND_LOG);
 system($system_command);
 
+
+# won't work - have to use some feature unique to the file
 open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't RE-open COMMAND_LOG $command_log"."\n\n";
 print COMMAND_LOG "\n"."waiting for the DRISEE stats: start(".time.") end(";
 # wait for the drisee stdout file to exist before proceeding
 sleep 10 while ( !(-e $drisee_stdout) );
 # make sure that the file not only exists, and it's size is not zero
 ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($drisee_stdout);
-sleep 10 if ( !( $size > 0 ) );
+sleep 10 while ( !( $size > 0 ) );
+# make sure that the file is complete
+my $file_done = 0
+  while ($file_done == 0){
+    sleep 10;
+    my $file_tail = system("tail -n 3 $drisee_stdout");
+    if($debug){ print "\n\n"."last three lines out stdout:"."\n"; }
+    my @file_tail = split("\n", $file_tail);
+    if ( $file_tail[1] =~ m/^Con/ ){ # consider the file to be done of the second to last line starts with "Con..taminated"
+      $file_done++;
+    }
+}
+
+# and it hasn't been changed 
+##sleep 10 while ( !( $mtime > 10 ) );
+
 print COMMAND_LOG time.")"."\n";
 close (COMMAND_LOG);
 
