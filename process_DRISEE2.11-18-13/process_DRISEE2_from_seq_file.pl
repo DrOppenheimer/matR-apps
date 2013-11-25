@@ -26,7 +26,7 @@ if( $debug ){ print STDOUT "made it here"."\n"; }
 # if ( (@ARGV > 0) && ($ARGV[0] =~ /-h/) ) { &usage(); }
 if ( $ARGV[0] =~ /-h/ ) { &usage(); }
 
-unless ( @ARGV > 0 || $mgid ) { &usage(); }
+unless ( @ARGV > 0 || $sequence_file ) { &usage(); }
 unless ( @ARGV > 0 ) { &usage(); }
 
 if ( ! GetOptions (
@@ -185,10 +185,10 @@ close(DATA_LOG);
 
 
 # CLEANUP -- FOR NOW, JUST DELETE THE SEQUENCE FILE
-unlink $sequence_file;
+# unlink $sequence_file;
 my $end_time = time;
 
-print COMMAND_LOG "DONE. It took (".($end_time-$start_time).") seconds to complete analysis of: ".$mgid."."."\n\n";
+print COMMAND_LOG "DONE. It took (".($end_time-$start_time).") seconds to complete analysis of: ".$sequence_file."."."\n\n";
 
 
 # SUBS
