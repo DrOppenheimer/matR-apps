@@ -59,7 +59,7 @@ unless ( defined $command_log && length $command_log > 0 )     { $command_log = 
 unless ( defined $data_log  && length $data_log > 0 )          { $data_log = $sequence_file."."."data_log.txt" };
 
 # get the sequence type from the sequence file extension
-my @split_filename = split(".", $sequence_file);
+my @split_filename = split(/\./, $sequence_file);
 #my $file_type;
 
 my $file_type = @split_filename[ scalar(@split_filename)-1 ]; 
