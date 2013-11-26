@@ -39,7 +39,6 @@ if ( ! GetOptions (
 		   "s|stat_file=s"     => \$stat_file,
 		   "l|drisee_log=s"    => \$drisee_log,
 		   "o|drisee_stdout=s" => \$drisee_stdout,
-		   "a|download_log=s"  => \$download_log,
 		   "b|command_log=s"   => \$command_log,
 		   "c|data_log=s"      => \$data_log,
 		   "h|help!"           => \$help,
@@ -54,7 +53,6 @@ my $start_time = time;
 unless ( defined $stat_file && length $stat_file > 0 )         { $stat_file = $sequence_file."."."drisee_STAT.txt" };
 unless ( defined $drisee_log  && length $drisee_log > 0 )      { $drisee_log = $sequence_file."."."drisee_log.txt" };
 unless ( defined $drisee_stdout && length $drisee_stdout > 0 ) { $drisee_stdout = $sequence_file."."."drisee_stdout.txt" };
-unless ( defined $download_log && length $download_log > 0 )   { $download_log = $sequence_file."."."download_log.txt" };
 unless ( defined $command_log && length $command_log > 0 )     { $command_log = $sequence_file."."."command_log.txt" };
 unless ( defined $data_log  && length $data_log > 0 )          { $data_log = $sequence_file."."."data_log.txt" };
 
@@ -217,11 +215,16 @@ USAGE:
 DESCRIPTION:
 This is a script that can be used to run DRISEE2 on multiple data sets.
 Is designed to run on one dataset at a time, but write consecutive outputs 
-to summary files -- one with a summary of  the downloads, another the data
-summary, and a third with a summary of DRISEE commands issued.
-This version acts on a sequence file that has already been downloaded.
+to summary files -- one with the data summary, and another with a summary 
+of DRISEE commands issued.
+
+This version acts on a sequence file that has already been downloaded
+(with download_sequence_r.perl_wrapper.pl).
 It assumes that the sequence type is indicated by the file extension which 
 is fasta or fastq - anything else will be rejected.
+
+See process_DRISEE2.pl for script that downloads and processes based on
+mgid.
 
 OPTIONS:
 
@@ -233,7 +236,6 @@ OPTIONS:
     -s|stat_file         (string)  drisee_stats file                   default: mgid.file_type.drisee_STAT.txt
     -l|drisee_log        (string)  drisee_log                          default: mgid.file_type.drisee_log.txt
     -o|drisee_stdout     (string)  drisee_stdout                       default: mgid.file_type.drisee_stdout.txt
-    -a|download_log      (string)  cummulative log of the downloads    default: mgid.file_type.download_log.txt
     -b|command_log       (string)  cummulative log of commands         default: mgid.file_type.command_log.txt
     -c|data_log          (string)  cummulative data log                default: mgid.file_type.data_log.txt    
 ________________________________________________________________________________________
