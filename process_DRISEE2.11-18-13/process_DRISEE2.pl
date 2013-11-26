@@ -36,7 +36,7 @@ if ( ! GetOptions (
 		   "r|scripts_path=s"  => \$scripts_path,
 		   "m|mgrast_key=s"    => \$mgrast_key,
 		   "p|drisee_path=s"   => \$drisee_path,
-		   "i|mgid=s"       => \$mgid,
+		   "i|mgid=s"          => \$mgid,
 		   "t|file_type=s"     => \$file_type,
 		   "n|num_proc=i"      => \$num_proc,
 		   #"p|percent!"        => \$percent,
@@ -54,12 +54,44 @@ if ( ! GetOptions (
    ) { &usage(); }
 
 
+# create a log for the DRISEE commands that the script issues
+unless ( -e $command_log ){
+  open(COMMAND_LOG, ">", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";			    
+  # print a header
+  print COMMAND_LOG "# This is a log of the system commands that process_DRISEE2.pl has produced."."\n";		    
+  close (COMMAND_LOG);
+}
+
+my $start_time = time;
+
+# DOWNLOAD THE DATA
+# a little bit of parsing to make the NULL value R friendly
+if ( $mgrast_key eq "NULL" ){
+  $mgrast_key =~ s/\"//;
+}
+
+my $r_cmd = qq(source("$scripts_path/download_sequence.r")
+suppressMessages( download_sequence(
+    mgid="$mgid",
+    mg_key=$mgrast_key,
+    log="$download_log"
+))
+);
+open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";
+print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
+system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
+
+# Figure out the sequence type from the extension of the downloaded file
+my $sequence_file = `ls $mgid.fast*`;
+if($debug){ print STDOUT "\n"."SEQUENCE FILE".$sequence_file."\n"; die; } 
+
+
 # generate default names for output files 
-my $sequence_file = $mgid.".".$file_type;
+#my $sequence_file = $mgid.".".$file_type;
 unless ( defined $stat_file && length $stat_file > 0 )         { $stat_file = $sequence_file."."."drisee_STAT.txt" };
 unless ( defined $drisee_log  && length $drisee_log > 0 )      { $drisee_log = $sequence_file."."."drisee_log.txt" };
 unless ( defined $drisee_stdout && length $drisee_stdout > 0 ) { $drisee_stdout = $sequence_file."."."drisee_stdout.txt" };
-unless ( defined $download_log && length $download_log > 0 )   { $download_log = $sequence_file."."."download_log.txt" };
+#unless ( defined $download_log && length $download_log > 0 )   { $download_log = $sequence_file."."."download_log.txt" };
 unless ( defined $command_log && length $command_log > 0 )     { $command_log = $sequence_file."."."command_log.txt" };
 unless ( defined $data_log  && length $data_log > 0 )          { $data_log = $sequence_file."."."data_log.txt" };
 
@@ -92,32 +124,6 @@ unless (-e $data_log){
   close (DATA_LOG);
   }
 
-# create a log for the DRISEE commands that the script issues
-unless ( -e $command_log ){
-  open(COMMAND_LOG, ">", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";			    
-  # print a header
-  print COMMAND_LOG "# This is a log of the system commands that process_DRISEE2.pl has produced."."\n";		    
-  close (COMMAND_LOG);
-}
-
-my $start_time = time;
-
-# DOWNLOAD THE DATA
-# a little bit of parsing to make the NULL value R friendly
-if ( $mgrast_key eq "NULL" ){
-  $mgrast_key =~ s/\"//;
-}
-
-my $r_cmd = qq(source("$scripts_path/download_sequence.r")
-suppressMessages( download_sequence(
-    mgid="$mgid",
-    mg_key=$mgrast_key,
-    log="$download_log"
-))
-);
-open(COMMAND_LOG, ">>", $command_log) or die "\n\n"."can't open COMMAND_LOG $command_log"."\n\n";
-print COMMAND_LOG "\n"."R Command:"."\n".$r_cmd."\n";
-system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 
 my $start_dl = time;
 print COMMAND_LOG "\n"."waiting for the sequence file to download: start(".$start_dl.") end(";
