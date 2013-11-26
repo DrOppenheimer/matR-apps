@@ -84,7 +84,7 @@ system(qq(echo '$r_cmd' | R --vanilla --slave --silent));
 # Figure out the sequence type from the extension of the downloaded file
 my $sequence_file = `ls $mgid.fast*`;
 chomp $sequence_file;
-if($debug){ print STDOUT "\n"."SEQUENCE FILE".$sequence_file."\n"; die; } 
+#if($debug){ print STDOUT "\n"."SEQUENCE FILE".$sequence_file."\n"; die; } 
 
 
 # generate default names for output files 
