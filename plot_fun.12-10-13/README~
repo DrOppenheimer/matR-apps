@@ -1,0 +1,28 @@
+# This script uses matR to generate 2 or 3 dimmensional pcoas
+
+# basic operation is to produce a color-less pcoa of the input data
+
+# user can also input a table to specify colors
+# This table can contain colors (as hex or nominal) or can contain metadata
+# that is automatically interpreted to produce coloring (identical values or text receive the same color
+# 
+# The user can also input a pch table -- this is more advanced R plotting that allows them to 
+# select the shape of the plotted points
+#
+# example invocations are below - going from simplest to most elaborate
+
+# create a 3d plot, minimum input arguments
+
+plot_mg_pcoa(table_in="test_data.txt")
+
+# create a 2d plot, minimum input arguments
+
+# create a 3d plot without data labels
+
+# create a 3d plot with colors specified by a color_table file 
+# (by default, first column of color table is used) and the script expecpts
+# entries to be literal or hex colors:
+
+plot_mg_pcoa(table_in="test_data.txt", color_table="test_colors.txt")
+
+# create a 3d
