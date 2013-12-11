@@ -1,0 +1,13 @@
+# This is a function that uses matR to generate heatmap-dendrogram vizualizations
+# It's a stripped down simple version for basic viz
+# pretty much the only user option is to decide if they want the rows labeled
+
+# here's a minimal invocation
+
+plot_mg_heatdend(table_in="test_data.txt")
+
+# here's an invocation that explicitly addresses all of the input args
+
+plot_mg_heatdend(table_in="test_data.txt", image_out="my_heat-dend",label_rows=TRUE, image_width_in=10, image_height_in=10, image_res_dpi=200)
+
+# NOTE: These examples take a few minutes to run.
