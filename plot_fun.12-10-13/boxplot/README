@@ -1,3 +1,7 @@
 # function for boxplots - very simple
 
 mg_boxplot(table_in="test_data.txt")
+
+# invication that explicitly calls all of the input args
+
+mg_boxplot(table_in="test_data.txt", image_out="my_boxplot", label_rows=TRUE, image_width_in=10, image_height=10, image_res_dpi=100)
