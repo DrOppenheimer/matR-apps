@@ -2,6 +2,9 @@ barplot_tool <- function(
                          file_in = "sample_data2.groups_in_file.txt",
                          file_out = "my_stats.summary.txt",
                          figure_out = NULL, # give a name and it will produce a file
+                         figure_width_in=6,
+                         figure_height_in=6,
+                         figure_res_dpi=300,
                          stat_test = "Kruskal-Wallis", # (an matR stat test)
                          order_by = NULL, # column to order by - can be integer column index (1 based) or column header -- paste(stat_test, "::fdr", sep="")
                          order_decreasing = TRUE,
@@ -189,26 +192,33 @@ barplot_tool <- function(
 # create the barplot if that option is chossen- as pdf - legend on left, barplot on right
   #my_pdf = paste(file_in, ".barplot.pdf", sep="")
   #pdf ( file=my_pdf, width=8.5, height=4 )
-  if ( identical( is.null(figure_out), NULL ) == FALSE){
-    pdf ( file=figure_out, width=8.5, height=4 )
+  if ( identical( is.null(figure_out), FALSE ) ){
+    png(
+        filename = figure_out,
+        width = figure_width_in,
+        height = figure_height_in,
+        res = figure_res_dpi,
+        units = 'in'
+    )
+    #pdf ( file=figure_out, width=8.5, height=4 )
     split.screen(c(1,2))
     screen(1)
     text( x=0.5, y=0.9 ,labels=paste(
-                          "file in:  ",file_in, "\n",
-                          "file out: ",file_out, "\n",
-                          "sorted by output column ", order_by, ", \"",colnames(my_stats.summary.ordered)[order_by], "\"", "\n",
-                          "Number of categories: ", my_n,
-                          sep=""
-                          ) )
-                                        #plot.new(  )
+                        "file in: ",file_in, "\n",
+                        "file out: ",file_out, "\n",
+                        "sorted by output column ", order_by, ", \"",colnames(my_stats.summary.ordered)[order_by], "\"", "\n",
+                        "Number of categories: ", my_n,
+                        sep=""
+                        ) )
     legend( x="center", legend=rownames(my_stats.summary.ordered.subset.rot_90), pch=15, col=my_data.color )
     screen(2)
-    barplot( 
-            my_stats.summary.ordered.subset.rot_90, 
-            beside=TRUE, 
-            col=my_data.color,
-            las=2
-            ) 
+    barplot(
+          my_stats.summary.ordered.subset.rot_90,
+          beside=TRUE,
+          col=my_data.color,
+          las=2
+          )
+  
     dev.off()
   }
 
