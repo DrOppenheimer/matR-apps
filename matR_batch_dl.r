@@ -87,9 +87,12 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
       }
       sleep_int <- 10
        
-      if ( debug==TRUE ){ print(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE) }
+      #if ( debug==TRUE ){ print(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE) }
       my_data <<- first_batch
-      if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
+      #if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
+      print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
+      write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
+      
       
       write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
@@ -126,15 +129,13 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
       }
       sleep_int <- 10
 
-      if(debug==TRUE){print("MADE IT HERE 1")}
-      
       #my_data <<- my_data + next_batch # This does not handle metadata yet
       my_data <<- merge(my_data$count, next_batch$count, by="row.names", all=TRUE) # This does not handle metadata yet
       rownames(my_data) <<- my_data$Row.names
       my_data$Row.names <<- NULL
 
-      if(debug==TRUE){print("MADE IT HERE 2")}
-      
+      print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
+      write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
       write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
@@ -177,7 +178,9 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
     my_data <<- merge(my_data$count, last_batch$count, by="row.names", all=TRUE) # This does not handle metadata yet
     rownames(my_data) <<- my_data$Row.names
     my_data$Row.names <<- NULL
-    
+
+    print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
+    write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
     write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
     write(print.toc(), file = my_log, append = TRUE)
     write("\n", file = my_log, append = TRUE)
