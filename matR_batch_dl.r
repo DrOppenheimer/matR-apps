@@ -61,6 +61,7 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
       batch_end <- batch_size
       if (debug==TRUE) {print(paste("first batch      -- batch_start:", batch_start, ":: batch_end:", batch_end))}
       batch_list = mgid_list[batch_start:batch_end]
+      write( date(), file = my_log, append = TRUE)
       write(paste("# Starting with with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
       write("# batch members:", file = my_log, append = TRUE)
       for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
@@ -90,11 +91,12 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
       #if ( debug==TRUE ){ print(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE) }
       my_data <<- first_batch
       #if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
-      print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
+      write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
       write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
       
       
       write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
+      write( date(), file = my_log, append = TRUE)
       write(print.toc(), file = my_log, append = TRUE)
       write("\n", file = my_log, append = TRUE)
     }else{ # process all batches except first and remainder
@@ -105,6 +107,7 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
       batch_list = mgid_list[batch_start:batch_end]
 
       if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }    
+      write( date(), file = my_log, append = TRUE)
       write(paste("# Starting batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
       write("# batch members", file = my_log, append = TRUE)
       for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
@@ -134,6 +137,7 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
       rownames(my_data) <<- my_data$Row.names
       my_data$Row.names <<- NULL
 
+      write( date(), file = my_log, append = TRUE)
       print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
       write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
       write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
@@ -148,7 +152,8 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
     batch_end <- length(mgid_list)
     if (debug==TRUE) {print(paste("last batch         -- batch_start:", batch_start, ":: batch_end:", batch_end))}
     batch_list = mgid_list[batch_start:batch_end]
-    
+
+    write( date(), file = my_log, append = TRUE)
     write(paste("# Starting batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
     write("# batch members", file = my_log, append = TRUE)
     for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
@@ -179,6 +184,7 @@ matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = 
     rownames(my_data) <<- my_data$Row.names
     my_data$Row.names <<- NULL
 
+    write( date(), file = my_log, append = TRUE)
     print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
     write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
     write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
