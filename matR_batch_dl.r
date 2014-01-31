@@ -1,220 +1,242 @@
-matR_batch_dl <- function(mgid_list, auth="~/my_auth", sleep_int = 10, my_log = "~/my_log.txt", batch_size = 10, my_entry="counts", my_annot="function", my_source="Subsystems", my_level="level3", output_prefix="my_data_matrix", debug=FALSE, verbose=FALSE){
+matR_batch_dl <- function(
+                          mgid_list,
+                          auth="~/my_auth",
+                          sleep_int = 10,
+                          my_log = "./my_log.txt",
+                          batch_size = 10,
+                          my_entry="counts",
+                          my_annot="function",
+                          my_source="Subsystems",
+                          my_level="level3",
+                          output_prefix="my_data_matrix",
+                          debug=FALSE,
+                          verbose=TRUE
+                          ){
 
-  require(matR) # load matR
+  # check for necessary arguments - show usage if they are not supplied
+  if ( nargs() == 0){print_usage()} 
+  if (identical(mgid_list, "") ){print_usage()}
+
+  # load required pacakges
+  require(matR) 
   require(RJSONIO)
   require(RCurl)
 
+  # source Dan's matR object merging script
   ##source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R") # get the merge function
   
   # Set authentication (key is in file)
   msession$setAuth(file=auth)
 
-  # delete old data
+  # delete old log file if it exists
   if ( file.exists(my_log)==TRUE ){ # delete old log if it exist 
     unlink(my_log)
     print( paste("deleted old log:", my_log) )
   }
-  
-  ## check to see if mgid_list is a character vector or file
-  ## If file check for columns - one column, assume it's the ids
-  ## If its two columns, first is ids, second is name
-  if ( length(mgid_list) > 1 ){
 
+  # delete my_data object if it exists
+  if ( exists("my_data")==TRUE ){
+    suppressWarnings(rm(my_data))
+    print("deleted previous object named my_data")
+  } 
+
+  ## check to see if mgid_list is a character vector or file
+  ## If it's a file check for columns - one column, assume it's the ids
+  ## If it's two columns, first is ids, second is name
+  if ( length(mgid_list) > 1 ){
   }else{
     temp_list <- read.table(mgid_list)
     num_samples <- dim(temp_list)[1]
     new_list <- vector(mode="character", length=num_samples)
-    
     for( i in 1:num_samples ){ # add ids to list
-        new_list[i] <- as.character(temp_list[i,1])
-      }
-    
+      new_list[i] <- as.character(temp_list[i,1])
+    }
     if( dim(temp_list)[2] == 2 ){ # name the ids in the list -- if names were supplied
       for( j in 1:num_samples ){
         names(new_list)[j] <- as.character(temp_list[j,2])
       }
-    
     }
     mgid_list <- new_list
   }
 
-  # if ( debug==TRUE ){ print("Made it here 5") }
-  
-  if ( nargs() == 0){print_usage()} # give usage if no arguemtsn are supplied
-  if (identical(mgid_list, "") ){print_usage()}  # give usage if empty arguement is supplied for mgid_list
-    
-  if ( exists("my_data")==TRUE ){
-    suppressWarnings(rm(my_data))
-    print("deleted previous object named my_data")
-  } # delete my_data object if it exists
-
+  # calculate and print some information to the log
   num_batch <- as.integer( length(mgid_list)%/%batch_size )
-  if (debug==TRUE) {print(paste("num_batch:", num_batch))}
   batch_remainder <- length(mgid_list)%%batch_size
-  if (debug==TRUE) {print(paste("batch_remainder:", batch_remainder))}
-  
+  write(
+        paste(
+              "# Num samples:          ", length(mgid_list), "\n", 
+              "# Batch size:           ", batch_size, "\n",
+              "# Num complete batches: ", num_batch, "\n",
+              "# Remainder batch size: ", batch_remainder, "\n",
+              sep="",
+              collapse=""
+              ),
+        file = my_log,
+        append = TRUE
+        )
+
+  ############################################################################
+  # MAIN LOOP - PROCESSES ALL BATCHES EXCEPT (IF THERE IS ONE) THE REMAINDER #
+  ############################################################################
   for (batch_count in 1:(num_batch)){
-    
-    if (batch_count == 1){ # process first batch
-      print.tic()
+
+    # Process the first batch
+    if (batch_count == 1){ 
+
+      # Get the first batch of data and use to initialize my_data object
       batch_start <- 1
       batch_end <- batch_size
-      if (debug==TRUE) {print(paste("first batch      -- batch_start:", batch_start, ":: batch_end:", batch_end))}
-      batch_list = mgid_list[batch_start:batch_end]
+      first_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int)
+      my_data <- data.matrix(first_batch$count)
+
+      # write information to the log
+      write(
+            paste(
+                  "# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes",
+                  sep="",
+                  collapse=""
+                  ),
+            file = my_log,
+            append = TRUE
+            )
       write( date(), file = my_log, append = TRUE)
-      write(paste("# Starting with with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" ), file = my_log, append = TRUE)
-      write("# batch members:", file = my_log, append = TRUE)
-      for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
+      write("\n\n", file = my_log, append = TRUE)
+
+      # replace NA's with 0
+      my_data[ is.na(my_data) ]<-0
+
+      # write current data to file
+      my_output = gsub(" ", "", paste(output_prefix,".BATCH_", batch_count,".", my_entry, ".txt"))
+      write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
       
-      first_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-      check_batch <- first_batch$count
-            
-      collection_call <- msession$urls()[1]
-      matrix_call <- msession$urls()[3]
-      write(paste("# API_CALL:\n", matrix_call ), file = my_log, append = TRUE)
-      write(paste("# API_CALL:\n", collection_call ), file = my_log, append = TRUE)
-      
-      # Check to see if the querry is complete before proceeding
-      API_status_check<- fromJSON(getURL(collection_call))
-      current_status <- API_status_check['status']      
-      while ( grepl(current_status, "done")==FALSE ){
-        Sys.sleep(sleep_int)
-        sleep_int <- sleep_int+10
-        print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete") )
-        write(paste("# API_CALL:\n", collection_call, sep="", collapse=""), file = my_log, append = TRUE)
-        write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete", sep="", collapse=""), file = my_log, append = TRUE )
-        API_status_check<- fromJSON(getURL(collection_call))
-        current_status <- API_status_check['status']
-      }
-      sleep_int <- 10
-       
-      #if ( debug==TRUE ){ print(paste("# API_CALL:\n", msession$urls()[1] ), file = my_log, append = TRUE) }
-      my_data <<- first_batch
-      #if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }
-      write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
-      write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
-      
-      
-      write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
-      write( date(), file = my_log, append = TRUE)
-      write(print.toc(), file = my_log, append = TRUE)
-      write("\n", file = my_log, append = TRUE)
     }else{ # process all batches except first and remainder
-      print.tic()
+
+      # Process the continuing (next) batch
       batch_start <- ((batch_count-1)*batch_size)+1
       batch_end <- (batch_count*batch_size)
-      if (debug==TRUE) {print(paste("continuing batch -- batch_start:", batch_start, ":: batch_end:", batch_end))}
-      batch_list = mgid_list[batch_start:batch_end]
+      next_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int)
+      
+      # Add the next batch to my_data
+      my_data <- merge(my_data, data.matrix(next_batch$count), by="row.names", all=TRUE) # This does not handle metadata yet
+      rownames(my_data) <- my_data$Row.names
+      my_data$Row.names <- NULL
 
-      if ( verbose==TRUE ){ print(paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes" )) }    
+      # write information to the log
+      write(
+            paste(
+                  "# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes",
+                  sep="",
+                  collapse=""
+                  ),
+            file = my_log,
+            append = TRUE
+            )
       write( date(), file = my_log, append = TRUE)
-      write(paste("# Starting batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
-      write("# batch members", file = my_log, append = TRUE)
-      for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
-      next_batch <<- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-      check_batch <- next_batch$count
+      write("\n\n", file = my_log, append = TRUE)
+      
+      # replace NA's with 0
+      my_data[ is.na(my_data) ]<-0
 
-      collection_call <- msession$urls()[1]
-      matrix_call <- msession$urls()[3]
-      write(paste("# API_CALL:\n", matrix_call ), file = my_log, append = TRUE)
-      write(paste("# API_CALL:\n", collection_call ), file = my_log, append = TRUE)
-            
-      API_status_check<- fromJSON(getURL(collection_call))
-      current_status <- API_status_check['status']      
-      while ( grepl(current_status, "done")==FALSE ){
-        Sys.sleep(sleep_int)
-        sleep_int <- sleep_int+10
-        print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete") )
-        write(paste("# API_CALL:\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
-        write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete", sep="", collapse=""), file = my_log, append = TRUE )
-        API_status_check<- fromJSON(getURL(collection_call))
-        current_status <- API_status_check['status']
-      }
-      sleep_int <- 10
-
-      #my_data <<- my_data + next_batch # This does not handle metadata yet
-      my_data <<- merge(my_data$count, next_batch$count, by="row.names", all=TRUE) # This does not handle metadata yet
-      rownames(my_data) <<- my_data$Row.names
-      my_data$Row.names <<- NULL
-
-      write( date(), file = my_log, append = TRUE)
-      print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
-      write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
-      write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
-      write(print.toc(), file = my_log, append = TRUE)
-      write("\n", file = my_log, append = TRUE)
+      # write current data to file
+      my_output = gsub(" ", "", paste(output_prefix,".BATCH_1_to_", batch_count,".", my_entry, ".txt"))
+      write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+      
     }
   }
-  
-  if ( batch_remainder > 0 ){ # process remainder batch
-    print.tic()
+
+  # process remainder batch
+  if ( batch_remainder > 0 ){ 
+
+    # Process the last batch (if there is a remainder
     batch_start <- (num_batch*batch_size)+1
     batch_end <- length(mgid_list)
-    if (debug==TRUE) {print(paste("last batch         -- batch_start:", batch_start, ":: batch_end:", batch_end))}
-    batch_list = mgid_list[batch_start:batch_end]
+    last_batch <- process_batch( (batch_count+1) , batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int)
 
+    # Add the next batch to my_data
+    my_data <- merge(my_data, data.matrix(last_batch$count), by="row.names", all=TRUE) # This does not handle metadata yet
+    rownames(my_data) <- my_data$Row.names
+    my_data$Row.names <- NULL
+
+    # write information to the log
+    write(
+          paste(
+                "# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes",
+                sep="",
+                collapse=""
+                ),
+            file = my_log,
+          append = TRUE
+          )
     write( date(), file = my_log, append = TRUE)
-    write(paste("# Starting batch", (batch_count + 1), ":: with", (batch_end - batch_start + 1), "metagenomes"  ),file = my_log, append = TRUE)
-    write("# batch members", file = my_log, append = TRUE)
-    for (i in 1:length(batch_list)){write(batch_list[i], file = my_log, append = TRUE)}
-    
-    last_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
-    check_batch <- last_batch$count
+    write("\n\n", file = my_log, append = TRUE)
+      
+    # replace NA's with 0
+    my_data[ is.na(my_data) ]<-0
 
-    collection_call <- msession$urls()[1]
-    matrix_call <- msession$urls()[3]
-    write(paste("# API_CALL:\n", matrix_call ), file = my_log, append = TRUE)
-    write(paste("# API_CALL:\n", collection_call ), file = my_log, append = TRUE)
-    
-    API_status_check<- fromJSON(getURL(collection_call))
-    current_status <- API_status_check['status']      
-    while ( grepl(current_status, "done")==FALSE ){
-      Sys.sleep(sleep_int)
-      sleep_int <- sleep_int+10
-      print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete") )
-      write(paste("# API_CALL:\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
-      write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete"), file = my_log, append = TRUE )
-      API_status_check<- fromJSON(getURL(collection_call))
-      current_status <- API_status_check['status']
-    }
-    sleep_int <- 10
-    
-    #my_data <<- my_data + last_batch # This does not handle metadata yet
-    my_data <<- merge(my_data$count, last_batch$count, by="row.names", all=TRUE) # This does not handle metadata yet
-    rownames(my_data) <<- my_data$Row.names
-    my_data$Row.names <<- NULL
+    # write current data to file
+    my_output = gsub(" ", "", paste(output_prefix,".BATCH_1_to_", (batch_count+1) ,".", my_entry, ".txt"))
+    write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
 
-    write( date(), file = my_log, append = TRUE)
-    print( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
-    write( paste("# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes", sep="", collapse="" ), file = my_log, append = TRUE )
-    write("# DONE \n# time: user.self sys.self elapsed user.child sys.child", file = my_log, append = TRUE)
-    write(print.toc(), file = my_log, append = TRUE)
-    write("\n", file = my_log, append = TRUE)
-    
+    print(paste("data available as data.matrix: my_data and as flat file ", my_output, sep="", collapse=""))
+    write( paste("data available as data.matrix: my_data \nand as flat file: ", my_output, sep="", collapse=""), file = my_log, append = TRUE )
+      
   }
 
-  ###### replace NA's with 0
-  #my_data.matrix <<- my_data$count
-  #my_data_matrix <<- my_data
-  #my_data.matrix[ is.na(my_data.matrix) ]<-0
-  my_data[ is.na(my_data) ]<-0
-
-  
-  # write output to a file
-  my_output = gsub(" ", "", paste(output_prefix, ".", my_entry, ".txt"))
-  write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
-  print(paste("data available as matrix: my_data.matrix and flat file:", my_output))
-  write("### ALL DONE ###", file = my_log, append = TRUE)
-
-  # delete data object from memory
   if ( exists("my_data")==TRUE ){ 
-    rm(my_data)
-  } # get rid of dupilcate data
+      rm(my_data)
+    }
   
+}
+  
+############################################################################
+############################################################################
+############################################################################
+### SUBS
+
+process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int){
+
+  # create list of ids in the batch from the main list
+  batch_list = mgid_list[batch_start:batch_end]
+
+  # write batch informatin to log
+  write( date(), file = my_log, append = TRUE)
+  write( paste("first batch --> batch_start: ", batch_start, " :: batch_end: ", batch_end, sep="", collapse="" ), file = my_log, append = TRUE)
+  write( paste("# batch ( ", batch_count, ") members:", file = my_log, append = TRUE) )
+  for (i in 1:length(batch_list)){ write(batch_list[i], file = my_log, append = TRUE) }
+  
+  # make the call
+  current_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
+  check_batch <- current_batch$count
+  collection_call <- msession$urls()[1]
+  matrix_call <- msession$urls()[2]
+  write(paste("# API_CALL (matrix_call):\n", matrix_call ), file = my_log, append = TRUE)
+  write(paste("# API_CALL (status_call):\n", collection_call ), file = my_log, append = TRUE)
+  
+  # check the status of the call -- proceed only when the data are available
+  check_status(collection_call, sleep_int, my_log)
+      
+  return(current_batch)
 }
 
 
-################################################################
+
+check_status <- function (collection_call, sleep_int, my_log)  {
+
+  API_status_check<- fromJSON(getURL(collection_call))
+  current_status <- API_status_check['status']      
+  while ( grepl(current_status, "done")==FALSE ){
+    Sys.sleep(sleep_int)
+    sleep_int <- sleep_int+10
+    print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete") )
+    write(paste("# API_CALL:\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
+    write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete", sep="", collapse=""), file = my_log, append = TRUE )
+    API_status_check<- fromJSON(getURL(collection_call))
+    current_status <- API_status_check['status']
+  }
+  
+}
+     
+
 
 print.tic <- function(x,...) {
     if (!exists("proc.time"))
@@ -234,10 +256,12 @@ print.toc <- function(x,...) {
 }
 
 
+
 source_https <- function(url, ...) {
   require(RCurl)
   sapply(c(url, ...), function(u) { eval(parse(text = getURL(u, followlocation = TRUE, cainfo = system.file("CurlSSL", "cacert.pem", package = "RCurl"))), envir = .GlobalEnv) } )
 } # Sourced code is commented out below in case you need it
+
 
 
 print_usage <- function() {
