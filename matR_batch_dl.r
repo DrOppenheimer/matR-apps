@@ -1,10 +1,12 @@
 matR_batch_dl <- function(
-                          mgid_list,
-                          auth="~/my_auth",
-                          sleep_int = 10,
-                          my_log = "./my_log.txt",
-                          batch_size = 10,
-                          my_entry="counts",
+                          mgid_list,    # file with list of IDs - no header
+                          list_is_file=TRUE,
+                          start_with=1, # list entry to start with
+                          auth="~/my_auth", # file with auth key
+                          sleep_int = 10, # initial sleep time (in seconds) -- incremented by 10 with each sleep
+                          my_log = "./my_log.txt", # name for the log file
+                          batch_size = 10, # number of IDs to process at one time (100 is the hard coded limit for the API - would suggest much smaller)
+                          my_entry="counts", 
                           my_annot="function",
                           my_source="Subsystems",
                           my_level="level3",
@@ -43,8 +45,9 @@ matR_batch_dl <- function(
   ## check to see if mgid_list is a character vector or file
   ## If it's a file check for columns - one column, assume it's the ids
   ## If it's two columns, first is ids, second is name
-  if ( length(mgid_list) > 1 ){
-  }else{
+  #if ( length(mgid_list) > 1 ){
+
+  if (list_is_file==TRUE){
     temp_list <- read.table(mgid_list)
     num_samples <- dim(temp_list)[1]
     new_list <- vector(mode="character", length=num_samples)
@@ -56,7 +59,7 @@ matR_batch_dl <- function(
         names(new_list)[j] <- as.character(temp_list[j,2])
       }
     }
-    mgid_list <- new_list
+    mgid_list <- new_list[start_with:num_samples]
   }
 
   # calculate and print some information to the log
@@ -200,7 +203,7 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
 
   # write batch informatin to log
   write( date(), file = my_log, append = TRUE)
-  write( paste("BATCH:", batch_count," :: batch_start(", ") batch_end(", batch_end, ")", sep="", collapse="" ), file = my_log, append = TRUE)
+  write( paste("BATCH:", batch_count," :: batch_start(", batch_start, ") batch_end(", batch_end, ")", sep="", collapse="" ), file = my_log, append = TRUE)
   write( paste("# batch ( ", batch_count, ") members:", file = my_log, append = TRUE) )
   for (i in 1:length(batch_list)){ write(batch_list[i], file = my_log, append = TRUE) }
   
