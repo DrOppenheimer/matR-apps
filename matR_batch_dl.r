@@ -1,11 +1,12 @@
 matR_batch_dl <- function(
                           mgid_list,    # file with list of IDs - no header
                           list_is_file=TRUE,
+                          print_list=FALSE, # print copy of list of ids to variable "my_list"
                           start_with=1, # list entry to start with
                           auth="~/my_auth", # file with auth key
                           sleep_int = 10, # initial sleep time (in seconds) -- incremented by 10 with each sleep
-                          my_log = "./my_log.txt", # name for the log file
-                          batch_size = 10, # number of IDs to process at one time (100 is the hard coded limit for the API - would suggest much smaller)
+                          my_log = "default", # name for the log file
+                          batch_size = 50, # number of IDs to process at one time (100 is the hard coded limit for the API - would suggest much smaller)
                           my_entry="counts", 
                           my_annot="function",
                           my_source="Subsystems",
@@ -15,15 +16,24 @@ matR_batch_dl <- function(
                           verbose=TRUE
                           ){
 
+  # NOTE: -- If this fails -- make sure that you are using the most up to date matR
+  # get the zip from here https://github.com/MG-RAST/matR
+  # install it like this install.packages("~/some_path/matR-master", repos=NULL, type="source")
+  # also make sure that RCurl and RJSONIO are installed
+  
   # check for necessary arguments - show usage if they are not supplied
   if ( nargs() == 0){print_usage()} 
   if (identical(mgid_list, "") ){print_usage()}
 
+  # create name for "default" log
+  if ( identical(my_log, "default")==TRUE ){ my_log=paste(mgid_list,".download_log",sep="", collapse="") }
+  
   # load required pacakges
   require(matR) 
   require(RJSONIO)
   require(RCurl)
 
+  if( debug==TRUE ){ print("made it here 1") }
   # source Dan's matR object merging script
   ##source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R") # get the merge function
   
@@ -62,12 +72,17 @@ matR_batch_dl <- function(
     mgid_list <- new_list[start_with:num_samples]
   }
 
+  # make sure the id list has only unique ids
+  mgid_list <- levels(as.factor(mgid_list))
+
+  if (print_list==TRUE){ my_list <<- mgid_list }
+  
   # calculate and print some information to the log
   num_batch <- as.integer( length(mgid_list)%/%batch_size )
   batch_remainder <- length(mgid_list)%%batch_size
   write(
         paste(
-              "# Num samples:          ", length(mgid_list), "\n", 
+              "# Num unique samples:   ", length(mgid_list), "\n", 
               "# Batch size:           ", batch_size, "\n",
               "# Num complete batches: ", num_batch, "\n",
               "# Remainder batch size: ", batch_remainder, "\n",
@@ -89,7 +104,7 @@ matR_batch_dl <- function(
       # Get the first batch of data and use to initialize my_data object
       batch_start <- 1
       batch_end <- batch_size
-      first_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int)
+      first_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
       my_data <- data.matrix(first_batch$count)
 
       # write information to the log
@@ -117,7 +132,7 @@ matR_batch_dl <- function(
       # Process the continuing (next) batch
       batch_start <- ((batch_count-1)*batch_size)+1
       batch_end <- (batch_count*batch_size)
-      next_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int)
+      next_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
       
       # Add the next batch to my_data
       my_data <- merge(my_data, data.matrix(next_batch$count), by="row.names", all=TRUE) # This does not handle metadata yet
@@ -153,7 +168,7 @@ matR_batch_dl <- function(
     # Process the last batch (if there is a remainder
     batch_start <- (num_batch*batch_size)+1
     batch_end <- length(mgid_list)
-    last_batch <- process_batch( (batch_count+1) , batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int)
+    last_batch <- process_batch( (batch_count+1) , batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
 
     # Add the next batch to my_data
     my_data <- merge(my_data, data.matrix(last_batch$count), by="row.names", all=TRUE) # This does not handle metadata yet
@@ -196,8 +211,10 @@ matR_batch_dl <- function(
 ############################################################################
 ### SUBS
 
-process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int){
+process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug){
 
+  if( debug==TRUE ){ print("made it to process_batch 1") }
+  
   # create list of ids in the batch from the main list
   batch_list = mgid_list[batch_start:batch_end]
 
@@ -206,32 +223,41 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
   write( paste("BATCH:", batch_count," :: batch_start(", batch_start, ") batch_end(", batch_end, ")", sep="", collapse="" ), file = my_log, append = TRUE)
   write( paste("# batch ( ", batch_count, ") members:", file = my_log, append = TRUE) )
   for (i in 1:length(batch_list)){ write(batch_list[i], file = my_log, append = TRUE) }
-  
+
+  if( debug==TRUE ){ print("made it to process_batch 2") }
   # make the call
   current_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
+  if( debug==TRUE ){ print("made it to process_batch 3") }
+  if( debug==TRUE ){ debug_batch <<- current_batch}
+  
   check_batch <- current_batch$count
+  
+  if( debug==TRUE ){ print("made it to process_batch 4") }
+  
   collection_call <- msession$urls()[1]
   matrix_call <- msession$urls()[2]
   write(paste("# API_CALL (matrix_call):\n", matrix_call ), file = my_log, append = TRUE)
   write(paste("# API_CALL (status_call):\n", collection_call ), file = my_log, append = TRUE)
+
   
   # check the status of the call -- proceed only when the data are available
-  check_status(collection_call, sleep_int, my_log)
+  check_status(collection_call, sleep_int, my_log, debug)
       
   return(current_batch)
 }
 
 
 
-check_status <- function (collection_call, sleep_int, my_log)  {
+check_status <- function (collection_call, sleep_int, my_log, debug)  {
 
+  if( debug==TRUE ){ print("made it to check_status function") }
   API_status_check<- fromJSON(getURL(collection_call))
   current_status <- API_status_check['status']      
   while ( grepl(current_status, "done")==FALSE ){
     Sys.sleep(sleep_int)
     sleep_int <- sleep_int+10
     print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete") )
-    write(paste("# API_CALL:\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
+    write(paste("# API_CALL: (status check)\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
     write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete", sep="", collapse=""), file = my_log, append = TRUE )
     API_status_check<- fromJSON(getURL(collection_call))
     current_status <- API_status_check['status']
