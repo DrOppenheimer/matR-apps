@@ -77,6 +77,7 @@ matR_batch_dl <- function(
 
   if (print_list==TRUE){ my_list <<- mgid_list }
   
+  write( date(), file = my_log, append = TRUE)
   # calculate and print some information to the log
   num_batch <- as.integer( length(mgid_list)%/%batch_size )
   batch_remainder <- length(mgid_list)%%batch_size
@@ -110,7 +111,7 @@ matR_batch_dl <- function(
       # write information to the log
       write(
             paste(
-                  "# finished with batch", batch_count, ":: with", (batch_end - batch_start + 1), "metagenomes",
+                  "# finished with batch (", batch_count, ") :: with (", (batch_end - batch_start + 1), ") metagenomes",
                   sep="",
                   collapse=""
                   ),
