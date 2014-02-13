@@ -99,11 +99,18 @@ matR_batch_dl <- function(
   ############################################################################
   # MAIN LOOP - PROCESSES ALL BATCHES EXCEPT (IF THERE IS ONE) THE REMAINDER #
   ############################################################################
-  for (batch_count in start_batch:(num_batch)){
+  this_is_first_batch = TRUE
+  for (batch_count in first_batch:(num_batch)){
 
     # Process the first batch
-    if (batch_count == 1){ 
+    if( this_is_first_batch==TRUE ){
+      this_is_first_batch=FALSE
+      #if (batch_count == 1){ 
 
+      # calculate start and stop (will be one unless first_batch is > 1) 
+      batch_start <- ((batch_count-1)*batch_size)+1
+      batch_end <- (batch_count*batch_size)
+      
       # Get the first batch of data and use to initialize my_data object
       batch_start <- 1
       batch_end <- batch_size
