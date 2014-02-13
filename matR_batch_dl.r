@@ -100,7 +100,7 @@ matR_batch_dl <- function(
   # MAIN LOOP - PROCESSES ALL BATCHES EXCEPT (IF THERE IS ONE) THE REMAINDER #
   ############################################################################
   this_is_first_batch = TRUE
-  for (batch_count in first_batch:(num_batch)){
+  for (batch_count in start_batch:(num_batch)){
 
     # Process the first batch
     if( this_is_first_batch==TRUE ){
