@@ -43,10 +43,10 @@ matR_batch_dl <- function(
   msession$setAuth(file=auth)
   
   # delete old log file if it exists
-  ## if ( file.exists(my_log)==TRUE ){ # delete old log if it exist 
-  ##   unlink(my_log)
-  ##   print( paste("deleted old log:", my_log) )
-  ## }
+  if ( file.exists(my_log)==TRUE ){ # delete old log if it exist 
+    unlink(my_log)
+     print( paste("deleted old log:", my_log) )
+   }
 
   # delete my_data object if it exists
   if ( exists("my_data")==TRUE ){
