@@ -12,7 +12,7 @@ matR_batch_dl <- function(
                           my_annot="function",
                           my_source="Subsystems",
                           my_level="level3",
-                          my_data_name = "default", # name for the data object
+                          #my_data_name = "default", # name for the data object
                           output_prefix="my_data_matrix",
                           debug=FALSE,
                           verbose=TRUE
@@ -215,24 +215,24 @@ matR_batch_dl <- function(
   my_output = gsub(" ", "", paste(output_prefix,".ALL_BATCHES.", my_entry, ".txt"))
   write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
 
-   # rename the R object in memory if that option was selected - otherwise, named as mgid_list.data
-  if ( identical(my_data_name, "default")==TRUE ){
-    if ( debug==TRUE ){ print("made it into rename loop A") }
-    my_data_name <- paste(mgid_list, ".data", sep="", collapse="" )
-    data_name <- my_data_name
-    assign( my_data_name, my_data )
-  }else{
-    if ( debug==TRUE ){ print("made it into rename loop B") }
-    data_name <- my_data_name
-    assign( my_data_name, my_data )
-  }
+  ## # rename the R object in memory if that option was selected - otherwise, named as mgid_list.data
+  ## if ( identical(my_data_name, "default")==TRUE ){
+  ##   if ( debug==TRUE ){ print("made it into rename loop A") }
+  ##   my_data_name <- paste(mgid_list, ".data", sep="", collapse="" )
+  ##   data_name <- my_data_name
+  ##   assign( my_data_name, my_data )
+  ## }else{
+  ##   if ( debug==TRUE ){ print("made it into rename loop B") }
+  ##   data_name <- my_data_name
+  ##   assign( my_data_name, my_data )
+  ## }
   
   # create named object with downloaded data avaialable in the workplace
-  my_data_name <<- my_data_name
+  my_data <<- my_data
     
   #print(paste("data available as data.matrix: my_data and as flat file ", my_output, sep="", collapse=""))
-  write( paste("data available as data.matrix: ", data_name," and as flat file: ", my_output, sep="", collapse=""), file = my_log, append = TRUE ) 
-  print( paste("data available as data.matrix: ", data_name," and as flat file: ", my_output, sep="", collapse=""), file = my_log, append = TRUE )
+  write( paste("data available as data.matrix: ", "my_data"," and as flat file: ", my_output, sep="", collapse=""), file = my_log, append = TRUE ) 
+  print( paste("data available as data.matrix: ", "my_data"," and as flat file: ", my_output, sep="", collapse=""), file = my_log, append = TRUE )
     
   # cleanup of temp data object
   if ( exists("my_data")==TRUE ){ 
