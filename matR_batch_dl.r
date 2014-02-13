@@ -212,8 +212,8 @@ matR_batch_dl <- function(
   }
 
   # write final outputs
-  my_output = gsub(" ", "", paste(output_prefix,".ALL_BATCHES.", my_entry, ".txt"))
-  write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  #my_output = gsub(" ", "", paste(output_prefix,".ALL_BATCHES.", my_entry, ".txt"))
+  #write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
 
   ## # rename the R object in memory if that option was selected - otherwise, named as mgid_list.data
   ## if ( identical(my_data_name, "default")==TRUE ){
