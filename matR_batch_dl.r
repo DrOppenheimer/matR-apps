@@ -107,13 +107,13 @@ matR_batch_dl <- function(
       this_is_first_batch=FALSE
       #if (batch_count == 1){ 
 
-      # calculate start and stop (will be one unless first_batch is > 1) 
+      # Get the first batch of data and use to initialize my_data object  (will be 1 and batch_size unless first_batch is > 1)
+      # calculate start and stop 
       batch_start <- ((batch_count-1)*batch_size)+1
+      # batch_start <- 1
       batch_end <- (batch_count*batch_size)
+      # batch_end <- batch_size
       
-      # Get the first batch of data and use to initialize my_data object
-      batch_start <- 1
-      batch_end <- batch_size
       first_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
       my_data <- data.matrix(first_batch$count)
 
