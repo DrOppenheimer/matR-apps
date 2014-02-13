@@ -166,7 +166,7 @@ matR_batch_dl <- function(
       my_data[ is.na(my_data) ]<-0
 
       # write current data to file
-      my_output = gsub(" ", "", paste(output_prefix,".BATCH_1_to_", batch_count,".", my_entry, ".txt"))
+      my_output = gsub(" ", "", paste(output_prefix,".BATCH_", start_batch,"_to_", batch_count,".", my_entry, ".txt"))
       write.table(my_data, file = my_output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
       
     }
