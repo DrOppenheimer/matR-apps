@@ -2,7 +2,7 @@ matR_batch_dl <- function(
                           mgid_list,    # file with list of IDs - no header
                           list_is_file=TRUE,
                           print_list=FALSE, # print copy of list of ids to variable "my_list"
-                          #start_sample=1, # list entry to start with
+                          start_sample=1, # list entry to start with
                           start_batch=1, # batch to start with
                           auth="~/my_auth", # file with auth key
                           sleep_int = 10, # initial sleep time (in seconds) -- incremented by 10 with each sleep
@@ -86,6 +86,7 @@ matR_batch_dl <- function(
   write(
         paste(
               "# Num unique samples:   ", length(mgid_list), "\n",
+              "# Start sample:         ", start_sample, "\n",
               "# Batch size:           ", batch_size, "\n",
               "# Start batch:          ", start_batch, "\n",
               "# Num complete batches: ", num_batch, "\n",
