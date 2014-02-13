@@ -276,14 +276,14 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
 
   
   # check the status of the call -- proceed only when the data are available
-  check_status(collection_call, sleep_int, my_log, debug)
+  check_status(collection_call, sleep_int, my_log, debug, batch_count)
       
   return(current_batch)
 }
 
 
 
-check_status <- function (collection_call, sleep_int, my_log, debug)  {
+check_status <- function (collection_call, sleep_int, my_log, debug, batch_count)  {
 
   if( debug==TRUE ){ print("made it to check_status function") }
   API_status_check<- fromJSON(getURL(collection_call))
@@ -291,7 +291,7 @@ check_status <- function (collection_call, sleep_int, my_log, debug)  {
   while ( grepl(current_status, "done")==FALSE ){
     Sys.sleep(sleep_int)
     sleep_int <- sleep_int+10
-    print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete") )
+    print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch", batch_count, sep="", collapse="") )
     write(paste("# API_CALL: (status check)\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
     write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete", sep="", collapse=""), file = my_log, append = TRUE )
     API_status_check<- fromJSON(getURL(collection_call))
