@@ -292,8 +292,8 @@ check_status <- function (collection_call, sleep_int, my_log, debug, batch_count
     Sys.sleep(sleep_int)
     sleep_int <- sleep_int+10
     print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch ( ", batch_count," )", sep="", collapse="") )
-    write(paste("# API_CALL: (status check)\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
-    write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete", sep="", collapse=""), file = my_log, append = TRUE )
+    write( paste("# API_CALL: (status check)\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
+    write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch ( ", batch_count," )", sep="", collapse=""), file = my_log, append = TRUE )
     API_status_check<- fromJSON(getURL(collection_call))
     current_status <- API_status_check['status']
   }
