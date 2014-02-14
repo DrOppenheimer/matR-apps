@@ -95,7 +95,7 @@ matR_batch_dl <- function(
   write(
         paste(
               "# Num unique samples:   ", length(mgid_list), "\n",
-              "# Start sample:         ", start_sample, "\n",
+              #"# Start sample:         ", start_sample, "\n",
               "# Batch size:           ", batch_size, "\n",
               "# Start batch:          ", start_batch, "\n",
               "# Num complete batches: ", num_batch, "\n",
