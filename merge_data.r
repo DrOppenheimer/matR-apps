@@ -1,4 +1,4 @@
-merge_data <- functon(mode="file", file1="", file2="", output="default"){
+merge_data <- function(mode="file", file1="", file2="", output="default"){
 
   if( identical( output, "default" )==TRUE ){
     output <- paste( file1, ".AND.", file2 ,sep="", collapse="" )
@@ -12,14 +12,12 @@ merge_data <- functon(mode="file", file1="", file2="", output="default"){
     data1 <- file1
     data2 <- file2
   }
-
+  
   merged_data <- merge(data1, data2, by="row.names", all=TRUE)
-
+  
   write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
 
 }
-
-
 
 #### SUBS
 import_data <- function(file_name)
