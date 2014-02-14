@@ -2,7 +2,7 @@ matR_batch_dl <- function(
                           mgid_list,    # file with list of IDs - no header
                           list_is_file=TRUE,
                           print_list=FALSE, # print copy of list of ids to variable "my_list"
-                          start_sample=1, # list entry to start with; NOTE start sample overides start batch
+                          #start_sample=1, # list entry to start with; NOTE start sample overides start batch
                           start_batch=1, # batch to start with: NOTE start_batch is overridden by start_sample
                           auth="~/my_auth", # file with auth key
                           sleep_int = 10, # initial sleep time (in seconds) -- incremented by 10 with each sleep
@@ -71,8 +71,8 @@ matR_batch_dl <- function(
         names(new_list)[j] <- as.character(temp_list[j,2])
       }
     }
-    mgid_list <- new_list[start_sample:num_samples]
-    #mgid_list <- new_list[1:num_samples]
+    #mgid_list <- new_list[start_sample:num_samples]
+    mgid_list <- new_list[1:num_samples]
   }
 
   # make sure the id list has only unique ids
@@ -85,12 +85,12 @@ matR_batch_dl <- function(
   num_batch <- as.integer( length(mgid_list)%/%batch_size )
   batch_remainder <- length(mgid_list)%%batch_size
 
-  if( start_sample > 1 ){
-    num_batch.original <- num_batch
-    num_batch <- as.integer( (length(mgid_list)-start_sample)%/%batch_size )
-    batch_remainder <- (length(mgid_list)-start_sample+1)%%batch_size
-    start_batch <- 1
-  }
+  ## if( start_sample > 1 ){
+  ##   num_batch.original <- num_batch
+  ##   num_batch <- as.integer( (length(mgid_list)-start_sample)%/%batch_size )
+  ##   batch_remainder <- (length(mgid_list)-start_sample+1)%%batch_size
+  ##   start_batch <- 1
+  ## }
 
   write(
         paste(
