@@ -6,7 +6,8 @@ plot_mg_heatdend <<- function(
                           label_rows=FALSE,
                           image_width_in=8.5,
                           image_height_in=11,
-                          image_res_dpi=300
+                          image_res_dpi=300,
+                          order_columns=TRUE
                           )
   
 {
@@ -44,9 +45,9 @@ plot_mg_heatdend <<- function(
 
   # Can create heat dend with or without row labels
   if ( identical( label_rows, FALSE ) ){
-    suppressWarnings(heatmap(data_collection, colsep=NULL))
+    suppressWarnings(heatmap(data_collection, colsep=NULL, Colv=order_columns))
   }else{
-    suppressWarnings(heatmap(data_collection, colsep=NULL, labRow=dimnames(data_collection$x)[[1]]))
+    suppressWarnings(heatmap(data_collection, colsep=NULL, Colv=order_columns, labRow=dimnames(data_collection$x)[[1]]))
   }
   ##}
   dev.off()
