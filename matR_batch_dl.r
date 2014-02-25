@@ -4,6 +4,7 @@ matR_batch_dl <- function(
                           print_list=FALSE, # print copy of list of ids to variable "my_list"
                           #start_sample=1, # list entry to start with; NOTE start sample overides start batch
                           start_batch=1, # batch to start with: NOTE start_batch is overridden by start_sample
+                          use_auth=FALSE,
                           auth="~/my_auth", # file with auth key
                           sleep_int = 10, # initial sleep time (in seconds) -- incremented by 10 with each sleep
                           my_log = "default", # name for the log file
@@ -40,7 +41,9 @@ matR_batch_dl <- function(
   ##source_https("https://raw.github.com/braithwaite/matR-apps/master/collection-merge.R") # get the merge function
   
   # Set authentication (key is in file)
-  msession$setAuth(file=auth)
+  if (use_auth==TRUE){
+    msession$setAuth(file=auth)
+  }
   
   # delete old log file if it exists
   if ( file.exists(my_log)==TRUE ){ # delete old log if it exist 

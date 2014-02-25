@@ -17,7 +17,8 @@ MGRAST_preprocessing <<- function(
 
   {
 
-    require(preprocessCore) || install.packages("preprocessCore", )            
+    # check for necessary package, install if it isn't there
+    require(preprocessCore) || install.packages("preprocessCore")            
     library(preprocessCore)
 ###### MAIN
 
@@ -50,8 +51,7 @@ MGRAST_preprocessing <<- function(
     if ( log_transform==TRUE ){
       input_data <- log_data(input_data)
     }
-    
-    
+        
     # Norm, standardize, and scale the data within each column (sample)
     input_data <- normalize_data(x=input_data, method=norm_method)
     # test_data <<- input_data # data has lost labels 
@@ -115,7 +115,9 @@ log_data <- function(x){
   log2(x + 1)
   x
 }
-  
+
+
+
 # functiona that performs normalization (log transformation, standardization, scaling fro m 0 to 1)
 normalize_data <- function (x, method = norm_method, ...) {
   
@@ -141,7 +143,6 @@ normalize_data <- function (x, method = norm_method, ...) {
 }
 
 
-
       
 # scale from 0 to one
 scale_data <- function(x){
@@ -150,6 +151,3 @@ scale_data <- function(x){
   if (scale != 0) x <- (x - shift)/scale
   x
 }
-
-    
-    
