@@ -4,6 +4,7 @@ heatmap_to_file <<- function(my_heatmap, file_out="default"){
     file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
   }
 
+  
   #(my_heatmap)$call$x
   
   sorted_matrix <- my_heatmap$call$x

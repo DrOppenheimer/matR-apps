@@ -37,15 +37,18 @@
 #   plot_mg_pcoa(table_in="test_data.txt", image_out = "wacky_pcoa", plot_pcs = c(1,3,5), label_points=NA, color_table="test_colors.txt", auto_colors=TRUE, color_column=3, pch_table="test_pch.txt", pch_column=3, image_width_in=10, image_height_in=10, image_res_dpi=250)
  
 render_pcoa <<- function(
-                         PCoA_in="test.PCoA", # annotation abundance table (raw or normalized values)
+                         PCoA_in="", # annotation abundance table (raw or normalized values)
                          
                          image_out="default",
                          figure_main ="principal coordinates",
                          components=c(1,2,3), # R formated string telling which coordinates to plot, and how many (2 or 3 coordinates)
+
+                         #eigen_values_object_name = "eigen_values",
+                         #eigen_vectors_object_name = "eigen_vectors",
                             ## dist_metric="euclidean", # distance metric to use one of (bray-curtis, euclidean, maximum, manhattan, canberra, minkowski, difference)
                          label_points=FALSE, # default is off
                          
-                         metadata_table="test.metadata", # matrix that contains colors or metadata that can be used to generate colors
+                         metadata_table=NA, # matrix that contains colors or metadata that can be used to generate colors
                          metadata_column=1, # column of the color matrix to color the pcoa (colors for the points in the matrix) -- rows = samples, columns = colorings
                          color_list=NA, # use explicit list of colors - trumps table if both are supplied
                          pch_table=NA, # additional matrix that allows users to specify the shape of the data points
@@ -57,26 +60,98 @@ render_pcoa <<- function(
                          width_legend = 0.4, # fraction of width used by legend
                          width_figure = 0.6, # fraction of width used by figure
                          legend_cex = 0.5, # cex for the legend
-                         fig_cex = 0.7, # cex for the figure
+                         figure_cex = 0.7, # cex for the figure
                          use_all_metadata_columns=FALSE, # option to overide color_column -- if true, plots are generate for all of the metadata columns
                          debug=TRUE
                          )
   
 {
   
+  require(matR)
 
-  # function load data
-  # function load metadata
-  # functoin load pch
-  # function plot
 
+
+  ######################
+  ######## MAIN ########
+  ######################
+
+  # import_data
+  load_pcoa_data(PCoA_in)
+  
+  # import_metadata_coloring
+  load_metadata(metadata_table, metadata_column, color_list)
+  
+  # import_pch
+  load_pch(pch_table)
+
+  if ( use_all_metadata_columns==TRUE ){
+    # autogenerate plots for all columns in the metadata table file
+
+    for (i in 1:ncol.color_matrix){
+      # generate name for each image - contains input PCoA, and header from metadata column used
+      image_out = paste(PCoA_in,".", colnames(pcoa_colors)[i], ".pcoa.png", sep="", collapse="")
+      # generate title for image
+      figure_main = paste( PCoA_in,".", colnames(pcoa_colors)[i],".PCoA", sep="", collapse="")
+      # get colors for metadata column i (repeats some code from load_netadata function)
+      column_factors <<- as.factor(color_matrix[,i])
+      column_levels <<- levels(as.factor(color_matrix[,i]))
+      num_levels <<- length(column_levels)
+      color_levels <<- col.wheel(num_levels)
+      plot_colors <<- pcoa_colors[,i]
+      # generate a plot for each column in the metadata - or the list of colors
+      create_plot(
+                  PCoA_in,
+                  ncol.color_matrix,
+                  eigen_values, eigen_vectors, components,
+                  column_levels, num_levels, color_levels, plot_colors, plot_pch,
+                  image_out,figure_main,
+                  image_width_in, image_height_in, image_res_dpi,
+                  width_legend, width_figure,
+                  legend_cex, figure_cex
+                  )
+
+    }
+
+  }else if ( use_all_metadata_columns==TRUE ){
+
+    # create a name for the (single) output file
+    if ( identical(image_out, "default") ){
+      image_out = paste(PCoA_in, ".pcoa.png", sep="", collapse="")
+    }else if ( use_all_metadata_columns==FALSE ) {
+      image_out = paste(image_out, ".png", sep="", collapse="")
+
+    # generate a single plot using the specified column from the metadata - or the list of colors
+    create_plot(
+                PCoA_in,
+                ncol.color_matrix,
+                eigen_values, eigen_vectors, components,
+                column_levels, num_levels, color_levels, plot_colors, plot_pch,
+                image_out,figure_main,
+                image_width_in, image_height_in, image_res_dpi,
+                width_legend, width_figure,
+                legend_cex, figure_cex
+                )
+    
+    }else{
+      stop(paste("invalid value for use_all_metadata_columns(", use_all_metadata_columns,") was specified, please try again", sep="", collapse=""))
+    }
+
+  }
+
+} 
+  ######################
+  ###### END MAIN ######
+  ######################
 
   
-  require(matR)
-  ######### First - read the PCoA results into R objects
+  
+  ######################
+  ######## SUBS ########
+  ######################
+  # SUB(1): Function to import the data from a pre-calculated PCoA
+  load_pcoa_data <- function(PCoA_in){
   con_1 <- file(PCoA_in)
   con_2 <- file(PCoA_in)
-
   # read through the first time to get the number of samples
   open(con_1);
   num_values <- 0
@@ -87,14 +162,12 @@ render_pcoa <<- function(
     }
   }
   close(con_1)
-
   # create object for values
   eigen_values <- matrix("", num_values, 1)
   dimnames(eigen_values)[[1]] <- 1:num_values
   eigen_vectors <- matrix("", num_values, num_values)
   dimnames(eigen_vectors)[[1]] <- 1:num_values
-  
- # read through a second time to populate the R objects
+  # read through a second time to populate the R objects
   value_index <- 1
   vector_index <- 1
   open(con_2)
@@ -124,172 +197,148 @@ render_pcoa <<- function(
     }
   }
   close(con_2)
-
   # finish labeling of data objects
   dimnames(eigen_values)[[2]] <- "EigenValues"
   dimnames(eigen_vectors)[[2]] <- dimnames(eigen_values)[[1]]
   class(eigen_values) <- "numeric"
   class(eigen_vectors) <- "numeric"
-
-  # create globals of the imported data
+  # write imported data to global objects
   eigen_values <<- eigen_values
   eigen_vectors <<- eigen_vectors
+  }
+  ######################
+  ######################
+  ######################
+  # SUB(2): Function to load the metadata/ generate or import colors for the points
+  load_metadata <- function(metadata_table, metadata_column, color_list){
+    if ( identical( is.na(metadata_table), FALSE ) ){
+      # generate auto colors if the color matrix contains metadata and not colors
+      color_matrix <<- as.matrix(
+                                read.table(
+                                           file=metadata_table,row.names=1,header=TRUE,sep="\t",colClasses = "character", check.names=FALSE,comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                           )
+                                )
+      # make sure that the color matrix is sorted (ROWWISE) by id
+      color_matrix <<-  color_matrix[order(rownames(color_matrix)),]
+      ncol.color_matrix <<- ncol(color_matrix)
+      # create the color matrix from the metadata
+      pcoa_colors <<- create_colors(color_matrix, color_mode="auto")
+      column_factors <<- as.factor(color_matrix[,metadata_column])
+      column_levels <<- levels(as.factor(color_matrix[,metadata_column]))
+      num_levels <<- length(column_levels)
+      color_levels <<- col.wheel(num_levels)
+      plot_colors <<- pcoa_colors[,metadata_column]
+    }else if ( identical( is.na(color_list), FALSE ) ){
+      # use list over table if it is supplied
+      column_levels <<- levels(as.factor(as.matrix(color_list)))
+      num_levels <<- length(column_levels)
+      color_levels <<- col.wheel(num_levels)
+      plot_colors <<- color_list
+    }else{
+      # use a default of black if no table or list is supplied
+      column_levels <<- "data"
+      num_levels <<- 1
+      color_levels <<- 1
+      plot_colors <<- "black"
+    }
+  }
+  ######################
+  ######################
+  ######################
+  # SUB(3): Function to import the pch information for the points
+  load_pch <- function(pch_table){
+  # load pch matrix if one is specified
+    if ( identical( is.na(pch_table), FALSE ) ){
+      pch_matrix <- data.matrix(read.table(file=pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
+      pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
+      plot_pch <<- pch_matrix[,pch_column]
+    }else{
+      plot_pch <<- 19
+    }
+  }
+  ######################
+  ######################
+  ######################
+  # SUB(4): Function that creates the plot
   
-#}
-
-
-  
-############### GET THE METADATA AND PRODUCE COLORS
-
-  if(debug==TRUE){ print(paste("is.na(metadata_table) :: ", is.na(metadata_table), sep="", collapse="")) }
-
-  if ( identical( is.na(metadata_table), FALSE ) ){
-
-
-    if( debug==TRUE ){ print("POOP") }
-  # generate auto colors if the color matrix contains metadata and not colors
-    color_matrix <- as.matrix(
-                              read.table(
-                                         file=metadata_table,
-                                         row.names=1,
-                                         header=TRUE,
-                                         sep="\t",
-                                         colClasses = "character",
-                                         check.names=FALSE,
-                                         comment.char = "",
-                                         quote="",
-                                         fill=TRUE,
-                                         blank.lines.skip=FALSE
-                                         )
-                              )
-  
-  # make sure that the color matrix is sorted (ROWWISE) by id
-    color_matrix <-  color_matrix[order(rownames(color_matrix)),]
+  create_plot <- function(
+                          PCoA_in,
+                          ncol.color_matrix,
+                          eigen_values, eigen_vectors, components,
+                          column_levels, num_levels, color_levels, plot_colors, plot_pch,
+                          image_out,figure_main,
+                          image_width_in, image_height_in, image_res_dpi,
+                          width_legend, width_figure,
+                          legend_cex, figure_cex
+                          ){                      
     
-  # create the color matrix from the metadata
-    pcoa_colors <<- create_colors(color_matrix, color_mode="auto")
-           
-
-
-    ##
-# Plot metadata colum
-#   eigen_values eigen_vectors 
-##
-
-    
-    
-
-
-
- # this bit is a repeat of the code in the sub below - clean up later
-    column_factors <- as.factor(color_matrix[,metadata_column])
-    column_levels <- levels(as.factor(color_matrix[,metadata_column]))
-    num_levels <- length(column_levels)
-    color_levels <- col.wheel(num_levels)
-    plot_colors <- pcoa_colors[,metadata_column]
-  }else{
-    column_levels <- "data"
-    num_levels <- 1
-    color_levels <- 1
-    plot_colors <- "black"
+    # initialize the png 
+    png(
+        filename = image_out,
+        width = image_width_in,
+        height = image_height_in,
+        res = image_res_dpi,
+        units = 'in'
+        )
+    my_layout <- layout(  matrix(c(1,2), 1, 2, byrow=TRUE ), widths=c( width_legend,width_figure) )
+    layout.show(my_layout)
+    # plot the legend
+    plot.new()
+    legend( x="center", legend=column_levels, pch=15, col=color_levels, cex=legend_cex)
+    # set par options (Most of the remaing code is copied/adapted from Dan Braithwaite's pco plotting in matR)
+    par <- list ()
+    par$main <- figure_main
+    #par$labels <- if (length (names (x)) != 0) names (x) else samples (x)
+    par$labels <- rownames(eigen_vectors)
+    #if (length (groups (x)) != 0) par$labels <- paste (par$labels, " (", groups (x), ")", sep = "")
+    par [c ("xlab", "ylab", if (length (components) == 3) "zlab" else NULL)] <- paste ("PC", components, ", R^2 = ", format (eigen_values [components], dig = 3), sep = "")
+    #col <- if (length (groups (x)) != 0) groups (x) else factor (rep (1, length (samples (x))))
+    #levels (col) <- colors() [sample (length (colors()), nlevels (col))]
+    #g <- as.character (col)
+    #par$pch <- 19
+    par$cex <- figure_cex
+    # main plot paramters - create the 2d or 3d plot
+    i <- eigen_vectors [ ,components [1]]
+    j <- eigen_vectors [ ,components [2]]
+    k <- if (length (components) == 3) eigen_vectors [ ,components [3]] else NULL
+    if (is.null (k)) {
+    #par$col <- col
+      par$col <- plot_colors
+      par$pch <- plot_pch
+      par <- resolveMerge (list (...), par)
+      xcall (plot, x = i, y = j, with = par, without = "labels")
+      xcall (points, x = i, y = j, with = par, without = "labels")
+      grid ()
+    } else {
+      # parameter "color" has to be specially handled.
+      # "points" above wants "col", scatterplot3d wants "color", and we
+      # want the user not to worry about it...
+      # par$color <- col
+      par$color <- plot_colors
+      par$pch <- plot_pch
+      par$type <- "h"
+      par$lty.hplot <- "dotted"
+      par$axis <- TRUE
+      par$box <- FALSE
+      #par <- resolveMerge (list (...), par)
+      reqPack ("scatterplot3d")
+      xys <- xcall (scatterplot3d, x = i, y = j, z = k, with = par,
+                    without = c ("cex", "labels")) $ xyz.convert (i, j, k)
+      i <- xys$x ; j <- xys$y
+    }
+    text (x = i, y = j, labels = par$labels, pos = 4, cex = par$cex)
+    #invisible (P)
+    #})
+    graphics.off()
   }
-
-
-  # use color list for colors if one is supplied
-  if ( identical( is.na(color_list), FALSE ) ){
-    plot_colors <- color_list
-  }
-  
-                                    
- # load pch matrix if one is specified
-  if ( identical( is.na(pch_table), FALSE ) ){
-    pch_matrix <- data.matrix(read.table(file=pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
-    pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
-    plot_pch <- pch_matrix[,pch_column]
-  }else{
-    plot_pch = 19
-  }
-  
+  ######################
+  ###### END SUBS ######
+  ######################
 
 
 
-############## IMAGE ATTRIBUTES
 
-    # generate filename for the image output
-  if ( identical(image_out, "default") ){
-    image_out = paste(PCoA_in, ".pcoa.png", sep="", collapse="")
-  }else{
-    image_out = paste(image_out, ".png", sep="", collapse="")
-  }
-
-  
-  png(
-      filename = image_out,
-      width = image_width_in,
-      height = image_height_in,
-      res = image_res_dpi,
-      units = 'in'
-      )
-
-  my_layout <- layout(  matrix(c(1,2), 1, 2, byrow=TRUE ), widths=c( width_legend,width_figure) )
-  layout.show(my_layout)
-
-# plot the legend
-  plot.new()
-  legend( x="center", legend=column_levels, pch=15, col=color_levels, cex=legend_cex)
-
-
-# plot the pco
-  #plot.new()
-
-  par <- list ()
-  par$main <- figure_main
-#par$labels <- if (length (names (x)) != 0) names (x) else samples (x)
-  par$labels <- rownames(eigen_vectors)
-#if (length (groups (x)) != 0) par$labels <- paste (par$labels, " (", groups (x), ")", sep = "")
-  par [c ("xlab", "ylab", if (length (components) == 3) "zlab" else NULL)] <- paste ("PC", components, ", R^2 = ", format (eigen_values [components], dig = 3), sep = "")
-
-#col <- if (length (groups (x)) != 0) groups (x) else factor (rep (1, length (samples (x))))
-#levels (col) <- colors() [sample (length (colors()), nlevels (col))]
-#g <- as.character (col)
-#par$pch <- 19
-  par$cex <- fig_cex
-
-  i <- eigen_vectors [ ,components [1]]
-  j <- eigen_vectors [ ,components [2]]
-  k <- if (length (components) == 3) eigen_vectors [ ,components [3]] else NULL
-  if (is.null (k)) {
-#par$col <- col
-    par$col <- plot_colors
-    par$pch <- plot_pch
-    par <- resolveMerge (list (...), par)
-    xcall (plot, x = i, y = j, with = par, without = "labels")
-    xcall (points, x = i, y = j, with = par, without = "labels")
-    grid ()
-  } else {
-# parameter "color" has to be specially handled.
-# "points" above wants "col", scatterplot3d wants "color", and we
-# want the user not to worry about it...
-                                        #par$color <- col
-    par$color <- plot_colors
-    par$pch <- plot_pch
-    par$type <- "h"
-    par$lty.hplot <- "dotted"
-    par$axis <- TRUE
-    par$box <- FALSE
-    #par <- resolveMerge (list (...), par)
-    reqPack ("scatterplot3d")
-    xys <- xcall (scatterplot3d, x = i, y = j, z = k, with = par,
-                  without = c ("cex", "labels")) $ xyz.convert (i, j, k)
-    i <- xys$x ; j <- xys$y
-  }
-  text (x = i, y = j, labels = par$labels, pos = 4, cex = par$cex)
-#invisible (P)
-#})
-
-  graphics.off()
-
-}
+ 
 
 
 
