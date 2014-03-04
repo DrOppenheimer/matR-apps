@@ -289,7 +289,11 @@ render_pcoa <<- function(
     par <- list ()
     par$main <- figure_main
     #par$labels <- if (length (names (x)) != 0) names (x) else samples (x)
-    par$labels <- rownames(eigen_vectors)
+    if ( label_points==TRUE ){
+      par$labels <-  rownames(eigen_vectors)
+    } else {
+      par$labels <- NA
+    }
     #if (length (groups (x)) != 0) par$labels <- paste (par$labels, " (", groups (x), ")", sep = "")
     par [c ("xlab", "ylab", if (length (components) == 3) "zlab" else NULL)] <- paste ("PC", components, ", R^2 = ", format (eigen_values [components], dig = 3), sep = "")
     #col <- if (length (groups (x)) != 0) groups (x) else factor (rep (1, length (samples (x))))
