@@ -107,7 +107,7 @@ render_pcoa <<- function(
                   image_out,figure_main,
                   image_width_in, image_height_in, image_res_dpi,
                   width_legend, width_figure,
-                  legend_cex, figure_cex
+                  legend_cex, figure_cex, label_points
                   )
 
     }
@@ -129,7 +129,7 @@ render_pcoa <<- function(
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                legend_cex, figure_cex
+                legend_cex, figure_cex, label_points
                 )
     
     }else{
@@ -269,7 +269,7 @@ render_pcoa <<- function(
                           image_out,figure_main,
                           image_width_in, image_height_in, image_res_dpi,
                           width_legend, width_figure,
-                          legend_cex, figure_cex
+                          legend_cex, figure_cex, label_points
                           ){                      
     
     # initialize the png 
