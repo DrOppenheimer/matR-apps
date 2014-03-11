@@ -87,7 +87,7 @@ MGRAST_preprocessing <<- function(
              input_data <- quantile_norm_data(input_data)
            },
            {
-             stop( paste( method, " is not a valid option for method", sep="", collapse=""))
+             stop( paste( norm_method, " is not a valid option for method", sep="", collapse=""))
            }
            )
 
