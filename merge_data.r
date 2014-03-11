@@ -32,7 +32,10 @@ merge_data <- function(mode="file", file1="", file2="", output="default", duplic
   ##   }
   ##   write.table( as.matrix(duplicate_entries, ncol=1), file = duplicate_log, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE ) 
   ## }
-
+  
+  # non optional, convert "na's" to 0
+    merged_data[is.na(merged_data)] <- 0
+  
   # write output
   write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
 
