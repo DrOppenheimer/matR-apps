@@ -37,12 +37,12 @@
 #   plot_mg_pcoa(table_in="test_data.txt", image_out = "wacky_pcoa", plot_pcs = c(1,3,5), label_points=NA, color_table="test_colors.txt", auto_colors=TRUE, color_column=3, pch_table="test_pch.txt", pch_column=3, image_width_in=10, image_height_in=10, image_res_dpi=250)
  
 render_pcoa <<- function(
-                         PCoA_in="test.PCoA", # annotation abundance table (raw or normalized values)
+                         PCoA_in="", # annotation abundance table (raw or normalized values)
                          image_out="default",
                          figure_main ="principal coordinates",
                          components=c(1,2,3), # R formated string telling which coordinates to plot, and how many (2 or 3 coordinates)
                          label_points=FALSE, # default is off
-                         metadata_table="test.metadata", # matrix that contains colors or metadata that can be used to generate colors
+                         metadata_table=NA, # matrix that contains colors or metadata that can be used to generate colors
                          metadata_column=2, # column of the color matrix to color the pcoa (colors for the points in the matrix) -- rows = samples, columns = colorings
                          amethst_groups=NA,        
                          color_list=NA, # use explicit list of colors - trumps table if both are supplied
@@ -57,7 +57,7 @@ render_pcoa <<- function(
                          legend_cex = 2, # cex for the legend
                          figure_cex = 2, # cex for the figure
                          bar_cex = 2, 
-                         use_all_metadata_columns=TRUE, # option to overide color_column -- if true, plots are generate for all of the metadata columns
+                         use_all_metadata_columns=FALSE, # option to overide color_column -- if true, plots are generate for all of the metadata columns
                          debug=TRUE
                          )
   
