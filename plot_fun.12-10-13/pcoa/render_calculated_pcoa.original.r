@@ -37,7 +37,7 @@
 #   plot_mg_pcoa(table_in="test_data.txt", image_out = "wacky_pcoa", plot_pcs = c(1,3,5), label_points=NA, color_table="test_colors.txt", auto_colors=TRUE, color_column=3, pch_table="test_pch.txt", pch_column=3, image_width_in=10, image_height_in=10, image_res_dpi=250)
  
 render_pcoa <<- function(
-                         PCoA_in="test.PCoA", # annotation abundance table (raw or normalized values)
+                         PCoA_in="", # annotation abundance table (raw or normalized values)
                          
                          image_out="default",
                          figure_main ="principal coordinates",
@@ -48,7 +48,7 @@ render_pcoa <<- function(
                             ## dist_metric="euclidean", # distance metric to use one of (bray-curtis, euclidean, maximum, manhattan, canberra, minkowski, difference)
                          label_points=FALSE, # default is off
                          
-                         metadata_table="test.metadata", # matrix that contains colors or metadata that can be used to generate colors
+                         metadata_table=NA, # matrix that contains colors or metadata that can be used to generate colors
                          metadata_column=1, # column of the color matrix to color the pcoa (colors for the points in the matrix) -- rows = samples, columns = colorings
 
                          amethst_groups=NA,
