@@ -1,15 +1,14 @@
 MGRAST_preprocessing <<- function(
                                   data_in,     # name of the input file (tab delimited text with the raw counts) or R matrix
                                   data_type        ="r_matrix",  #c(file r_matrix)
-                                  file_out         = "preprocessed_data",    # name of the output data file (tab delimited text of preprocessed data)
+                                  output_object    ="default", # output R object (matrix)
+                                  output_file      ="default", # output flat file                       
                                   remove_sg        = TRUE, # boolean to remove singleton counts
                                   sg.lim.entry     = 0, # limit for individual values to be removed
                                   sg.lim.row       = 1,
                                   log_transform    = TRUE,
                                   norm_method      = "quantile", #c("standardize", "quantile"),
                                   scale_0_to_1     = TRUE,
-                                  output_object    ="default",
-                                  output_file      ="default",
                                   produce_boxplots = FALSE,
                                   boxplot_height_in = 11,
                                   boxplot_width_in = 8.5,
@@ -129,7 +128,7 @@ MGRAST_preprocessing <<- function(
 
     # message to send to the user after completion, given names for object and flat file outputs
     writeLines("Data have been preprocessed. Proprocessed data are in")
-    writeLines(paste("     object   : ",output_object, sep="", collapse=""))
+    writeLines(paste("     object   : ", output_object, sep="", collapse=""))
     writeLines(paste("     and file : ", output_file, sep="", collapse=""))
     writeLines(boxplot_message)
               

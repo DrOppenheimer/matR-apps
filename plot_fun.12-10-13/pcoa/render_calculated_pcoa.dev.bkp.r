@@ -69,12 +69,13 @@ render_pcoa <<- function(
                          )
   
 {
-
-  print("TEST")
+  
   require(matR)
 
-
-
+  # quick check to make sure that incompatible options were not selected
+  argument_test <- is.na(metadata_table,amethst_groups,color_list)
+  if ( length(argument_test==TRUE) != 1){ stop("only one of these can be non NA: (metadata_table, amethst_groups, color_list)") }
+  
   ######################
   ######## MAIN ########
   ######################
@@ -83,58 +84,60 @@ render_pcoa <<- function(
   load_pcoa_data(PCoA_in)
   
   # import_metadata_coloring
-  load_metadata(metadata_table, metadata_column, color_list)
+  load_metadata(metadata_table, metadata_column, color_list, amethst_groups)
   
   # import_pch
   load_pch(pch_table)
 
-  # HANDLE METADATA INPUT AS AMETHST GROUPS FILE
-  if ( identical( is.na(amethst_groups), FALSE ) ){
+  if(debug==TRUE){print("HELLO 2")}
 
-    con_grp <- file(amethst_groups)
-    open(con_grp)
-    line_count<- 1
-    groups.list <- vector(mode="character")
-    while ( length(my_line <- readLines(con_grp,n = 1, warn = FALSE)) > 0) {
-  
-      new_line <- my_line
-      split_line <- unlist(strsplit(my_line, split=","))
-      #names(my_list) <- rep(2, length (my_list))
 
-      split_line.list <- rep(line_count, length(split_line))
-      names(split_line.list) <- split_line
-      groups.list <- c(groups.list, split_line.list)
-      line_count <- line_count + 1
-    }
-    close(con_grp)
 
-    if ( length(groups.list) != length(unique(names(groups.list))) ){ stop("One or more groups have redundant entries - this is not allowed for coloring the PCoA") }
 
-    color_matrix <- matrix(groups.list, ncol=1)
-    rownames(color_matrix) <- names(groups.list)
+                                        # HANDLE METADATA INPUT AS AMETHST GROUPS FILE
+  ## if ( identical( is.na(amethst_groups), FALSE ) ){
 
-    #poop <<- color_matrix
-    
-    color_matrix <- color_matrix[order(rownames(color_matrix)),,drop=FALSE]
+    ## con_grp <- file(amethst_groups)
+    ## open(con_grp)
+    ## line_count<- 1
+    ## groups.list <- vector(mode="character")
+    ## while ( length(my_line <- readLines(con_grp,n = 1, warn = FALSE)) > 0) {
+      
+    ##   new_line <- my_line
+    ##   split_line <- unlist(strsplit(my_line, split=","))
+    ##   #names(my_list) <- rep(2, length (my_list))
 
-    poop <<- color_matrix
+    ##   split_line.list <- rep(line_count, length(split_line))
+    ##   names(split_line.list) <- split_line
+    ##   groups.list <- c(groups.list, split_line.list)
+    ##   line_count <- line_count + 1
+    ## }
+    ## close(con_grp)
 
-    # create the color matrix from the metadata
-    pcoa_colors <- create_colors(color_matrix, color_mode="auto")
+    ## if ( length(groups.list) != length(unique(names(groups.list))) ){ stop("One or more groups have redundant entries - this is not allowed for coloring the PCoA") }
+    ## color_matrix <- matrix(groups.list, ncol=1)
+    ## rownames(color_matrix) <- names(groups.list)  
+    ## color_matrix <- color_matrix[order(rownames(color_matrix)),,drop=FALSE]
+
+    ## # create the color matrix from the metadata
+    ## pcoa_colors <- create_colors(color_matrix, color_mode="auto")
            
-    # this bit is a repeat of the code in the sub below - clean up later
-    column_factors <<- as.factor(color_matrix[,1])
-    column_levels <<- levels(as.factor(color_matrix[,1]))
-    num_levels <<- length(column_levels)
-    color_levels <<- col.wheel(num_levels)
-    plot_colors <<- pcoa_colors
+    ## # this bit is a repeat of the code in the sub below - clean up later
+    ## column_factors <<- as.factor(color_matrix[,1])
+    ## column_levels <<- levels(as.factor(color_matrix[,1]))
+    ## num_levels <<- length(column_levels)
+    ## color_levels <<- col.wheel(num_levels)
+    ## plot_colors <<- pcoa_colors
+
+
+
     
     if ( identical(image_out, "default") ){
       image_out = paste(PCoA_in, ".pcoa.png", sep="", collapse="")
     }else if ( use_all_metadata_columns==FALSE ) {
       image_out = paste(image_out, ".png", sep="", collapse="")
     }
-    
+      
     create_plot(
                 PCoA_in,
                 ncol.color_matrix,
@@ -144,58 +147,70 @@ render_pcoa <<- function(
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
                 legend_cex, figure_cex, label_points
-                )
-    
-    
-    ## # plot the legend
-    ## plot.new()
-    ## legend( x="center", legend=column_levels, pch=15, col=color_levels, cex=legend_cex)
-
-    ## plot_colors <- color_matrix
+                )       
   }
+
+
+
 
 
   # HANDLE METADATA_TABLE
-  # import colors if the option is selected - generate colors from metadata table if that option is selected
-  if ( use_all_metadata_columns==TRUE ){
+  # import colors if the option is selected - generate colors for all columns in the metadata table if that option is selected
+  if ( identical( is.na(metadata_table), FALSE ) ){
+
+    if ( use_all_metadata_columns==TRUE ){
     # autogenerate plots for all columns in the metadata table file
-    
-    for (i in 1:ncol.color_matrix){
-      # generate name for each image - contains input PCoA, and header from metadata column used
-      image_out = paste(PCoA_in,".", colnames(pcoa_colors)[i], ".pcoa.png", sep="", collapse="")
-      # generate title for image
-      figure_main = paste( PCoA_in,".", colnames(pcoa_colors)[i],".PCoA", sep="", collapse="")
+
+      for (i in 1:ncol.color_matrix){
+        # generate filename and title for each image - contains input PCoA, and header from metadata column used
+        image_out = paste(PCoA_in,".", colnames(pcoa_colors)[i], ".pcoa.png", sep="", collapse="")
+        figure_main = paste( PCoA_in,".", colnames(pcoa_colors)[i],".PCoA", sep="", collapse="")
+
+        # get colors for metadata column i (repeats some code from load_netadata function)
+        column_color <<- function( color_matrix, my_color_mode="auto", my_column=i )
+
+        ## column_factors <<- as.factor(color_matrix[,i])
+        ## column_levels <<- levels(as.factor(color_matrix[,i]))
+        ## num_levels <<- length(column_levels)
+        ## color_levels <<- col.wheel(num_levels)
+        ## plot_colors <<- pcoa_colors[,i]
+
+        # generate a plot for each column in the metadata - or the list of colors
+        create_plot(
+                    PCoA_in,
+                    ncol.color_matrix,
+                    eigen_values, eigen_vectors, components,
+                    column_levels, num_levels, color_levels, plot_colors, plot_pch,
+                    image_out,figure_main,
+                    image_width_in, image_height_in, image_res_dpi,
+                    width_legend, width_figure,
+                    legend_cex, figure_cex, label_points
+                    ) 
+      }
+      
+    }else if ( use_all_metadata_columns==FALSE ){
+    # auto generate colors from a single selected column in the metadata table
+
+      # generate filename and title for each image - contains input PCoA, and header from metadata column used
+      if ( identical(image_out, "default") ){
+        image_out = paste(PCoA_in,".", colnames(pcoa_colors)[metadata_column], ".pcoa.png", sep="", collapse="")
+        figure_main = paste( PCoA_in,".", colnames(pcoa_colors)[metadata_column],".PCoA", sep="", collapse="")
+      }else{
+        image_out = paste(image_out, ".png", sep="", collapse="")
+        figure_main = paste( image_out,".PCoA", sep="", collapse="")
+      }
+      
       # get colors for metadata column i (repeats some code from load_netadata function)
-      column_factors <<- as.factor(color_matrix[,i])
-      column_levels <<- levels(as.factor(color_matrix[,i]))
-      num_levels <<- length(column_levels)
-      color_levels <<- col.wheel(num_levels)
-      plot_colors <<- pcoa_colors[,i]
-      # generate a plot for each column in the metadata - or the list of colors
+      column_color <<- function( color_matrix, my_color_mode="auto", my_column=metadata_column )
+
+      ## column_factors <<- as.factor(color_matrix[,metadata_column])
+      ## column_levels <<- levels(as.factor(color_matrix[,metadata_column]))
+      ## num_levels <<- length(column_levels)
+      ## color_levels <<- col.wheel(num_levels)
+      ## plot_colors <<- pcoa_colors[,metadata_column]
+      
+      # generate a single plot using the specified column from the metadata - or the list of colors
       create_plot(
-                  PCoA_in,
-                  ncol.color_matrix,
-                  eigen_values, eigen_vectors, components,
-                  column_levels, num_levels, color_levels, plot_colors, plot_pch,
-                  image_out,figure_main,
-                  image_width_in, image_height_in, image_res_dpi,
-                  width_legend, width_figure,
-                  legend_cex, figure_cex, label_points
-                  )
-
-    }
-
-  }else if ( use_all_metadata_columns==FALSE ){
-
-    # create a name for the (single) output file
-    if ( identical(image_out, "default") ){
-      image_out = paste(PCoA_in, ".pcoa.png", sep="", collapse="")
-    }else if ( use_all_metadata_columns==FALSE ) {
-      image_out = paste(image_out, ".png", sep="", collapse="")
-    }
-
-    # generate a single plot using the specified column from the metadata - or the list of colors
-    create_plot(
                 PCoA_in,
                 ncol.color_matrix,
                 eigen_values, eigen_vectors, components,
@@ -205,146 +220,210 @@ render_pcoa <<- function(
                 width_legend, width_figure,
                 legend_cex, figure_cex, label_points
                 )
-    
-  }else{
-    stop(paste("invalid value for use_all_metadata_columns(", use_all_metadata_columns,") was specified, please try again", sep="", collapse=""))
-  }
-  
-#}
+   
+    }else{
+      stop(paste("invalid value for use_all_metadata_columns(", use_all_metadata_columns,") was specified, please try again", sep="", collapse=""))
+    }
 
+  }
+
+} 
   ######################
   ###### END MAIN ######
   ######################
 
   
   
-  ######################
-  ######## SUBS ########
-  ######################
-  # SUB(1): Function to import the data from a pre-calculated PCoA
-  load_pcoa_data <- function(PCoA_in){
-    con_1 <- file(PCoA_in)
-    con_2 <- file(PCoA_in)
-  # read through the first time to get the number of samples
-    open(con_1);
-    num_values <- 0
-    data_type = "NA"
-    while ( length(my_line <- readLines(con_1,n = 1, warn = FALSE)) > 0) {
-      if ( length( grep("PCO", my_line) ) == 1  ){
-        num_values <- num_values + 1
+######################
+######## SUBS ########
+######################
+
+#######################
+######## SUB(1): Function to import the data from a pre-calculated PCoA
+######################
+load_pcoa_data <- function(PCoA_in){
+con_1 <- file(PCoA_in)
+con_2 <- file(PCoA_in)
+# read through the first time to get the number of samples
+open(con_1);
+num_values <- 0
+data_type = "NA"
+while ( length(my_line <- readLines(con_1,n = 1, warn = FALSE)) > 0) {
+  if ( length( grep("PCO", my_line) ) == 1  ){
+    num_values <- num_values + 1
+  }
+}
+close(con_1)
+# create object for values
+eigen_values <- matrix("", num_values, 1)
+dimnames(eigen_values)[[1]] <- 1:num_values
+eigen_vectors <- matrix("", num_values, num_values)
+dimnames(eigen_vectors)[[1]] <- 1:num_values
+# read through a second time to populate the R objects
+value_index <- 1
+vector_index <- 1
+open(con_2)
+current.line <- 1
+data_type = "NA"
+while ( length(my_line <- readLines(con_2,n = 1, warn = FALSE)) > 0) {
+  if ( length( grep("#", my_line) ) == 1  ){
+    if ( length( grep("EIGEN VALUES", my_line) ) == 1  ){
+      data_type="eigen_values"
+    } else if ( length( grep("EIGEN VECTORS", my_line) ) == 1 ){
+      data_type="eigen_vectors"
+    }
+  }else{
+      split_line <- noquote(strsplit(my_line, split="\t"))
+      if ( identical(data_type, "eigen_values")==TRUE ){
+        dimnames(eigen_values)[[1]][value_index] <- noquote(split_line[[1]][1])
+        eigen_values[value_index,1] <- noquote(split_line[[1]][2])       
+        value_index <- value_index + 1
+      }
+      if ( identical(data_type, "eigen_vectors")==TRUE ){
+        dimnames(eigen_vectors)[[1]][vector_index] <- noquote(split_line[[1]][1])
+        for (i in 2:(num_values+1)){
+          eigen_vectors[vector_index, (i-1)] <- as.numeric(noquote(split_line[[1]][i]))
+        }
+        vector_index <- vector_index + 1
       }
     }
-    close(con_1)
-  # create object for values
-    eigen_values <- matrix("", num_values, 1)
-    dimnames(eigen_values)[[1]] <- 1:num_values
-    eigen_vectors <- matrix("", num_values, num_values)
-    dimnames(eigen_vectors)[[1]] <- 1:num_values
-  # read through a second time to populate the R objects
-    value_index <- 1
-    vector_index <- 1
-    open(con_2)
-    current.line <- 1
-    data_type = "NA"
-    while ( length(my_line <- readLines(con_2,n = 1, warn = FALSE)) > 0) {
-      if ( length( grep("#", my_line) ) == 1  ){
-        if ( length( grep("EIGEN VALUES", my_line) ) == 1  ){
-          data_type="eigen_values"
-        } else if ( length( grep("EIGEN VECTORS", my_line) ) == 1 ){
-          data_type="eigen_vectors"
-        }
-      }else{
-        split_line <- noquote(strsplit(my_line, split="\t"))
-        if ( identical(data_type, "eigen_values")==TRUE ){
-          dimnames(eigen_values)[[1]][value_index] <- noquote(split_line[[1]][1])
-          eigen_values[value_index,1] <- noquote(split_line[[1]][2])       
-          value_index <- value_index + 1
-        }
-        if ( identical(data_type, "eigen_vectors")==TRUE ){
-          dimnames(eigen_vectors)[[1]][vector_index] <- noquote(split_line[[1]][1])
-          for (i in 2:(num_values+1)){
-            eigen_vectors[vector_index, (i-1)] <- as.numeric(noquote(split_line[[1]][i]))
-          }
-          vector_index <- vector_index + 1
-        }
-      }
-    }
-    close(con_2)
-  # finish labeling of data objects
-    dimnames(eigen_values)[[2]] <- "EigenValues"
-    dimnames(eigen_vectors)[[2]] <- dimnames(eigen_values)[[1]]
-    class(eigen_values) <- "numeric"
-    class(eigen_vectors) <- "numeric"
-  # write imported data to global objects
-    eigen_values <<- eigen_values
-    eigen_vectors <<- eigen_vectors
+}
+close(con_2)
+# finish labeling of data objects
+dimnames(eigen_values)[[2]] <- "EigenValues"
+dimnames(eigen_vectors)[[2]] <- dimnames(eigen_values)[[1]]
+class(eigen_values) <- "numeric"
+class(eigen_vectors) <- "numeric"
+# write imported data to global objects
+eigen_values <<- eigen_values
+eigen_vectors <<- eigen_vectors
+}
+######################
+######################
+######################
+
+
+######################
+# SUB(2): Function to load the metadata/ generate or import colors for the points
+######################
+load_metadata <- function(metadata_table, metadata_column, color_list){
+if ( identical( is.na(metadata_table), FALSE ) ){
+
+
+  # Import metadata table, use it to generate colors
+  color_matrix <<- as.matrix(
+                             read.table(
+                                        file=metadata_table,row.names=1,header=TRUE,sep="\t",
+                                        colClasses = "character", check.names=FALSE,
+                                        comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                        )
+                             )
+  # make sure that the color matrix is sorted (ROWWISE) by id
+  color_matrix <<-  color_matrix[order(rownames(color_matrix)),]
+
+  column_color <<- function( color_matrix, my_color_mode="auto", my_column=metadata_column )
+  ## ncol.color_matrix <<- ncol(color_matrix)
+  ## pcoa_colors <<- create_colors(color_matrix, color_mode="auto")
+  ## column_factors <<- as.factor(color_matrix[,metadata_column])
+  ## column_levels <<- levels(as.factor(color_matrix[,metadata_column]))
+  ## num_levels <<- length(column_levels)
+  ## color_levels <<- col.wheel(num_levels)
+  ## plot_colors <<- pcoa_colors[,metadata_column]
+  
+
+} else if ( identical( is.na(amethst_groups), FALSE ) ){
+
+  
+  # import amethst formatted groups - use it to generate colors
+  con_grp <- file(amethst_groups)
+  open(con_grp)
+  line_count<- 1
+  groups.list <- vector(mode="character")
+  while ( length(my_line <- readLines(con_grp,n = 1, warn = FALSE)) > 0) {
+    new_line <- my_line
+    split_line <- unlist(strsplit(my_line, split=","))
+      #names(my_list) <- rep(2, length (my_list))
+
+    split_line.list <- rep(line_count, length(split_line))
+    names(split_line.list) <- split_line
+    groups.list <- c(groups.list, split_line.list)
+    line_count <- line_count + 1
   }
-  ######################
-  ######################
-  ######################
-  # SUB(2): Function to load the metadata/ generate or import colors for the points
-  load_metadata <- function(metadata_table, metadata_column, color_list){
-    if ( identical( is.na(metadata_table), FALSE ) ){
-      # generate auto colors if the color matrix contains metadata and not colors
-      color_matrix <<- as.matrix(
-                                read.table(
-                                           file=metadata_table,row.names=1,header=TRUE,sep="\t",colClasses = "character", check.names=FALSE,comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
-                                           )
-                                )
-      # make sure that the color matrix is sorted (ROWWISE) by id
-      color_matrix <<-  color_matrix[order(rownames(color_matrix)),]
-      ncol.color_matrix <<- ncol(color_matrix)
-      # create the color matrix from the metadata
-      pcoa_colors <<- create_colors(color_matrix, color_mode="auto")
-      column_factors <<- as.factor(color_matrix[,metadata_column])
-      column_levels <<- levels(as.factor(color_matrix[,metadata_column]))
-      num_levels <<- length(column_levels)
-      color_levels <<- col.wheel(num_levels)
-      plot_colors <<- pcoa_colors[,metadata_column]
-    }else if ( identical( is.na(color_list), FALSE ) ){
-      # use list over table if it is supplied
-      column_levels <<- levels(as.factor(as.matrix(color_list)))
-      num_levels <<- length(column_levels)
-      color_levels <<- col.wheel(num_levels)
-      plot_colors <<- color_list
-    }else{
-      # use a default of black if no table or list is supplied
-      column_levels <<- "data"
-      num_levels <<- 1
-      color_levels <<- 1
-      plot_colors <<- "black"
-    }
+  close(con_grp)
+  if ( length(groups.list) != length(unique(names(groups.list))) ){
+    stop("One or more groups have redundant entries - this is not allowed for coloring the PCoA")
   }
-  ######################
-  ######################
-  ######################
-  # SUB(3): Function to import the pch information for the points
-  load_pch <- function(pch_table){
+
+  color_matrix <- matrix(groups.list, ncol=1)
+  rownames(color_matrix) <- names(groups.list)  
+  color_matrix <- color_matrix[order(rownames(color_matrix)),,drop=FALSE]
+  # create the color matrix from the metadata
+
+  column_color <<- function( color_matrix, my_color_mode="auto", my_column=metadata_column )
+  ## ncol.color_matrix <<- ncol(color_matrix)
+  ## pcoa_colors <- create_colors(color_matrix, color_mode="auto")
+  ## column_factors <<- as.factor(color_matrix[,1])
+  ## column_levels <<- levels(as.factor(color_matrix[,1]))
+  ## num_levels <<- length(column_levels)
+  ## color_levels <<- col.wheel(num_levels)
+  ## plot_colors <<- pcoa_colors
+
+  
+}else if ( identical( is.na(color_list), FALSE ) ){
+
+
+  # use list of color if it is supplied
+  column_levels <<- levels(as.factor(as.matrix(color_list)))
+  num_levels <<- length(column_levels)
+  color_levels <<- col.wheel(num_levels)
+  plot_colors <<- color_list
+
+  
+}else{
+
+
+  # use a default of black if no table or list is supplied
+  column_levels <<- "data"
+  num_levels <<- 1
+  color_levels <<- 1
+  plot_colors <<- "black"
+
+
+}
+######################
+######################
+######################
+
+
+######################
+# SUB(3): Function to import the pch information for the points
+######################
+load_pch <- function(pch_table){
   # load pch matrix if one is specified
-    if ( identical( is.na(pch_table), FALSE ) ){
-      pch_matrix <- data.matrix(read.table(file=pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
-      pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
-      plot_pch <<- pch_matrix[,pch_column]
-    }else{
-      plot_pch <<- 19
-    }
+  if ( identical( is.na(pch_table), FALSE ) ){
+    pch_matrix <- data.matrix(read.table(file=pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
+    pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
+    plot_pch <<- pch_matrix[,pch_column]
+  }else{
+    plot_pch <<- 19
   }
+}
   ######################
   ######################
   ######################
   # SUB(4): Function that creates the plot
   
-  create_plot <- function(
-                          PCoA_in,
-                          ncol.color_matrix,
-                          eigen_values, eigen_vectors, components,
-                          column_levels, num_levels, color_levels, plot_colors, plot_pch,
-                          image_out,figure_main,
-                          image_width_in, image_height_in, image_res_dpi,
-                          width_legend, width_figure,
+create_plot <- function(
+                        PCoA_in,
+                        ncol.color_matrix,
+                        eigen_values, eigen_vectors, components,
+                        column_levels, num_levels, color_levels, plot_colors, plot_pch,
+                        image_out,figure_main,
+                        image_width_in, image_height_in, image_res_dpi,
+                        width_legend, width_figure,
                           legend_cex, figure_cex, label_points
-                          ){                      
-    
+                        ){                      
+  
     # initialize the png 
     png(
         filename = image_out,
@@ -353,7 +432,10 @@ render_pcoa <<- function(
         res = image_res_dpi,
         units = 'in'
         )
-    my_layout <- layout(  matrix(c(1,2), 1, 2, byrow=TRUE ), widths=c( width_legend,width_figure) )
+
+    #my_layout <- layout(  matrix(c(1,2), 1, 2, byrow=TRUE ), widths=c( width_legend,width_figure) )
+    my_layout <- layout(  matrix(c(1,2,3,3), 2, 2, byrow=TRUE ), widths=c( width_legend,width_figure,1), heights=c(0.9,0.9,0.1) )
+
     layout.show(my_layout)
     # plot the legend
     plot.new()
@@ -406,8 +488,38 @@ render_pcoa <<- function(
     text (x = i, y = j, labels = par$labels, pos = 4, cex = par$cex)
     #invisible (P)
     #})
+
+    # Add color bar
+    bar_x <- 1:num_levels
+    bar_y <- 1
+    bar_z <- matrix(1:num_levels, ncol=1)
+    image(x,y,z,col=color_levels,axes=FALSE,xlab="",ylab="")
+    loc <- par("usr")
+    text(loc[1], loc[1], column_levels[1], pos = 1, xpd = T)
+    text(loc[2], loc[3], column_levels[num_levels], pos = 1, xpd = T)
+
+    print("MADE IT HERE")
+      
     graphics.off()
   }
+
+
+
+######################
+# SUB(3): Handle partially formatted metadata to produce colors for a single column in a metadata table
+######################
+
+column_color <<- function( color_matrix, my_color_mode="auto", my_column=metadata_column ){
+  ncol.color_matrix <<- ncol(color_matrix)
+  pcoa_colors <<- create_colors(color_matrix, color_mode=my_color_mode)
+  column_factors <<- as.factor(color_matrix[,metadata_column])
+  column_levels <<- levels(as.factor(color_matrix[,metadata_column]))
+  num_levels <<- length(column_levels)
+  color_levels <<- col.wheel(num_levels)
+  plot_colors <<- pcoa_colors
+}
+
+
   ######################
   ###### END SUBS ######
   ######################
@@ -514,7 +626,7 @@ create_colors <- function(color_matrix, color_mode = "auto"){ # function to auto
   return(my_data.color)
 }
 
-}
+
 
 
 
