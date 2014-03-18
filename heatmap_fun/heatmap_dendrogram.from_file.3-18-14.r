@@ -695,13 +695,14 @@ load_metadata <- function(metadata_table, metadata_column){
                                           comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
                                           )
                                )
-                                        # make sure that the color matrix is sorted (ROWWISE) by id
-  metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
+
+  # make sure that the color matrix is sorted (ROWWISE) by id
+  # metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
   color_matrix <- create_colors(metadata_matrix, color_mode = "auto")
   ncol.color_matrix <- ncol(color_matrix)
   
-  metadata_factors <- as.factor(metadata_matrix[,i])
-  metadata_levels <- levels(as.factor(metadata_matrix[,i]))
+  metadata_factors <- as.factor(metadata_matrix[,metadata_column])
+  metadata_levels <- levels(as.factor(metadata_matrix[,metadata_column]))
   num_levels <- length(metadata_levels)
   color_levels <- col.wheel(num_levels)
   all_colors <- color_matrix[,i]
@@ -712,6 +713,71 @@ load_metadata <- function(metadata_table, metadata_column){
 }
 ######################
 ######################
+
+######################
+# SUB(6): Create optimal contrast color selection using a color wheel
+# adapted from https://stat.ethz.ch/pipermail/r-help/2002-May/022037.html 
+######################
+col.wheel <- function(num_col, my_cex=0.75) {
+  cols <- rainbow(num_col)
+  col_names <- vector(mode="list", length=num_col)
+  for (i in 1:num_col){
+    col_names[i] <- getColorTable(cols[i])
+  }
+  cols
+}
+######################
+######################
+
+
+######################
+# SUB(7): The inverse function to col2rgb()
+# adapted from https://stat.ethz.ch/pipermail/r-help/2002-May/022037.html
+######################
+rgb2col <- function(rgb) {
+  rgb <- as.integer(rgb)
+  class(rgb) <- "hexmode"
+  rgb <- as.character(rgb)
+  rgb <- matrix(rgb, nrow=3)
+  paste("#", apply(rgb, MARGIN=2, FUN=paste, collapse=""), sep="")
+}
+######################
+######################
+
+  
+######################
+# SUB(8): Convert all colors into format "#rrggbb"
+# adapted from https://stat.ethz.ch/pipermail/r-help/2002-May/022037.html
+######################
+getColorTable <- function(col) {
+  rgb <- col2rgb(col);
+  col <- rgb2col(rgb);
+  sort(unique(col))
+}
+######################
+######################
+
+
+######################
+# SUB(9): Automtically generate colors from metadata with identical text or values
+######################
+create_colors <- function(color_matrix, color_mode = "auto"){ # function to     
+  my_data.color <- data.frame(color_matrix)
+  ids <- rownames(color_matrix)
+  color_categories <- colnames(color_matrix)
+  for ( i in 1:dim(color_matrix)[2] ){
+    column_factors <- as.factor(color_matrix[,i])
+    column_levels <- levels(as.factor(color_matrix[,i]))
+    num_levels <- length(column_levels)
+    color_levels <- col.wheel(num_levels)
+    levels(column_factors) <- color_levels
+    my_data.color[,i]<-as.character(column_factors)
+  }
+  return(my_data.color)
+}
+######################
+######################
+
 
 
 ## R> functionReturningTwoValues <- function() {return(list(first=1, second=2))}
