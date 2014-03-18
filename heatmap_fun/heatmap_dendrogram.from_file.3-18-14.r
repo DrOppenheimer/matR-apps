@@ -157,12 +157,12 @@ heatmap_dendrogram.from_file <- function (
 ##### produce HD sorted flat file output
   
   heatmap_to_file <- function(my_heatmap, file_out){
-    if ( identical(file_out, "default")==TRUE ){
-      file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
-    }
+    # if ( identical(file_out, "default")==TRUE ){
+    #  file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
+    # }
     sorted_matrix <- my_heatmap$call$x
     sorted_matrix <- sorted_matrix[ my_heatmap$rowInd ,  my_heatmap$colInd ]
-    sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
+    #sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
     write.table(sorted_matrix, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   }
 
