@@ -156,16 +156,16 @@ heatmap_dendrogram.from_file <- function (
 
 ##### produce HD sorted flat file output
   
-  heatmap_to_file <- function(my_heatmap, file_out){
-    # if ( identical(file_out, "default")==TRUE ){
-    #  file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
-    # }
-    sorted_matrix <- my_heatmap$call$x
-    sorted_matrix <- sorted_matrix[ my_heatmap$rowInd ,  my_heatmap$colInd ]
-    #sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
-    write.table(sorted_matrix, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
-    print(paste("Wrote heatmap dendrogram sorted data as file: ", file_out, sep="", collapse=""))
-  }
+  ## heatmap_to_file <- function(my_heatmap, file_out){
+  ##   # if ( identical(file_out, "default")==TRUE ){
+  ##   #  file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
+  ##   # }
+  ##   sorted_matrix <- my_heatmap$call$x
+  ##   sorted_matrix <- sorted_matrix[ my_heatmap$rowInd ,  my_heatmap$colInd ]
+  ##   sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
+  ##   write.table(sorted_matrix, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  ##   print(paste("Wrote heatmap dendrogram sorted data as file: ", file_out, sep="", collapse=""))
+  ## }
 
 
   
@@ -620,7 +620,12 @@ heatmap_dendrogram.from_file <- function (
                                   high = retval$breaks[-1], color = retval$col)
   # Produce heatmap sorted output if specified
   if ( produce_flat_output==TRUE){
-    heatmap_to_file(retval, file_out)
+    ## heatmap_to_file(my_heatmap=retval, file_out=file_out)
+    rot_x <- t(x[1:nrow(x),])
+    rowsort_rot_x <- rot_x[nrow(rot_x):1,]
+    #output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
+    write.table(rot_x, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+    print(paste("Wrote heatmap dendrogram sorted data as file: ", file_out, sep="", collapse=""))
   }
 
   # Return heatmap object if sepcified
@@ -648,8 +653,7 @@ heatmap_dendrogram.from_file <- function (
 
 ##### New section Kevin added to kick out files that have the row and column labels 1-10-12
   
-  ## Row_labels_file = gsub(" ", "", paste(file_in,".HD.Row_labels.txt"))
-  
+  ## Row_labels_file = gsub(" ", "", paste(file_in,".HD.Row_labels.txt")) 
   ## for ( i in (dim(data.matrix(labRow))[1]):1 ){ # order of the rows in labRow is reverse of how they are plotted
   ##   write( labRow[i], file = Row_labels_file, append=TRUE )  
   ## }
@@ -663,9 +667,7 @@ heatmap_dendrogram.from_file <- function (
   ## #t(mat[3:1,])
   ## rot_x <- t(x[1:nrow(x),])
   ## rowsort_rot_x <- rot_x[nrow(rot_x):1,]
-
   ## output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
-  
   ## write.table(rot_x, file = output_filename, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   
     
