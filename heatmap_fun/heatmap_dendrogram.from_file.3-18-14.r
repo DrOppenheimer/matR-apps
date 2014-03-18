@@ -4,7 +4,7 @@ heatmap_dendrogram.from_file <- function (
 
                                           file_in,
                                           produce_flat_output = TRUE,
-                                          file_out = if (produce_flat_output) paste(file_in, ".HD.txt", sep="", collapse="") else NA, # produce HD sorted flat output
+                                          file_out = if (produce_flat_output) paste(file_in, ".HD_sorted.txt", sep="", collapse="") else NA, # produce HD sorted flat output
      
                                           return_heatmap_object = TRUE,
                                           heatmap_objectname = if (return_heatmap_object) paste(file_in, ".heatmap", sep="", collapse=""),
