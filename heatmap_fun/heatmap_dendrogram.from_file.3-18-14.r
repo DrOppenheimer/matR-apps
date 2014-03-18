@@ -2,7 +2,7 @@ heatmap_dendrogram.from_file <- function (
 
                                           file_in,
                                         #file_out,
-                                          scale_0_to_1 = FALSE,
+                                          scale_0_to_1 = TRUE,
                                           figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                           image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
                                           image_title = image_out, # image_out
