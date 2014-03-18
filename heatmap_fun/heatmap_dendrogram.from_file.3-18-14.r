@@ -1,43 +1,67 @@
+# Majority of this code is adapted from heatmap.2{gplots}
+
 heatmap_dendrogram.from_file <- function (
 
                                           file_in,
-                                        #file_out,
-                                          scale_0_to_1 = TRUE,
-                                          figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
-                                          image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
-                                          image_title = image_out, # image_out
-                                        #x,                                             # x = input_object that contains the data                 
+                                          produce_flat_output = TRUE,
 
+                                          scale_0_to_1 = TRUE,                  # scale all values in matrix between 0 and 1
+                                          figure_type   = "png",                # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
+                                          image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
+                                          file_out = if (produce_flat_output) gsub(" ", "", paste(file_in, ".HD.txt")) else NA, # produce HD sorted flat output
+                                          image_title = image_out, # image_out
+                                                           
                                           # colors
-                                          #heat_color1="red",                             # two colors for the the gradient that will be created for the heatmap
+                                          #heat_color1="red",                   # two colors for the the gradient that will be created for the heatmap
                                           #heat_color2="green",
-                                          col = c("red","green"), #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
-                                          palette_n=255,                                 # 255 is the max value
+                                          col = c("red","green"),               #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
+                                          palette_n=255,                        # 255 is the max value
        
-                                          labRow = NA,                                 # Kevin 1-27-10 - Dendrogram row labels (NULL for default; NA to remove)
-                                          labCol = NA,                                 # Kevin 1-27-10 - Dendrogram column labels (NULL for default; NA to remove)
-                                       # par (las=2 (labels perp to axis)
-                                          hclustfun_method = "ward",            # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid")
+                                          labRow = NA,                          # Kevin 1-27-10 - Dendrogram row labels (NULL for default; NA to remove)
+                                          labCol = NA,                          # Kevin 1-27-10 - Dendrogram column labels (NULL for default; NA to remove)
+                                          # par (las=2 (labels perp to axis)
+                                          hclustfun_method = "ward",            # clustering method: from hclust{stats}, default is "complete"
+                                                                                # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid")
                                  
                                        # figure output parameters (units vary depending on selected figure_type (bleow)
-                                          figure_width  = 22,                               # usually pixels, inches if eps is selected; png is default
-                                          figure_height = 10,                               # usually pixels, inches if eps is selected; png is default
+                                          figure_width  = 22,                   # usually pixels, inches if eps is selected; png is default
+                                          figure_height = 10,                   # usually pixels, inches if eps is selected; png is default
                                           my_units = "in",
-                                          figure_res = 200,                                 # usually pixels, inches if eps is selected; png is default      
-                                       #figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
+                                          figure_res = 200,                     # usually pixels, inches if eps is selected; png is default      
+                                       #figure_type   = "png",                  # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                        
                                        # dendrogram control
-                                          dendrogram = "both",                                # dendrogram = c("both","row", "column", "none")
-                                          symm = FALSE,
-                                          Rowv = TRUE,                                        # <--- Kevin 1-27-10 - FALSE, data are not hclust sorted by row
-                                          Colv = if (symm) "Rowv" else TRUE,                  # <--- Kevin 1-27-10 - FALSE data are not hclust sorted by column
-                                          distfun = dist,
-                                          hclustfun = hclust,                                 # <------ Kevin 2-8-10 - forces "complete" method # made variable directly below 2-24-10
-                                        #hclustfun_method = "complete",       # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid") 
+                                          dendrogram = "both",                  # dendrogram = c("both","row", "column", "none")
+                                                                                # character string indicating whether to draw 'none', 'row', 'column' or 'both'
+                                                                                # dendrograms. Defaults to 'both'. However, if Rowv (or Colv) is FALSE or NULL
+                                                                                # and dendrogram is 'both', then a warning is issued and Rowv (or Colv)
+                                                                                # arguments are honoured.
+                                          
+                                          symm = FALSE,                         # logical indicating if x should be treated symmetrically;
+                                                                                # can only be true when x is a square matrix.
+                                          
+                                          Rowv = TRUE,                          # determines if and how the row dendrogram should be reordered.
+                                                                                # By default, it is TRUE, which implies dendrogram is computed
+                                                                                # and reordered based on row means. If NULL or FALSE, then no dendrogram
+                                                                                # is computed and no reordering is done. If a dendrogram, then it is
+                                                                                # used "as-is", ie without any reordering. If a vector of integers,
+                                                                                # then dendrogram is computed and reordered based on the order of the vector.
+                                          
+                                          Colv = if (symm) "Rowv" else TRUE,    # determines if and how the column dendrogram should be reordered.
+                                                                                # Has the options as the Rowv argument above and additionally when x
+                                                                                # is a square matrix, Colv = "Rowv" means that columns should be treated
+                                                                                # identically to the rows.
+                                          
+                                          distfun = dist,                       # dist method: from dist{stats}, default is euclidean
+                                                                                # "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski"
+                                                                                # try ecodist distance ?
+                                          
+                                          hclustfun = hclust,                   # <------ Kevin 2-8-10 - forces "complete" method # made variable directly below 2-24-10
+                                                                                # other options = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid") 
                                        
                                         # data scaling
-                                          scale = "none",                                     # scale = c("none", "row", "column")
-                                          na.rm = TRUE,
+                                          scale = "none",                       # scale = c("none", "row", "column")
+                                          na.rm = TRUE,                         # logical indicating whether NA's should be removed.
                                  
                                         # image plot
                                           revC = identical(Colv, "Rowv"),
@@ -71,8 +95,10 @@ heatmap_dendrogram.from_file <- function (
                                         # Row/Column Labeling
                                           margins = c(5, 1),                                  ##### <------ Kevin 1-27-10 - specifcy the size of the margins
 
-                                          ColSideColors, # <-------------------------------
-                                          RowSideColors, # <-------------------------------
+                                          ColSideColors, # (optional) character vector of length ncol(x) containing the color names for a
+                                                         # horizontal side bar that may be used to annotate the columns of x.
+                                          RowSideColors, # (optional) character vector of length nrow(x) containing the color names for a
+                                                         # vertical side bar that may be used to annotate the rows of x.
 
                                           row_lab_mult = 2, # <-----                          # used below to adjust font size of row labels - Kevin 3-9-10
                                           col_lab_mult = 3, # <-----                          # used below to adjust font size of column labels - Kevin 3-9-10
@@ -125,6 +151,20 @@ heatmap_dendrogram.from_file <- function (
     x = data.matrix(read.table(file_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
   }
 
+##### produce HD sorted flat file output
+  
+  heatmap_to_file <<- function(my_heatmap, file_out){
+    if ( identical(file_out, "default")==TRUE ){
+      file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
+    }
+    sorted_matrix <- my_heatmap$call$x
+    sorted_matrix <- sorted_matrix[ my_heatmap$rowInd ,  my_heatmap$colInd ]
+    sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
+    write.table(sorted_matrix, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  }
+
+
+  
 ###### get the diensions of the input object  
   number_entries = (dim(x)[1]) # number rows
   number_samples = (dim(x)[2]) # number columns
