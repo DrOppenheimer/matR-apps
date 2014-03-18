@@ -631,7 +631,7 @@ heatmap_dendrogram.from_file <- function (
   # Return heatmap object if sepcified
   if ( return_heatmap_object==TRUE){
     do.call("<<-",list(heatmap_objectname, retval))
-    print(paste("Wrote heatmap dendrogram to object: ", return_heatmap_object, sep="", collapse=""))
+    print(paste("Wrote heatmap dendrogram to object: ", heatmap_objectname, sep="", collapse=""))
   }
 
   invisible(retval)
