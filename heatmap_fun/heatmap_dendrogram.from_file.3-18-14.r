@@ -27,14 +27,14 @@ heatmap_dendrogram.from_file <- function (
                                        #figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                        
                                        # dendrogram control
+                                          dendrogram = "both",                                # dendrogram = c("both","row", "column", "none")
+                                          symm = FALSE,
                                           Rowv = TRUE,                                        # <--- Kevin 1-27-10 - FALSE, data are not hclust sorted by row
                                           Colv = if (symm) "Rowv" else TRUE,                  # <--- Kevin 1-27-10 - FALSE data are not hclust sorted by column
                                           distfun = dist,
                                           hclustfun = hclust,                                 # <------ Kevin 2-8-10 - forces "complete" method # made variable directly below 2-24-10
                                         #hclustfun_method = "complete",       # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid") 
-                                          dendrogram = "both",                                # dendrogram = c("both","row", "column", "none")
-                                          symm = FALSE,
-                                 
+                                       
                                         # data scaling
                                           scale = "none",                                     # scale = c("none", "row", "column")
                                           na.rm = TRUE,
@@ -104,7 +104,7 @@ heatmap_dendrogram.from_file <- function (
                                           # lhei = NULL,                                        # <--- line height multiplier
                                           lhei=c(0.2,0.8),
                                           # lwid = NULL,
-                                          lwid = c(0.1, 0.9),
+                                          lwid = c(0.05, 0.95),
                                  
                                         # extras ...
                                  
