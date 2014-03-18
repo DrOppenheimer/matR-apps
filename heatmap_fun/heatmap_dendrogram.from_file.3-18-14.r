@@ -705,7 +705,7 @@ load_metadata <- function(metadata_table, metadata_column){
   metadata_levels <- levels(as.factor(metadata_matrix[,metadata_column]))
   num_levels <- length(metadata_levels)
   color_levels <- col.wheel(num_levels)
-  all_colors <- color_matrix[,i]
+  all_colors <- color_matrix[,metadata_column]
 
   return( list(metadata_levels=metadata_levels, color_levels=color_levels, all_colors=all_colors) )
   
