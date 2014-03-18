@@ -4,11 +4,14 @@ heatmap_dendrogram.from_file <- function (
 
                                           file_in,
                                           produce_flat_output = TRUE,
+                                          file_out = if (produce_flat_output) paste(file_in, ".HD.txt", sep="", collapse="") else NA, # produce HD sorted flat output
+     
+                                          return_heatmap_object = TRUE,
+                                          heatmap_objectname = if (return_heatmap_object) paste(file_in, ".heatmap", sep="", collapse=""),
 
                                           scale_0_to_1 = TRUE,                  # scale all values in matrix between 0 and 1
                                           figure_type   = "png",                # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                           image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
-                                          file_out = if (produce_flat_output) gsub(" ", "", paste(file_in, ".HD.txt")) else NA, # produce HD sorted flat output
                                           image_title = image_out, # image_out
                                                            
                                           # colors
@@ -153,7 +156,7 @@ heatmap_dendrogram.from_file <- function (
 
 ##### produce HD sorted flat file output
   
-  heatmap_to_file <<- function(my_heatmap, file_out){
+  heatmap_to_file <- function(my_heatmap, file_out){
     if ( identical(file_out, "default")==TRUE ){
       file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
     }
@@ -614,9 +617,18 @@ heatmap_dendrogram.from_file <- function (
   else plot.new()
   retval$colorTable <- data.frame(low = retval$breaks[-length(retval$breaks)], 
                                   high = retval$breaks[-1], color = retval$col)
-  #invisible(retval)
-  return(retval)
+  # Produce heatmap sorted output if specified
+  if ( produce_flat_output==TRUE){
+    heatmap_to_file(retval, file_out)
+  }
 
+  # Return heatmap object if sepcified
+  if ( return_heatmap_object==TRUE){
+    do.call("<<-",list(heatmap_objectname, retval))
+  }
+
+  invisible(retval)
+  
 
   # Add color bar at bottom
 
@@ -629,34 +641,30 @@ heatmap_dendrogram.from_file <- function (
   ## text(loc[2], loc[3], column_levels[num_levels], pos = 1, xpd = T, cex=bar_cex)
   ## graphics.off()
   ## custom_palette
-
-
-
-
   
   dev.off()
 
 ##### New section Kevin added to kick out files that have the row and column labels 1-10-12
   
-  Row_labels_file = gsub(" ", "", paste(file_in,".HD.Row_labels.txt"))
+  ## Row_labels_file = gsub(" ", "", paste(file_in,".HD.Row_labels.txt"))
   
-  for ( i in (dim(data.matrix(labRow))[1]):1 ){ # order of the rows in labRow is reverse of how they are plotted
-    write( labRow[i], file = Row_labels_file, append=TRUE )  
-  }
+  ## for ( i in (dim(data.matrix(labRow))[1]):1 ){ # order of the rows in labRow is reverse of how they are plotted
+  ##   write( labRow[i], file = Row_labels_file, append=TRUE )  
+  ## }
   
-  Col_labels_file = gsub(" ", "", paste(file_in,".HD.Col_labels.txt"))
-  for ( j in 1:(dim(data.matrix(labCol))[1]) ){ 
-    write( labCol[j], file = Col_labels_file, append=TRUE )
-  }
+  ## Col_labels_file = gsub(" ", "", paste(file_in,".HD.Col_labels.txt"))
+  ## for ( j in 1:(dim(data.matrix(labCol))[1]) ){ 
+  ##   write( labCol[j], file = Col_labels_file, append=TRUE )
+  ## }
 
-  #x_out <<- x
-  #t(mat[3:1,])
-  rot_x <- t(x[1:nrow(x),])
-  rowsort_rot_x <- rot_x[nrow(rot_x):1,]
+  ## #x_out <<- x
+  ## #t(mat[3:1,])
+  ## rot_x <- t(x[1:nrow(x),])
+  ## rowsort_rot_x <- rot_x[nrow(rot_x):1,]
 
-  output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
+  ## output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
   
-  write.table(rot_x, file = output_filename, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  ## write.table(rot_x, file = output_filename, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   
     
 }
