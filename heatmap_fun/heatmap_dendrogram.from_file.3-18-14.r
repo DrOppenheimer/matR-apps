@@ -7,6 +7,7 @@ heatmap_dendrogram.from_file <- function (
                                           metadata_table=NA,
                                           metadata_column=1,
                                           metadata_colors=NA,
+                                          legend_cex=1,
 
                                           produce_flat_output = TRUE,
                                           file_out = if (produce_flat_output) paste(file_in, ".HD_sorted.txt", sep="", collapse="") else NA, # produce HD sorted flat output
@@ -119,7 +120,7 @@ heatmap_dendrogram.from_file <- function (
                                           key = TRUE,                                         # <------ Kevin 9-28-10 key scaling needs work
                                           keysize = .9,                                       ##### <------ Kevin 1-27-10 size of the key
                                           key_lines = 1,                                      # Kevin ADDED 1-27-10 0=no 1=yes for trace lines in the key (edited in loop below)
-                                          key_text = "Key (min to max)",                      #\nand Histogram", # Kevin  1-27-10 - ADDED - MADE VARIABLE
+                                          key_text = "Heat Color Key (min to max)",                      #\nand Histogram", # Kevin  1-27-10 - ADDED - MADE VARIABLE
                                           key_text_cex = 0.5,                                 # Kevin made this variable 4-7-10
                                           key_xlabel = NULL,                                  #"Value", # Kevin  1-27-10 - ADDED - MADE VARIABLE 
                                           key_ylabel = NULL,                                  #"Count", # Kevin  1-27-10 - ADDED - MADE VARIABLE
@@ -172,7 +173,7 @@ heatmap_dendrogram.from_file <- function (
     png(filename="heatmap_legend.png", width = 4, height = 10, pointsize = 12, res = 150 , units = "in")
     plot.new()
     legend( x="center", legend=metadata_levels, pch=15, col=color_levels, cex=2)
-    
+    dev.off()
     # return( list(metadata_levels=metadata_levels, color_levels=color_levels, all_colors=all_colors) )
   }
 
@@ -547,9 +548,24 @@ heatmap_dendrogram.from_file <- function (
 
   # plot the horizontal dendrogram ?
   if (dendrogram %in% c("both", "row")) {
-    plot(ddr, horiz = TRUE, axes = FALSE, yaxs = "i", leaflab = "none")
+
+    if( identical( is.na(metadata_table), FALSE )==TRUE ){
+      plot.new()
+      legend( x="center", legend=metadata_levels, pch=15, col=color_levels, cex=legend_cex)
+    }else{
+      plot(ddr, horiz = TRUE, axes = FALSE, yaxs = "i", leaflab = "none")
+    }
+
   }
-  else plot.new() # empty plot if "both or "row" are not chosen
+  else
+
+    if( identical( is.na(metadata_table), FALSE )==TRUE ){
+      plot.new()
+      legend( x="center", legend=metadata_levels, pch=15, col=color_levels, cex=legend_cex)
+    }else{
+      plot.new() # empty plot if "both or "row" are not chosen
+    }
+
   par(mar = c(0, 0, if (!is.null(main)) 5 else 0, margins[2]))
   ##############################################################
   
