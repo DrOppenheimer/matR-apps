@@ -102,7 +102,7 @@ heatmap_dendrogram.from_file <- function (
                                           lmat = NULL,
                                           # lmat = rbind(4:3, 2:1) # is the default
                                           # lhei = NULL,                                        # <--- line height multiplier
-                                          lhei=c(0.2,0.8)
+                                          lhei=c(0.2,0.8),
                                           # lwid = NULL,
                                           lwid = c(0.1, 0.9),
                                  
