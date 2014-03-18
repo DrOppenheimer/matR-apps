@@ -1,105 +1,105 @@
 heatmap_dendrogram.from_file <- function (
 
-                                 file_in,
+                                          file_in,
                                         #file_out,
-                                 scale_0_to_1 = TRUE,
-                                 figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
-                                 image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
-                                 image_title = image_out, # image_out
+                                          scale_0_to_1 = FALSE,
+                                          figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
+                                          image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
+                                          image_title = image_out, # image_out
                                         #x,                                             # x = input_object that contains the data                 
 
-                                       # bells and whistles ...
-                                 heat_color1="red",                             # two colors for the the gradient that will be created for the heatmap
-                                 heat_color2="green",
-                                 palette_n=12,
-                                       #key = FALSE,
-                                 labRow = NULL,                                      # Kevin 1-27-10 - Dendrogram row labels (NA to remove)
-                                 labCol = NULL,                                      # Kevin 1-27-10 - Dendrogram column labels (NA to remove)
+                                          # colors
+                                          #heat_color1="red",                             # two colors for the the gradient that will be created for the heatmap
+                                          #heat_color2="green",
+                                          col = c("red","green") #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
+                                          palette_n=100,                                 # 255 is the max value
+       
+                                          labRow = NULL,                                 # Kevin 1-27-10 - Dendrogram row labels (NA to remove)
+                                          labCol = NULL,                                          # Kevin 1-27-10 - Dendrogram column labels (NA to remove)
                                        # par (las=2 (labels perp to axis)
-                                 hclustfun_method = "ward",            # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid")
+                                          hclustfun_method = "ward",            # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid")
                                  
                                        # figure output parameters (units vary depending on selected figure_type (bleow)
-                                 figure_width  = 1000,                               # usually pixels, inches if eps is selected; png is default
-                                          figure_height = 1000,                               # usually pixels, inches if eps is selected; png is default
-                                          my_units = "px",
-                                 figure_res    = NA,                                 # usually pixels, inches if eps is selected; png is default      
+                                          figure_width  = 22,                               # usually pixels, inches if eps is selected; png is default
+                                          figure_height = 10,                               # usually pixels, inches if eps is selected; png is default
+                                          my_units = "in",
+                                          figure_res    = NA,                                 # usually pixels, inches if eps is selected; png is default      
                                        #figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                        
                                        # dendrogram control
-                                 Rowv = TRUE,                                        # <--- Kevin 1-27-10 - FALSE, data are not hclust sorted by row
-                                 Colv = if (symm) "Rowv" else TRUE,                  # <--- Kevin 1-27-10 - FALSE data are not hclust sorted by column
-                                 distfun = dist,
-                                 hclustfun = hclust,                                 # <------ Kevin 2-8-10 - forces "complete" method # made variable directly below 2-24-10
+                                          Rowv = TRUE,                                        # <--- Kevin 1-27-10 - FALSE, data are not hclust sorted by row
+                                          Colv = if (symm) "Rowv" else TRUE,                  # <--- Kevin 1-27-10 - FALSE data are not hclust sorted by column
+                                          distfun = dist,
+                                          hclustfun = hclust,                                 # <------ Kevin 2-8-10 - forces "complete" method # made variable directly below 2-24-10
                                         #hclustfun_method = "complete",       # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid") 
-                                 dendrogram = "both",                                # dendrogram = c("both","row", "column", "none")
-                                 symm = FALSE,
+                                          dendrogram = "both",                                # dendrogram = c("both","row", "column", "none")
+                                          symm = FALSE,
                                  
                                         # data scaling
-                                 scale = "none",                                     # scale = c("none", "row", "column")
-                                 na.rm = TRUE,
+                                          scale = "none",                                     # scale = c("none", "row", "column")
+                                          na.rm = TRUE,
                                  
                                         # image plot
-                                 revC = identical(Colv, "Rowv"),
-                                 add.expr,
+                                          revC = identical(Colv, "Rowv"),
+                                          add.expr,
                                  
                                         # mapping data to colors
-                                 breaks,
-                                 symbreaks = min(x < 0, na.rm = TRUE) || scale != "none",
+                                          breaks,
+                                          symbreaks = min(x < 0, na.rm = TRUE) || scale != "none",
                                  
-                                        # colors
-                                 col = "heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
+                                        
 
                                         # block sepration
-                                 colsep,
-                                 rowsep, 
-                                 sepcolor = "white",
-                                 sepwidth = c(0.05, 0.05),
+                                          colsep,
+                                          rowsep, 
+                                          sepcolor = "white",
+                                          sepwidth = c(0.05, 0.05),
 
                                         # cell labeling
-                                 cellnote,
-                                 notecex = 1, 
-                                 notecol = "cyan",
-                                 na.color = par("bg"),
+                                          cellnote,
+                                          notecex = 1, 
+                                          notecol = "cyan",
+                                          na.color = par("bg"),
                                        
                                         # level trace
-                                 trace = "none",                                     # trace = c("column", "row", "both", "none")
-                                 tracecol = "cyan",
-                                 hline = median(breaks), 
-                                 vline = median(breaks),
-                                 linecol = tracecol,
+                                          trace = "none",                                     # trace = c("column", "row", "both", "none")
+                                          tracecol = "cyan",
+                                          hline = median(breaks), 
+                                          vline = median(breaks),
+                                          linecol = tracecol,
 
                                         # Row/Column Labeling
-                                 margins = c(5, 1),                                  ##### <------ Kevin 1-27-10 - specifcy the size of the margins
-                                 ColSideColors,
-                                 RowSideColors,
-                                 row_lab_mult = 2, # <-----                          # used below to adjust font size of row labels - Kevin 3-9-10
-                                 col_lab_mult = 3, # <-----                          # used below to adjust font size of column labels - Kevin 3-9-10
-                                 cexRow = row_lab_mult*(1/log10(nr)),                # 0.1 + 1/log10(nr),  ##### <------ Kevin 1-27-10 (Dendogram row font size)  
-                                 cexCol = col_lab_mult*(1/log10(nc)),                # 0.1 + 1/log10(nc),   ##### <------ Kevin 1-27-10 (Dendogram column font size)
+                                          margins = c(5, 1),                                  ##### <------ Kevin 1-27-10 - specifcy the size of the margins
+                                          ColSideColors,
+                                          RowSideColors,
+                                          row_lab_mult = 2, # <-----                          # used below to adjust font size of row labels - Kevin 3-9-10
+                                          col_lab_mult = 3, # <-----                          # used below to adjust font size of column labels - Kevin 3-9-10
+                                          cexRow = row_lab_mult*(1/log10(nr)),                # 0.1 + 1/log10(nr),  ##### <------ Kevin 1-27-10 (Dendogram row font size)  
+                                          cexCol = col_lab_mult*(1/log10(nc)),                # 0.1 + 1/log10(nc),   ##### <------ Kevin 1-27-10 (Dendogram column font size)
                                         #labRow = NULL,                                      # Kevin 1-27-10 - Dendrogram row labels (NA to remove)
                                         #labCol = NULL,                                      # Kevin 1-27-10 - Dendrogram column labels (NA to remove)
                                  
                                         # color key + density info
-                                 key = FALSE,                                         # <------ Kevin 9-28-10 key scaling needs work
-                                 keysize = .9,                                       ##### <------ Kevin 1-27-10 size of the key
-                                 key_lines = 1,                                      # Kevin ADDED 1-27-10 0=no 1=yes for trace lines in the key (edited in loop below)
-                                 key_text = "Key (min to max)",                      #\nand Histogram", # Kevin  1-27-10 - ADDED - MADE VARIABLE
-                                 key_text_cex = 0.5,                                 # Kevin made this variable 4-7-10
-                                 key_xlabel = NULL,                                  #"Value", # Kevin  1-27-10 - ADDED - MADE VARIABLE 
-                                 key_ylabel = NULL,                                  #"Count", # Kevin  1-27-10 - ADDED - MADE VARIABLE
-                                 density.info = c("histogram", "density", "none"),
-                                 denscol = tracecol,                                 # <------ Kevin 1-27-10 - spcify color for key traceline
-                                 symkey = min(x < 0, na.rm = TRUE) || symbreaks,
-                                 densadj = 0.25,
+                                          key = FALSE,                                         # <------ Kevin 9-28-10 key scaling needs work
+                                          keysize = .9,                                       ##### <------ Kevin 1-27-10 size of the key
+                                          key_lines = 1,                                      # Kevin ADDED 1-27-10 0=no 1=yes for trace lines in the key (edited in loop below)
+                                          key_text = "Key (min to max)",                      #\nand Histogram", # Kevin  1-27-10 - ADDED - MADE VARIABLE
+                                          key_text_cex = 0.5,                                 # Kevin made this variable 4-7-10
+                                          key_xlabel = NULL,                                  #"Value", # Kevin  1-27-10 - ADDED - MADE VARIABLE 
+                                          key_ylabel = NULL,                                  #"Count", # Kevin  1-27-10 - ADDED - MADE VARIABLE
+                                          density.info = c("histogram", "density", "none"),
+                                          denscol = tracecol,                                 # <------ Kevin 1-27-10 - spcify color for key traceline
+                                          symkey = min(x < 0, na.rm = TRUE) || symbreaks,
+                                          densadj = 0.25,
                                  
                                         # plot labels 
-                                 xlab = NULL,
-                                 ylab = NULL,
+                                          xlab = NULL,
+                                          ylab = NULL,
                                  
                                         # plot layout
-                                 lmat = NULL,
-                                 lhei = NULL,                                        # <--- line height multiplier
-                                 lwid = NULL,
+                                          lmat = NULL,
+                                          lhei = NULL,                                        # <--- line height multiplier
+                                          lwid = NULL,
                                  
                                         # extras ...
                                  
@@ -112,6 +112,7 @@ heatmap_dendrogram.from_file <- function (
   #library(Cairo)
   library(gplots)
   library(matlab)
+  library(gtools) # for the invalid function
 
 ###### sub to import the input_file
 #import_data <- function(file_name)
@@ -389,6 +390,8 @@ heatmap_dendrogram.from_file <- function (
     stop("lwid must have length = ncol(lmat) =", ncol(lmat))
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
+
+  # create the layout: default is lmat <- rbind(4:3, 2:1)
   layout(lmat, widths = lwid, heights = lhei, respect = FALSE)
   if (!missing(RowSideColors)) {
     par(mar = c(margins[1], 0, 0, 0.5))
@@ -409,6 +412,8 @@ heatmap_dendrogram.from_file <- function (
     cellnote <- cellnote[, iy]
   }
   else iy <- 1:nr
+
+  # plot 1 (recall default layout ( lmat <- rbind(4:3, 2:1) ))
   image(1:nc, 1:nr, x, xlim = 0.5 + c(0, nc), ylim = 0.5 + 
         c(0, nr), axes = FALSE, xlab = "", ylab = "", col = col, 
         breaks = breaks, ...)
@@ -419,15 +424,17 @@ heatmap_dendrogram.from_file <- function (
     retval$colDendrogram <- ddc
   retval$breaks <- breaks
   retval$col <- col
-  #if (!invalid(na.color) & any(is.na(x))) {
-  #  mmat <- ifelse(is.na(x), 1, NA)
-  #  image(1:nc, 1:nr, mmat, axes = FALSE, xlab = "", ylab = "", 
-  #        col = na.color, add = TRUE)
-  #}
+  if (!invalid(na.color) & any(is.na(x))) {
+    mmat <- ifelse(is.na(x), 1, NA)
+    image(1:nc, 1:nr, mmat, axes = FALSE, xlab = "", ylab = "", 
+          col = na.color, add = TRUE)
+  }
+  # axis below
   axis(1, 1:nc, labels = labCol, las = 2, line = -0.5, tick = 0, # las = 2 is perp to axis 8-16-10 see ?par
        cex.axis = cexCol)
   if (!is.null(xlab)) 
     mtext(xlab, side = 1, line = margins[1] - 1.25)
+  # axis to right
   axis(4, iy, labels = labRow, las = 2, line = -0.5, tick = 0,   # las = 2 is perp to axis 8-16-10 see ?par
        cex.axis = cexRow)
   if (!is.null(ylab)) 
@@ -478,15 +485,23 @@ heatmap_dendrogram.from_file <- function (
     text(x = c(row(cellnote)), y = c(col(cellnote)), labels = c(cellnote), 
          col = notecol, cex = notecex)
   par(mar = c(margins[1], 0, 0, 0))
+
+
+  # plot the horizontal dendrogram ?
   if (dendrogram %in% c("both", "row")) {
     plot(ddr, horiz = TRUE, axes = FALSE, yaxs = "i", leaflab = "none")
   }
-  else plot.new()
+  else plot.new() # empty plot if "both or "row" are not chosen
   par(mar = c(0, 0, if (!is.null(main)) 5 else 0, margins[2]))
+  ##############################################################
+  
+  # plot the vertical dendrogram?
   if (dendrogram %in% c("both", "column")) {
     plot(ddc, axes = FALSE, xaxs = "i", leaflab = "none")
   }
-  else plot.new()
+  else plot.new() # empty plot if "both or "row" are not chosen
+  ##############################################################
+
   if (!is.null(main)) 
     title(main, cex.main = .9 * op[["cex.main"]])
   if (key) {
@@ -503,6 +518,7 @@ heatmap_dendrogram.from_file <- function (
       max.raw <- max(x, na.rm = TRUE)
     }
     z <- seq(min.raw, max.raw, length = length(col))
+    # looks like the color bar in the key
     image(z = matrix(z, ncol = 1), col = col, breaks = tmpbreaks, 
           xaxt = "n", yaxt = "n")
     par(usr = c(0, 1, 0, 1))
@@ -514,6 +530,7 @@ heatmap_dendrogram.from_file <- function (
     else if (scale == "column") 
       mtext(side = 1, "Column Z-Score", line = 2)
     else mtext(side = 1, key_xlabel, line = 2) # <---- Kevin 1-27-10 (make option) - the x axis label for key - MADE VARIABLE
+
     if (density.info == "density") { # This is for the "color key + density info" - Kevin 1-27-10
       dens <- density(x, adjust = densadj, na.rm = TRUE)
       omit <- dens$x < min(breaks) | dens$x > max(breaks)
@@ -529,6 +546,7 @@ heatmap_dendrogram.from_file <- function (
       par(cex = key_text_cex)
       mtext(side = 2, "Density", line = 2)
     }
+
     else if (density.info == "histogram") { # axis 2 is for the "color key + density info" - Kevin 1-27-10
       h <- hist(x, plot = FALSE, breaks = breaks)
       hx <- scale01(breaks, min.raw, max.raw)
@@ -542,12 +560,33 @@ heatmap_dendrogram.from_file <- function (
       par(cex = key_text_cex) # Kevin 4-7-10 made variable from = cex = 0.5
       mtext(side = 2, key_ylabel, line = 2) # <---- Kevin 1-27-10 (make option) - the y axis label for key - MADE VARIABLE
     }
+    
     else title(key_text) # Kevin 1-27-10 (changed to a variable argument)
   }
+
+  # This does the main table ?
   else plot.new()
   retval$colorTable <- data.frame(low = retval$breaks[-length(retval$breaks)], 
                                   high = retval$breaks[-1], color = retval$col)
   invisible(retval)
+
+
+
+  # Add color bar at bottom
+
+  bar_x <- 1:num_levels
+  bar_y <- 1
+  bar_z <- matrix(1:num_levels, ncol=1)
+  image(x=bar_x,y=bar_y,z=bar_z,col=color_levels,axes=FALSE,xlab="",ylab="")
+  loc <- par("usr")
+  text(loc[1], loc[1], column_levels[1], pos = 1, xpd = T, cex=bar_cex)
+  text(loc[2], loc[3], column_levels[num_levels], pos = 1, xpd = T, cex=bar_cex)
+  graphics.off()
+  custom_palette
+
+
+
+
   
   dev.off()
 
