@@ -11,7 +11,7 @@ heatmap_dendrogram.from_file <- function (
                                           # colors
                                           #heat_color1="red",                             # two colors for the the gradient that will be created for the heatmap
                                           #heat_color2="green",
-                                          col = c("red","green") #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
+                                          col = c("red","green"), #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
                                           palette_n=100,                                 # 255 is the max value
        
                                           labRow = NULL,                                 # Kevin 1-27-10 - Dendrogram row labels (NA to remove)
@@ -146,7 +146,8 @@ heatmap_dendrogram.from_file <- function (
 ###### Sub function that creates the color palette for the heatmap from selected colors (red to gren is default) 
   #heat_palette<-function (heat_color1, heat_color2, n=palette_n)  
     { 
-      ramp <- colorRamp(c(heat_color1, heat_color2))
+      #ramp <- colorRamp(c(heat_color1, heat_color2))
+      ramp <- colorRamp(col)
       custom_palette<<- rgb(ramp(seq(0, 1, length = palette_n)), max = 255)
     }
   #heat_palette()                   # 
