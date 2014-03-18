@@ -614,8 +614,8 @@ heatmap_dendrogram.from_file <- function (
   else plot.new()
   retval$colorTable <- data.frame(low = retval$breaks[-length(retval$breaks)], 
                                   high = retval$breaks[-1], color = retval$col)
-  invisible(retval)
-
+  #invisible(retval)
+  return(retval)
 
 
   # Add color bar at bottom
