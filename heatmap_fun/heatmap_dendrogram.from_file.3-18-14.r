@@ -12,10 +12,10 @@ heatmap_dendrogram.from_file <- function (
                                           #heat_color1="red",                             # two colors for the the gradient that will be created for the heatmap
                                           #heat_color2="green",
                                           col = c("red","green"), #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
-                                          palette_n=100,                                 # 255 is the max value
+                                          palette_n=255,                                 # 255 is the max value
        
-                                          labRow = NULL,                                 # Kevin 1-27-10 - Dendrogram row labels (NA to remove)
-                                          labCol = NULL,                                          # Kevin 1-27-10 - Dendrogram column labels (NA to remove)
+                                          labRow = NA,                                 # Kevin 1-27-10 - Dendrogram row labels (NULL for default; NA to remove)
+                                          labCol = NA,                                 # Kevin 1-27-10 - Dendrogram column labels (NULL for default; NA to remove)
                                        # par (las=2 (labels perp to axis)
                                           hclustfun_method = "ward",            # hclustfun_method = c("ward", "single", "complete", "average", "mcquitty", "median" or "centroid")
                                  
@@ -23,7 +23,7 @@ heatmap_dendrogram.from_file <- function (
                                           figure_width  = 22,                               # usually pixels, inches if eps is selected; png is default
                                           figure_height = 10,                               # usually pixels, inches if eps is selected; png is default
                                           my_units = "in",
-                                          figure_res    = NA,                                 # usually pixels, inches if eps is selected; png is default      
+                                          figure_res = 200,                                 # usually pixels, inches if eps is selected; png is default      
                                        #figure_type   = "png",                              # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
                                        
                                        # dendrogram control
@@ -70,8 +70,10 @@ heatmap_dendrogram.from_file <- function (
 
                                         # Row/Column Labeling
                                           margins = c(5, 1),                                  ##### <------ Kevin 1-27-10 - specifcy the size of the margins
-                                          ColSideColors,
-                                          RowSideColors,
+
+                                          ColSideColors, # <-------------------------------
+                                          RowSideColors, # <-------------------------------
+
                                           row_lab_mult = 2, # <-----                          # used below to adjust font size of row labels - Kevin 3-9-10
                                           col_lab_mult = 3, # <-----                          # used below to adjust font size of column labels - Kevin 3-9-10
                                           cexRow = row_lab_mult*(1/log10(nr)),                # 0.1 + 1/log10(nr),  ##### <------ Kevin 1-27-10 (Dendogram row font size)  
@@ -80,7 +82,7 @@ heatmap_dendrogram.from_file <- function (
                                         #labCol = NULL,                                      # Kevin 1-27-10 - Dendrogram column labels (NA to remove)
                                  
                                         # color key + density info
-                                          key = FALSE,                                         # <------ Kevin 9-28-10 key scaling needs work
+                                          key = TRUE,                                         # <------ Kevin 9-28-10 key scaling needs work
                                           keysize = .9,                                       ##### <------ Kevin 1-27-10 size of the key
                                           key_lines = 1,                                      # Kevin ADDED 1-27-10 0=no 1=yes for trace lines in the key (edited in loop below)
                                           key_text = "Key (min to max)",                      #\nand Histogram", # Kevin  1-27-10 - ADDED - MADE VARIABLE
@@ -98,8 +100,11 @@ heatmap_dendrogram.from_file <- function (
                                  
                                         # plot layout
                                           lmat = NULL,
-                                          lhei = NULL,                                        # <--- line height multiplier
-                                          lwid = NULL,
+                                          # lmat = rbind(4:3, 2:1) # is the default
+                                          # lhei = NULL,                                        # <--- line height multiplier
+                                          lhei=c(0.2,0.8)
+                                          # lwid = NULL,
+                                          lwid = c(0.1, 0.9),
                                  
                                         # extras ...
                                  
