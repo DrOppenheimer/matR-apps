@@ -3,6 +3,11 @@
 heatmap_dendrogram.from_file <- function (
 
                                           file_in,
+
+                                          metadata_table=NA,
+                                          metadata_column=1,
+                                          metadata_colors=NA,
+
                                           produce_flat_output = TRUE,
                                           file_out = if (produce_flat_output) paste(file_in, ".HD_sorted.txt", sep="", collapse="") else NA, # produce HD sorted flat output
      
@@ -154,19 +159,22 @@ heatmap_dendrogram.from_file <- function (
     x = data.matrix(read.table(file_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
   }
 
-##### produce HD sorted flat file output
-  
-  ## heatmap_to_file <- function(my_heatmap, file_out){
-  ##   # if ( identical(file_out, "default")==TRUE ){
-  ##   #  file_out <- paste( deparse(substitute(my_heatmap)), ".sorted_data", sep="", collapse="")
-  ##   # }
-  ##   sorted_matrix <- my_heatmap$call$x
-  ##   sorted_matrix <- sorted_matrix[ my_heatmap$rowInd ,  my_heatmap$colInd ]
-  ##   sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
-  ##   write.table(sorted_matrix, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
-  ##   print(paste("Wrote heatmap dendrogram sorted data as file: ", file_out, sep="", collapse=""))
-  ## }
 
+# Import metadata, and use to generate color bar for the columns
+  if ( identical( is.na(metadata_table), FALSE )==TRUE ) {
+
+    my_colors <- load_metadata(metadata_table, metadata_column)
+
+    metadata_levels <- my_colors$metadata_levels
+    color_levels <- my_colors$color_levels
+    ColSideColors <- my_colors$all_colors
+
+    png(filename="heatmap_legend.png", width = 4, height = 10, pointsize = 12, res = 150 , units = "in")
+    plot.new()
+    legend( x="center", legend=metadata_levels, pch=15, col=color_levels, cex=2)
+    
+    # return( list(metadata_levels=metadata_levels, color_levels=color_levels, all_colors=all_colors) )
+  }
 
   
 ###### get the diensions of the input object  
@@ -672,3 +680,44 @@ heatmap_dendrogram.from_file <- function (
   
     
 }
+
+
+
+######################
+# SUB( ): Function to load the metadata/ generate or import colors for the points
+######################
+load_metadata <- function(metadata_table, metadata_column){
+
+  metadata_matrix <- as.matrix( # Import metadata table, use it to generate colors
+                               read.table(
+                                          file=metadata_table,row.names=1,header=TRUE,sep="\t",
+                                          colClasses = "character", check.names=FALSE,
+                                          comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                          )
+                               )
+                                        # make sure that the color matrix is sorted (ROWWISE) by id
+  metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
+  color_matrix <- create_colors(metadata_matrix, color_mode = "auto")
+  ncol.color_matrix <- ncol(color_matrix)
+  
+  metadata_factors <- as.factor(metadata_matrix[,i])
+  metadata_levels <- levels(as.factor(metadata_matrix[,i]))
+  num_levels <- length(metadata_levels)
+  color_levels <- col.wheel(num_levels)
+  all_colors <- color_matrix[,i]
+
+  return( list(metadata_levels=metadata_levels, color_levels=color_levels, all_colors=all_colors) )
+  
+  
+}
+######################
+######################
+
+
+## R> functionReturningTwoValues <- function() {return(list(first=1, second=2))}
+## R> r <- functionReturningTwoValues()
+## R> r$first
+## [1] 1
+## R> r$second
+## [1] 2
+
