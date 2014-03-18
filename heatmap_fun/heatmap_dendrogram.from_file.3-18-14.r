@@ -164,7 +164,7 @@ heatmap_dendrogram.from_file <- function (
     sorted_matrix <- sorted_matrix[ my_heatmap$rowInd ,  my_heatmap$colInd ]
     #sorted_matrix <- sorted_matrix[ nrow(sorted_matrix):1, ] 
     write.table(sorted_matrix, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
-    print(paste("\n\nWrote heatmap dendrogram sorted data as file: ", file_out, "\n\n", sep="", collapse=""))
+    print(paste("Wrote heatmap dendrogram sorted data as file: ", file_out, sep="", collapse=""))
   }
 
 
@@ -626,7 +626,7 @@ heatmap_dendrogram.from_file <- function (
   # Return heatmap object if sepcified
   if ( return_heatmap_object==TRUE){
     do.call("<<-",list(heatmap_objectname, retval))
-    print(paste("\n\nWrote heatmap dendrogram to object: ", return_heatmap_object, "\n\n", sep="", collapse=""))
+    print(paste("Wrote heatmap dendrogram to object: ", return_heatmap_object, sep="", collapse=""))
   }
 
   invisible(retval)
