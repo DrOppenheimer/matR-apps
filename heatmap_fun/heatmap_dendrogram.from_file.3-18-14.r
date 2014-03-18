@@ -575,15 +575,15 @@ heatmap_dendrogram.from_file <- function (
 
   # Add color bar at bottom
 
-  bar_x <- 1:num_levels
-  bar_y <- 1
-  bar_z <- matrix(1:num_levels, ncol=1)
-  image(x=bar_x,y=bar_y,z=bar_z,col=color_levels,axes=FALSE,xlab="",ylab="")
-  loc <- par("usr")
-  text(loc[1], loc[1], column_levels[1], pos = 1, xpd = T, cex=bar_cex)
-  text(loc[2], loc[3], column_levels[num_levels], pos = 1, xpd = T, cex=bar_cex)
-  graphics.off()
-  custom_palette
+  ## bar_x <- 1:num_levels
+  ## bar_y <- 1
+  ## bar_z <- matrix(1:num_levels, ncol=1)
+  ## image(x=bar_x,y=bar_y,z=bar_z,col=color_levels,axes=FALSE,xlab="",ylab="")
+  ## loc <- par("usr")
+  ## text(loc[1], loc[1], column_levels[1], pos = 1, xpd = T, cex=bar_cex)
+  ## text(loc[2], loc[3], column_levels[num_levels], pos = 1, xpd = T, cex=bar_cex)
+  ## graphics.off()
+  ## custom_palette
 
 
 
