@@ -23,8 +23,8 @@ heatmap_dendrogram.from_file <- function (
                                           # colors
                                           #heat_color1="red",                   # two colors for the the gradient that will be created for the heatmap
                                           #heat_color2="green",
-                                          col = c("red","green"),               #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
-                                          palette_n=255,                        # 255 is the max value
+                                          col = c("red","yellow","green"),      #"heat.colors", # <------ Kevin 1-27-10 - MADE VARIABLE in loop below
+                                          palette_n=150,                        # 255 is the max value
        
                                           labRow = NA,                          # Kevin 1-27-10 - Dendrogram row labels (NULL for default; NA to remove)
                                           labCol = NA,                          # Kevin 1-27-10 - Dendrogram column labels (NULL for default; NA to remove)
