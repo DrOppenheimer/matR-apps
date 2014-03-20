@@ -1,11 +1,11 @@
 MGRAST_preprocessing <<- function(
                                   data_in,     # name of the input file (tab delimited text with the raw counts) or R matrix
-                                  data_type        ="r_matrix",  #c(file r_matrix)
+                                  data_type        ="file",  #c(file r_matrix)
                                   output_object    ="default", # output R object (matrix)
                                   output_file      ="default", # output flat file                       
                                   remove_sg        = TRUE, # boolean to remove singleton counts
-                                  sg.lim.entry     = 0, # limit for individual values to be removed
-                                  sg.lim.row       = 1,
+                                  value.min        = 2, # lowest retained value (lower converted to 0)
+                                  row.min          = 4, # lowest retained row sum (lower, row is removed)
                                   log_transform    = TRUE,
                                   norm_method      = "quantile", #c("standardize", "quantile"),
                                   scale_0_to_1     = TRUE,
@@ -13,14 +13,12 @@ MGRAST_preprocessing <<- function(
                                   boxplot_height_in = 11,
                                   boxplot_width_in = 8.5,
                                   boxplot_res_dpi = 300,
-                                  debug=FALSE
-                                  
+                                  debug=FALSE                                  
                                   )
 
   {
 
-    
-    
+        
     # check for necessary package, install if it isn't there
     require(preprocessCore) || install.packages("preprocessCore")            
     library(preprocessCore)
@@ -54,27 +52,19 @@ MGRAST_preprocessing <<- function(
     }
     # make a copy of the input data that is not processed
     input_data.og <- input_data
-
-    if( debug==TRUE ){ print("made it here (1)") }
-    
+ 
     # non optional, convert "na's" to 0
     input_data[is.na(input_data)] <- 0
-
-    if( debug==TRUE ){ print("made it here (2)") }
     
     # remove singletons
     if(remove_sg==TRUE){
-      input_data <- remove.singletons(x=input_data, lim.entry=sg.lim.entry, lim.row=sg.lim.row)
+      input_data <- remove.singletons(x=input_data, lim.entry=value.min, lim.row=row.min, debug=debug)
     }
-
-    if( debug==TRUE ){ print("made it here (3)") }
     
     # log transform log(x+1)2
     if ( log_transform==TRUE ){
       input_data <- log_data(input_data)
     }
-
-    if( debug==TRUE ){ print("made it here (4)") }
     
     # Normalize -- stadardize or quantile norm (depends on user selection)
     switch(
@@ -89,15 +79,11 @@ MGRAST_preprocessing <<- function(
              stop( paste( norm_method, " is not a valid option for method", sep="", collapse=""))
            }
            )
-
-    if( debug==TRUE ){ print("made it here (5)") }
     
     # scale normalized data [max..min] to [0..1] over the entire dataset 
     if ( scale_0_to_1==TRUE ){
       input_data <- scale_data(input_data)
     }
-
-    if( debug==TRUE ){ print("made it here (6)") }
     
     # create object, with specified name, that contains the preprocessed data
     do.call("<<-",list(output_object, input_data))
@@ -140,13 +126,20 @@ MGRAST_preprocessing <<- function(
 ### Subs
       
 # Sub to remove singletons
-remove.singletons <- function (x, lim.entry=sg.lim.entry, lim.row=sg.lim.row , ...) {
+remove.singletons <- function (x, lim.entry, lim.row, debug) {
   x <- as.matrix (x)
   x [is.na (x)] <- 0
-  x [x <= lim.entry] <- 0
-  x [apply (x, MARGIN = 1, sum) >= lim.row, ]
-  x
+  x [x < lim.entry] <- 0 # less than limit changed to 0
+  #x [ apply(x, MARGIN = 1, sum) >= lim.row, ] # THIS DOES NOT WORK - KEEPS ORIGINAL MATRIX
+  x <- x [ apply(x, MARGIN = 1, sum) >= lim.row, ] # row sum equal to or greater than limit is retained
+  if (debug==TRUE){write.table(x, file="sg_removed.txt", sep="\t", col.names = NA, row.names = TRUE, quote = FALSE)}
+  x  
 }
+
+# theMatrixWithoutRow5 = theMatrix[-5,]
+# t1 <- t1[-(4:6),-(7:9)]
+# mm2 <- mm[mm[,1]!=2,] # delete row if first column is 2
+# data[rowSums(is.na(data)) != ncol(data),] # remove rows with any NAs
 
 # Sub to log transform (base two of x+1)
 log_data <- function(x){
