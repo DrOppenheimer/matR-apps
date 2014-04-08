@@ -1,14 +1,14 @@
 MGRAST_preprocessing <<- function(
                                   data_in,     # name of the input file (tab delimited text with the raw counts) or R matrix
-                                  data_type        ="file",  #c(file r_matrix)
+                                  data_type        ="file",  # c(file, r_matrix)
                                   output_object    ="default", # output R object (matrix)
                                   output_file      ="default", # output flat file                       
                                   remove_sg        = TRUE, # boolean to remove singleton counts
                                   value.min        = 2, # lowest retained value (lower converted to 0)
                                   row.min          = 4, # lowest retained row sum (lower, row is removed)
-                                  log_transform    = TRUE,
-                                  norm_method      = "quantile", #c("standardize", "quantile", none),
-                                  scale_0_to_1     = TRUE,
+                                  log_transform    = FALSE,
+                                  norm_method      = "DESeq", #c("standardize", "quantile", "DESeq", none),
+                                  scale_0_to_1     = FALSE,
                                   produce_boxplots = FALSE,
                                   boxplot_height_in = 11,
                                   boxplot_width_in = 8.5,
@@ -19,9 +19,15 @@ MGRAST_preprocessing <<- function(
   {
 
         
-    # check for necessary package, install if it isn't there
-    require(preprocessCore) || install.packages("preprocessCore")            
-    library(preprocessCore)
+    # check for necessary packages, install if they are not there
+    
+    require(preprocessCore) || install.packages("preprocessCore")
+    source("http://bioconductor.org/biocLite.R")
+    require(DESeq) || biocLite("DESeq")
+    # (DESeq): www.ncbi.nlm.nih.gov/pubmed/20979621
+    
+    #library(preprocessCore)
+    #library(DESeq)
     ###### MAIN
 
     # get the name of the object if an object is used -- use the filename if input is filename string
@@ -74,6 +80,9 @@ MGRAST_preprocessing <<- function(
            },
            quantile={
              input_data <- quantile_norm_data(input_data)
+           },
+           DESeq={
+             input_data <- DESeq_norm_data(input_data)
            },
            none={
              input_data <- input_data
@@ -166,7 +175,44 @@ standardize_data <- function (x, ...){
   x <- (x - mu)/sigm
   x
 }
-     
+
+# sub to perform DESeq normalization
+DESeq_norm_data <- function (x, ...){
+  # code in this function is borrowed from two sources
+  # Orignal DESeq publication www.ncbi.nlm.nih.gov/pubmed/20979621
+  #     also see vignette("DESeq")
+  # and Paul J. McMurdie's example analysis in a later paper http://www.ncbi.nlm.nih.gov/pubmed/24699258
+  #     with supporing material # http://joey711.github.io/waste-not-supplemental/simulation-cluster-accuracy/simulation-cluster-accuracy-server.html
+
+  # create metadata - simple case - treats all data as single group
+  my_conditions <- as.factor(rep(1,ncol(x)))
+  my_dataset <- newCountDataSet( x, my_conditions )
+  
+  # estimate the size factors
+  my_dataset <- estimateSizeFactors(my_dataset)
+  
+  # estimate dispersions
+  # reproduce this: deseq_varstab(physeq, method = "blind", sharingMode = "maximum", fitType = "local")
+  #      see https://stat.ethz.ch/pipermail/bioconductor/2012-April/044901.html
+  # with DESeq code directly
+  my_dataset <- estimateDispersions(my_dataset, method = "blind", sharingMode = "maximum", fitType="local")
+
+  # Determine which column(s) have the dispersion estimates
+  dispcol = grep("disp\\_", colnames(fData(my_dataset)))
+
+  # Enforce that there are no infinite values in the dispersion estimates
+  if (any(!is.finite(fData(my_dataset)[, dispcol]))) {
+    fData(cds)[which(!is.finite(fData(my_dataset)[, dispcol])), dispcol] <- 0
+  }
+
+  # apply variance stabilization normalization
+  my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
+
+  # return matrix of normed values
+  x <- exprs(my_dataset.normed)
+  x  
+}
+
 # sub to scale dataset values from [min..max] to [0..1]
 scale_data <- function(x){
   shift <- min(x, na.rm = TRUE)
