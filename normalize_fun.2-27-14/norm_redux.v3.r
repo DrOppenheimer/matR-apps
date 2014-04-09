@@ -13,14 +13,14 @@ MGRAST_preprocessing <<- function(
                                   boxplot_height_in = 11,
                                   boxplot_width_in = 8.5,
                                   boxplot_res_dpi = 300,
-                                  debug=FALSE                                  
+                                  debug=TRUE                                  
                                   )
 
   {
 
         
     # check for necessary packages, install if they are not there
-    
+    require(matR) || install.packages("matR", repo="http://mcs.anl.gov/~braithwaite/R", type="source")
     require(preprocessCore) || install.packages("preprocessCore")
     source("http://bioconductor.org/biocLite.R")
     require(DESeq) || biocLite("DESeq")
@@ -41,11 +41,11 @@ MGRAST_preprocessing <<- function(
 
     # Generate names for the output file and object
     if ( identical( output_object, "default") ){
-      output_object <- paste( input_name, ".PREPROCESSED" , sep="", collapse="")
+      output_object <- paste( input_name, ".", norm_method, ".PREPROCESSED" , sep="", collapse="")
     }
 
     if ( identical( output_file, "default") ){
-      output_file <- paste( input_name, ".PREPROCESSED.txt" , sep="", collapse="")
+      output_file <- paste( input_name, ".", norm_method, ".PREPROCESSED.txt" , sep="", collapse="")
     }
     
     # Input the data
@@ -82,7 +82,7 @@ MGRAST_preprocessing <<- function(
              input_data <- quantile_norm_data(input_data)
            },
            DESeq={
-             input_data <- DESeq_norm_data(input_data)
+             input_data <- DESeq_norm_data(input_data, input_name, debug)
            },
            none={
              input_data <- input_data
@@ -91,6 +91,8 @@ MGRAST_preprocessing <<- function(
              stop( paste( norm_method, " is not a valid option for method", sep="", collapse=""))
            }
            )
+
+    if( debug==TRUE ){ print("MADE IT HERE (10)") }
     
     # scale normalized data [max..min] to [0..1] over the entire dataset 
     if ( scale_0_to_1==TRUE ){
@@ -99,10 +101,14 @@ MGRAST_preprocessing <<- function(
     
     # create object, with specified name, that contains the preprocessed data
     do.call("<<-",list(output_object, input_data))
+
+    if( debug==TRUE ){ print("MADE IT HERE (11)") }
     
     # write flat file, with specified name, that contains the preprocessed data
     write.table(input_data, file=output_file, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE)
-             
+
+    if( debug==TRUE ){ print("MADE IT HERE (12)") }
+    
     # produce boxplots
     boxplot_message <- "     boxplot  : NA"
     if ( produce_boxplots==TRUE ) {
@@ -124,11 +130,15 @@ MGRAST_preprocessing <<- function(
       boxplot_message <- paste("     boxplot  : ", boxplots_file, sep="", collapse="")
     }
 
+    if( debug==TRUE ){ print("MADE IT HERE (13)") }
+
     # message to send to the user after completion, given names for object and flat file outputs
     writeLines("Data have been preprocessed. Proprocessed data are in")
     writeLines(paste("     object   : ", output_object, sep="", collapse=""))
     writeLines(paste("     and file : ", output_file, sep="", collapse=""))
     writeLines(boxplot_message)
+
+    if( debug==TRUE ){ print("MADE IT HERE (14)") }
               
   }
 
@@ -177,26 +187,29 @@ standardize_data <- function (x, ...){
 }
 
 # sub to perform DESeq normalization
-DESeq_norm_data <- function (x, ...){
+DESeq_norm_data <- function (x, input_name, debug, ...){
   # code in this function is borrowed from two sources
   # Orignal DESeq publication www.ncbi.nlm.nih.gov/pubmed/20979621
   #     also see vignette("DESeq")
   # and Paul J. McMurdie's example analysis in a later paper http://www.ncbi.nlm.nih.gov/pubmed/24699258
   #     with supporing material # http://joey711.github.io/waste-not-supplemental/simulation-cluster-accuracy/simulation-cluster-accuracy-server.html
 
-  # create metadata - simple case - treats all data as single group
-  my_conditions <- as.factor(rep(1,ncol(x)))
-  my_dataset <- newCountDataSet( x, my_conditions )
+  # add pseudocounts to prevent workflow from crashing on NaNs
+  x = x + 1 
   
+  # create metadata - simple case - treats all data as single group
+  my_conditions <- as.factor(rep(1,ncol(x))) 
+  my_dataset <- newCountDataSet( x, my_conditions )
+
   # estimate the size factors
   my_dataset <- estimateSizeFactors(my_dataset)
-  
+ 
   # estimate dispersions
   # reproduce this: deseq_varstab(physeq, method = "blind", sharingMode = "maximum", fitType = "local")
   #      see https://stat.ethz.ch/pipermail/bioconductor/2012-April/044901.html
   # with DESeq code directly
   my_dataset <- estimateDispersions(my_dataset, method = "blind", sharingMode = "maximum", fitType="local")
-
+  
   # Determine which column(s) have the dispersion estimates
   dispcol = grep("disp\\_", colnames(fData(my_dataset)))
 
@@ -208,9 +221,23 @@ DESeq_norm_data <- function (x, ...){
   # apply variance stabilization normalization
   my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
 
+  # produce a plot of the regression
+  regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
+  png(
+      filename = regression_filename,
+      height = 8.5,
+      width = 8.5,
+      res = 300,
+      units = 'in'
+      )
+  plot.new()    
+  plotDispEsts( my_dataset )
+  dev.off()
+  
   # return matrix of normed values
   x <- exprs(my_dataset.normed)
-  x  
+  x
+
 }
 
 # sub to scale dataset values from [min..max] to [0..1]
