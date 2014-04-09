@@ -10,8 +10,8 @@ MGRAST_preprocessing <<- function(
                                   norm_method      = "DESeq", #c("standardize", "quantile", "DESeq", none),
                                   scale_0_to_1     = FALSE,
                                   produce_boxplots = FALSE,
-                                  boxplot_height_in = 11,
-                                  boxplot_width_in = 8.5,
+                                  boxplot_height_in = "default", # 11,
+                                  boxplot_width_in = "default", #"8.5,
                                   boxplot_res_dpi = 300,
                                   debug=FALSE                                  
                                   )
@@ -20,7 +20,7 @@ MGRAST_preprocessing <<- function(
 
         
     # check for necessary packages, install if they are not there
-    require(matR) || install.packages("matR", repo="http://mcs.anl.gov/~braithwaite/R", type="source")
+    #require(matR) || install.packages("matR", repo="http://mcs.anl.gov/~braithwaite/R", type="source")
     require(preprocessCore) || install.packages("preprocessCore")
     source("http://bioconductor.org/biocLite.R")
     require(DESeq) || biocLite("DESeq")
@@ -108,6 +108,10 @@ MGRAST_preprocessing <<- function(
     boxplot_message <- "     boxplot  : NA"
     if ( produce_boxplots==TRUE ) {
       boxplots_file <- paste(input_name, ".boxplots.png", sep="", collapse="")
+      
+      if( identical(boxplot_height_in, "default") ){ boxplot_height_in <- 11 }
+      if( identical(boxplot_width_in, "default") ){ boxplot_width_in <- round(ncol(input_data)/14) }
+
       png(
           filename = boxplots_file,
           height = boxplot_height_in,
@@ -118,11 +122,11 @@ MGRAST_preprocessing <<- function(
       plot.new()
       split.screen(c(2,1))
       screen(1)
-      boxplot(input_data.og, main=(paste(input_name," RAW", sep="", collapse="")), las=2)
+      graphics::boxplot(input_data.og, main=(paste(input_name," RAW", sep="", collapse="")), las=2, cex.axis=0.5)
       screen(2)
-      boxplot(input_data, main=(paste(input_name," PREPROCESSED (", norm_method, " norm)", sep="", collapse="")),las=2)
+      graphics::boxplot(input_data, main=(paste(input_name," PREPROCESSED (", norm_method, " norm)", sep="", collapse="")),las=2, cex.axis=0.5)
       dev.off()
-      boxplot_message <- paste("         boxplot  : ", boxplots_file, sep="", collapse="")
+      boxplot_message <- paste("             boxplot  : ", boxplots_file, sep="", collapse="")
     }
 
     # message to send to the user after completion, given names for object and flat file outputs
