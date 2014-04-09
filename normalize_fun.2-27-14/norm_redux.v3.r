@@ -82,7 +82,8 @@ MGRAST_preprocessing <<- function(
              input_data <- quantile_norm_data(input_data)
            },
            DESeq={
-             input_data <- DESeq_norm_data(input_data, input_name, debug)
+             regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
+             input_data <- DESeq_norm_data(input_data, regression_filename, debug)
            },
            none={
              input_data <- input_data
@@ -121,15 +122,18 @@ MGRAST_preprocessing <<- function(
       screen(2)
       boxplot(input_data, main=(paste(input_name," PREPROCESSED (", norm_method, " norm)", sep="", collapse="")),las=2)
       dev.off()
-      boxplot_message <- paste("     boxplot  : ", boxplots_file, sep="", collapse="")
+      boxplot_message <- paste("         boxplot  : ", boxplots_file, sep="", collapse="")
     }
 
     # message to send to the user after completion, given names for object and flat file outputs
     writeLines("Data have been preprocessed. Proprocessed data are in")
-    writeLines(paste("     object   : ", output_object, sep="", collapse=""))
-    writeLines(paste("     and file : ", output_file, sep="", collapse=""))
+    writeLines(paste("         object   : ", output_object, sep="", collapse=""))
+    writeLines(paste("         and file : ", output_file, sep="", collapse=""))
     writeLines(boxplot_message)
-              
+    if( identical(norm_method, "DESeq") ){
+      writeLines(paste(" regression image : ", regression_filename, sep="", collapse="")) 
+    }                 
+    
   }
 
 
@@ -177,7 +181,7 @@ standardize_data <- function (x, ...){
 }
 
 # sub to perform DESeq normalization
-DESeq_norm_data <- function (x, input_name, debug, ...){
+DESeq_norm_data <- function (x, regression_filename, debug, ...){
   # code in this function is borrowed from two sources
   # Orignal DESeq publication www.ncbi.nlm.nih.gov/pubmed/20979621
   #     also see vignette("DESeq")
@@ -212,7 +216,6 @@ DESeq_norm_data <- function (x, input_name, debug, ...){
   my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
 
   # produce a plot of the regression
-  regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
   png(
       filename = regression_filename,
       height = 8.5,
