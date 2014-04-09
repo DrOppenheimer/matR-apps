@@ -13,7 +13,7 @@ MGRAST_preprocessing <<- function(
                                   boxplot_height_in = 11,
                                   boxplot_width_in = 8.5,
                                   boxplot_res_dpi = 300,
-                                  debug=TRUE                                  
+                                  debug=FALSE                                  
                                   )
 
   {
@@ -92,8 +92,6 @@ MGRAST_preprocessing <<- function(
            }
            )
 
-    if( debug==TRUE ){ print("MADE IT HERE (10)") }
-    
     # scale normalized data [max..min] to [0..1] over the entire dataset 
     if ( scale_0_to_1==TRUE ){
       input_data <- scale_data(input_data)
@@ -101,13 +99,9 @@ MGRAST_preprocessing <<- function(
     
     # create object, with specified name, that contains the preprocessed data
     do.call("<<-",list(output_object, input_data))
-
-    if( debug==TRUE ){ print("MADE IT HERE (11)") }
-    
+ 
     # write flat file, with specified name, that contains the preprocessed data
     write.table(input_data, file=output_file, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE)
-
-    if( debug==TRUE ){ print("MADE IT HERE (12)") }
     
     # produce boxplots
     boxplot_message <- "     boxplot  : NA"
@@ -130,15 +124,11 @@ MGRAST_preprocessing <<- function(
       boxplot_message <- paste("     boxplot  : ", boxplots_file, sep="", collapse="")
     }
 
-    if( debug==TRUE ){ print("MADE IT HERE (13)") }
-
     # message to send to the user after completion, given names for object and flat file outputs
     writeLines("Data have been preprocessed. Proprocessed data are in")
     writeLines(paste("     object   : ", output_object, sep="", collapse=""))
     writeLines(paste("     and file : ", output_file, sep="", collapse=""))
     writeLines(boxplot_message)
-
-    if( debug==TRUE ){ print("MADE IT HERE (14)") }
               
   }
 
@@ -230,7 +220,7 @@ DESeq_norm_data <- function (x, input_name, debug, ...){
       res = 300,
       units = 'in'
       )
-  plot.new()    
+  #plot.new()    
   plotDispEsts( my_dataset )
   dev.off()
   
