@@ -1,19 +1,26 @@
 MGRAST_preprocessing <<- function(
                                   data_in,     # name of the input file (tab delimited text with the raw counts) or R matrix
-                                  data_type        ="file",  # c(file, r_matrix)
-                                  output_object    ="default", # output R object (matrix)
-                                  output_file      ="default", # output flat file                       
-                                  remove_sg        = TRUE, # boolean to remove singleton counts
-                                  value.min        = 2, # lowest retained value (lower converted to 0)
-                                  row.min          = 4, # lowest retained row sum (lower, row is removed)
-                                  log_transform    = FALSE,
-                                  norm_method      = "DESeq", #c("standardize", "quantile", "DESeq", none),
-                                  scale_0_to_1     = FALSE,
-                                  produce_boxplots = FALSE,
-                                  boxplot_height_in = "default", # 11,
-                                  boxplot_width_in = "default", #"8.5,
-                                  boxplot_res_dpi = 300,
-                                  debug=FALSE                                  
+                                  data_type             ="file",  # c(file, r_matrix)
+                                  output_object         ="default", # output R object (matrix)
+                                  output_file           ="default", # output flat file                       
+                                  removeSg              = TRUE, # boolean to remove singleton counts
+                                  removeSg_valueMin     = 2, # lowest retained value (lower converted to 0)
+                                  removeSg_rowMin       = 4, # lowest retained row sum (lower, row is removed)
+                                  log_transform         = FALSE,
+                                  norm_method           = "DESeq", #c("standardize", "quantile", "DESeq", none),
+                                  DESeq_metadata_in     = NULL,
+                                  DESeq_metadata_column = 1,
+                                  DESeq_metadata_type   = "file",           # c( "file", "r_matrix" )
+                                  DESeq_method          = "per-condition",  # c( "pooled", "pooled-CR", "per-condition", "blind" )
+                                  DESeq_sharingMode     = "gene-est-only",  # c( "maximum", "fit-only", "gene-est-only" )
+                                  DESeq_fitType         = "local",          # c( "parametric", "local" )
+                                  scale_0_to_1          = FALSE,
+                                  produce_boxplots      = FALSE,
+                                  boxplot_height_in     = "default", # 11,
+                                  boxplot_width_in      = "default", #"8.5,
+                                  boxplot_res_dpi       = 300,
+                                  create_log            = TRUE,
+                                  debug                 = FALSE                                  
                                   )
 
   {
@@ -30,7 +37,9 @@ MGRAST_preprocessing <<- function(
     #library(DESeq)
     ###### MAIN
 
-    # get the name of the object if an object is used -- use the filename if input is filename string
+
+    
+    # get the name of the data object if an object is used -- use the filename if input is filename string
     if ( identical( data_type, "file") ){
       input_name <- data_in
     }else if( identical( data_type, "r_matrix") ){
@@ -39,14 +48,23 @@ MGRAST_preprocessing <<- function(
       stop( paste( data_type, " is not a valid option for data_type", sep="", collapse=""))
     }
 
+
+    
+    
+    #if ( identical( method, "DESeq" ) ){
+
+   
+    
+
     # Generate names for the output file and object
     if ( identical( output_object, "default") ){
       output_object <- paste( input_name, ".", norm_method, ".PREPROCESSED" , sep="", collapse="")
     }
-
     if ( identical( output_file, "default") ){
       output_file <- paste( input_name, ".", norm_method, ".PREPROCESSED.txt" , sep="", collapse="")
     }
+
+
     
     # Input the data
     if ( identical( data_type, "file") ){
@@ -56,22 +74,34 @@ MGRAST_preprocessing <<- function(
     }else{
       stop( paste( data_type, " is not a valid option for data_type", sep="", collapse=""))
     }
+
+
+    
+    # sort the data (COLUMNWISE) by id
+    input_data <- input_data[,order(colnames(input_data))]
+    
     # make a copy of the input data that is not processed
     input_data.og <- input_data
  
     # non optional, convert "na's" to 0
     input_data[is.na(input_data)] <- 0
+
+
     
     # remove singletons
-    if(remove_sg==TRUE){
-      input_data <- remove.singletons(x=input_data, lim.entry=value.min, lim.row=row.min, debug=debug)
+    if(removeSg==TRUE){
+      input_data <- remove.singletons(x=input_data, lim.entry=removeSg_valueMin, lim.row=removeSg_rowMin, debug=debug)
     }
+
+
     
     # log transform log(x+1)2
     if ( log_transform==TRUE ){
       input_data <- log_data(input_data)
     }
-    
+
+
+    regression_message <- "DESeq regression:      NA"
     # Normalize -- stadardize or quantile norm (depends on user selection)
     switch(
            norm_method,
@@ -83,7 +113,11 @@ MGRAST_preprocessing <<- function(
            },
            DESeq={
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
-             input_data <- DESeq_norm_data(input_data, regression_filename, debug)
+             regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
+             input_data <- DESeq_norm_data(input_data, regression_filename,
+                                           DESeq_metadata_in, DESeq_metadata_column, DESeq_metadata_type,
+                                           DESeq_method, DESeq_sharingMode, DESeq_fitType, debug)
+             
            },
            none={
              input_data <- input_data
@@ -92,7 +126,7 @@ MGRAST_preprocessing <<- function(
              stop( paste( norm_method, " is not a valid option for method", sep="", collapse=""))
            }
            )
-
+    
     # scale normalized data [max..min] to [0..1] over the entire dataset 
     if ( scale_0_to_1==TRUE ){
       input_data <- scale_data(input_data)
@@ -103,11 +137,13 @@ MGRAST_preprocessing <<- function(
  
     # write flat file, with specified name, that contains the preprocessed data
     write.table(input_data, file=output_file, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE)
+
+
     
     # produce boxplots
-    boxplot_message <- "     boxplot  : NA"
+    boxplot_message <- "output boxplot:        NA"
     if ( produce_boxplots==TRUE ) {
-      boxplots_file <- paste(input_name, ".boxplots.png", sep="", collapse="")
+      boxplots_file <- paste(input_name, ".boxplots.png", "\n", sep="", collapse="")
       
       if( identical(boxplot_height_in, "default") ){ boxplot_height_in <- 11 }
       if( identical(boxplot_width_in, "default") ){ boxplot_width_in <- round(ncol(input_data)/14) }
@@ -126,17 +162,55 @@ MGRAST_preprocessing <<- function(
       screen(2)
       graphics::boxplot(input_data, main=(paste(input_name," PREPROCESSED (", norm_method, " norm)", sep="", collapse="")),las=2, cex.axis=0.5)
       dev.off()
-      boxplot_message <- paste("             boxplot  : ", boxplots_file, sep="", collapse="")
+      boxplot_message <- paste("output boxplot:       ", boxplots_file, "\n", sep="", collapse="")
     }
 
+
     # message to send to the user after completion, given names for object and flat file outputs
-    writeLines("Data have been preprocessed. Proprocessed data are in")
-    writeLines(paste("         object   : ", output_object, sep="", collapse=""))
-    writeLines(paste("         and file : ", output_file, sep="", collapse=""))
-    writeLines(boxplot_message)
-    if( identical(norm_method, "DESeq") ){
-      writeLines(paste(" regression image : ", regression_filename, sep="", collapse="")) 
-    }                 
+    #writeLines( paste("Data have been preprocessed. Proprocessed, see ", log_file, " for details", sep="", collapse=""))
+
+    
+    if ( create_log==TRUE ){
+      # name log file
+      log_file <- paste( output_file, ".log", sep="", collapse="")
+      # write log
+      writeLines(
+                 paste(
+                       "##############################################################\n",
+                       "###################### INPUT PARAMETERS ######################\n",
+                       "data_in:               ", data_in, "\n",
+                       "data_type:             ", data_type, "\n",
+                       "output_object:         ", output_object, "\n",
+                       "output_file:           ", output_file, "\n",
+                       "removeSg:              ", as.character(removeSg),
+                       "removeSg_valueMin:     ", removeSg_valueMin, "\n",
+                       "removeSg_rowMin:       ", removeSg_rowMin, "\n",
+                       "log_transform          ", as.character(log_transform), "\n",
+                       "norm_method:           ", norm_method, "\n",
+                       "DESeq_metadata_in:     ", as.character(DESeq_metadata_in), "\n",
+                       "DESeq_metadata_column: ", DESeq_metadata_column, "\n",
+                       "DESeq_metadata_type:   ", DESeq_metadata_type, "\n",
+                       "DESeq_method:          ", DESeq_method, "\n",
+                       "DESeq_sharingMode:     ", DESeq_sharingMode, "\n",
+                       "DESeq_fitType:         ", DESeq_fitType, "\n",
+                       "scale_0_to_1:          ", as.character(scale_0_to_1), "\n",
+                       "produce_boxplots:      ", as.character(produce_boxplots), "\n",
+                       "boxplot_height_in:     ", boxplot_height_in, "\n",
+                       "boxplot_width_in:      ", boxplot_width_in, "\n",
+                       "debug as.character:    ", as.character(debug), "\n",
+                       "####################### OUTPUT SUMMARY #######################\n",
+                       "output object:         ", output_object, "\n",
+                       "otuput file:           ", output_file, "\n",
+                       boxplot_message, "\n",
+                       regression_message, "\n",
+                       "##############################################################",
+                       sep="", collapse=""
+                       ),
+                 con=log_file
+                 )
+    }
+
+
     
   }
 
@@ -144,7 +218,24 @@ MGRAST_preprocessing <<- function(
 
 
 ### Subs
-      
+
+# Sub to load the metadata (for DESeq)
+
+import_metadata_from_file <- function(file){
+
+  metadata_matrix <- as.matrix(
+                               read.table(
+                                          file=file,row.names=1,header=TRUE,sep="\t",
+                                          colClasses = "character", check.names=FALSE,
+                                          comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                          )
+                               )
+  # return imported matrix
+  metadata_matrix
+}
+
+
+
 # Sub to remove singletons
 remove.singletons <- function (x, lim.entry, lim.row, debug) {
   x <- as.matrix (x)
@@ -185,20 +276,38 @@ standardize_data <- function (x, ...){
 }
 
 # sub to perform DESeq normalization
-DESeq_norm_data <- function (x, regression_filename, debug, ...){
-  # code in this function is borrowed from two sources
+DESeq_norm_data <- function (x, regression_filename,
+                             DESeq_metadata_in, DESeq_metadata_column, DESeq_metadata_type,
+                             DESeq_method, DESeq_sharingMode, DESeq_fitType, debug, ...){
+  # much of the code in this function is borrowed from two sources
   # Orignal DESeq publication www.ncbi.nlm.nih.gov/pubmed/20979621
   #     also see vignette("DESeq")
   # and Paul J. McMurdie's example analysis in a later paper http://www.ncbi.nlm.nih.gov/pubmed/24699258
   #     with supporing material # http://joey711.github.io/waste-not-supplemental/simulation-cluster-accuracy/simulation-cluster-accuracy-server.html
 
+  # die if no metadata are supplied
+  if( is.null(DESeq_metadata_in) ){ stop("YOU MUST SUPPLY DESeq_metadata_in to use DESeq") }
+  
+  # import metadata matrix (from object or file)
+  if ( identical(DESeq_metadata_type, "r_matrix") ){
+    metadata_matrix <- DESeq_metadata_in
+  } else if ( identical(DESeq_metadata_type, "file") ) {
+    metadata_matrix <- import_metadata_from_file(DESeq_metadata_in)
+  }
+  # make sure that the color matrix is sorted (ROWWISE) by id
+  metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
+  # create metadata factors
+  my_conditions <- as.factor( metadata_matrix[,DESeq_metadata_column] )
+
+  ## # possible solution if DESeq is used, but no metadata is imported - want to discourage this, so commented out for now
+  ## my_conditions <- as.factor(rep(1,ncol(x)))
+  
   # add pseudocounts to prevent workflow from crashing on NaNs
   x = x + 1 
   
-  # create metadata - simple case - treats all data as single group
-  my_conditions <- as.factor(rep(1,ncol(x))) 
+  # create dataset object
   my_dataset <- newCountDataSet( x, my_conditions )
-
+  
   # estimate the size factors
   my_dataset <- estimateSizeFactors(my_dataset)
  
@@ -208,7 +317,9 @@ DESeq_norm_data <- function (x, regression_filename, debug, ...){
   # with DESeq code directly
   # my_dataset <- estimateDispersions(my_dataset, method = "blind", sharingMode = "maximum", fitType="local")
   # but this is what they did in the supplemental material for the DESeq paper (I think) -- and in figure 1 of McMurdie et al.
-  my_dataset <- estimateDispersions(my_dataset, method = "pooled", sharingMode = "fit-only", fitType="local")
+  #my_dataset <- estimateDispersions(my_dataset, method = "pooled", sharingMode = "fit-only", fitType="local") ### THIS WORKS
+  # This is what they suggest in the DESeq vignette for multiple replicats
+  my_dataset <- estimateDispersions(my_dataset, method = DESeq_method, sharingMode = DESeq_sharingMode, fitType = DESeq_fitType)
   
   # Determine which column(s) have the dispersion estimates
   dispcol = grep("disp\\_", colnames(fData(my_dataset)))
