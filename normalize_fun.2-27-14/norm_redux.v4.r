@@ -136,7 +136,7 @@ MGRAST_preprocessing <<- function(
     do.call("<<-",list(output_object, input_data))
  
     # write flat file, with specified name, that contains the preprocessed data
-    write.table(input_data, file=output_file, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE)
+    write.table(input_data, file=output_file, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
 
 
     
@@ -243,7 +243,7 @@ remove.singletons <- function (x, lim.entry, lim.row, debug) {
   x [x < lim.entry] <- 0 # less than limit changed to 0
   #x [ apply(x, MARGIN = 1, sum) >= lim.row, ] # THIS DOES NOT WORK - KEEPS ORIGINAL MATRIX
   x <- x [ apply(x, MARGIN = 1, sum) >= lim.row, ] # row sum equal to or greater than limit is retained
-  if (debug==TRUE){write.table(x, file="sg_removed.txt", sep="\t", col.names = NA, row.names = TRUE, quote = FALSE)}
+  if (debug==TRUE){write.table(x, file="sg_removed.txt", sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")}
   x  
 }
 
