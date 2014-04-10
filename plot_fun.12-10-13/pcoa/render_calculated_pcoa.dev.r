@@ -289,8 +289,8 @@ load_pcoa_data <- function(PCoA_in){
 ######################
 # SUB(2): Function to load the metadata/ generate or import colors for the points
 ######################
-load_metadata <- function(metadata_table, metadata_column, color_list, amethst_groups){
-
+#load_metadata <- function(metadata_table, metadata_column, color_list, amethst_groups){
+load_metadata <- function(metadata_table, ...){
   
   if ( identical( is.na(metadata_table), FALSE ) ){ # HANDLE METADATA TABLE for generating colors
     metadata_matrix <- as.matrix( # Import metadata table, use it to generate colors
@@ -305,9 +305,7 @@ load_metadata <- function(metadata_table, metadata_column, color_list, amethst_g
     color_matrix <<- create_colors(metadata_matrix, color_mode = "auto")
     ncol.color_matrix <<- ncol(color_matrix)
     
-  
   } else if ( identical( is.na(amethst_groups), FALSE ) ){ # HANDLE AMETHST GROUPS for generating colors
-
 
     con_grp <- file(amethst_groups)
     open(con_grp)
@@ -337,7 +335,6 @@ load_metadata <- function(metadata_table, metadata_column, color_list, amethst_g
     num_levels <<- length(column_levels)
     color_levels <<- col.wheel(num_levels)
     pcoa_colors <<- color_matrix[,1]
-    
     
   }else if ( identical( is.na(color_list), FALSE ) ){ # HANDLE COLOR LIST; use list of color if it is supplied
     
