@@ -273,7 +273,7 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
   if(debug==TRUE){print("# FINSISHED MAKING THE CALL:\n")}
   
   check_batch <- current_batch$count
-  if(debug==TRUE){print("# checked")
+  if(debug==TRUE){print("# checked bactch")}
                   
   #check_batch <- current_batch
   
