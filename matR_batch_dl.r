@@ -275,7 +275,7 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
   check_batch <- current_batch$count
   if(debug==TRUE){print("# checked bactch")}
                   
-  #check_batch <- current_batch
+  check_batch <- current_batch$counts
   
   collection_call <- msession$urls()[1]
   matrix_call <- msession$urls()[2]
