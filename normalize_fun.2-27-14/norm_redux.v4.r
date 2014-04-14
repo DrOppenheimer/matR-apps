@@ -28,8 +28,10 @@ MGRAST_preprocessing <<- function(
         
     # check for necessary packages, install if they are not there
     #require(matR) || install.packages("matR", repo="http://mcs.anl.gov/~braithwaite/R", type="source")
+    #chooseCRANmirror()
+    setRepositories(ind=1:2)
     require(preprocessCore) || install.packages("preprocessCore")
-    source("http://bioconductor.org/biocLite.R")
+    #source("http://bioconductor.org/biocLite.R")
     require(DESeq) || biocLite("DESeq")
     # (DESeq): www.ncbi.nlm.nih.gov/pubmed/20979621
     
