@@ -275,10 +275,14 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
   check_batch <- current_batch$count
   if(debug==TRUE){print("# checked bactch")}
                   
-  check_batch <- current_batch$counts
-  
   collection_call <- msession$urls()[1]
+
+  if(debug==TRUE){print("# checked url")}
+  
   matrix_call <- msession$urls()[2]
+
+  if(debug==TRUE){print("# tried matrix call")}
+  
   write(paste("# API_CALL (matrix_call):\n", matrix_call ), file = my_log, append = TRUE)
   write(paste("# API_CALL (status_call):\n", collection_call ), file = my_log, append = TRUE)
 
