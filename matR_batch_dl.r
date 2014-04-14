@@ -269,19 +269,9 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
   write("# GOING TO START THE CALL:\n" , file = my_log, append = TRUE)
   current_batch <- collection(batch_list, count = c(entry=my_entry, annot=my_annot, source=my_source, level=my_level))
   write("# FINSISHED MAKING THE CALL:\n" , file = my_log, append = TRUE)
-
-
-
-  # see tryCatch example at bottome
-
-
-
-
-
-
-
   
-  check_batch <- current_batch$count
+  #check_batch <- current_batch$count
+  check_batch <- current_batch
   
   collection_call <- msession$urls()[1]
   matrix_call <- msession$urls()[2]
