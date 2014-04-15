@@ -8,11 +8,11 @@ MGRAST_preprocessing <<- function(
                                   removeSg_rowMin       = 4, # lowest retained row sum (lower, row is removed)
                                   log_transform         = FALSE,
                                   norm_method           = "DESeq", #c("standardize", "quantile", "DESeq", none),
-                                  DESeq_metadata_in     = NULL,
-                                  DESeq_metadata_column = 1,
+                                  DESeq_metadata_in     = NULL, # only used if method is other than "blind"
+                                  DESeq_metadata_column = NULL, # only used if method is other than "blind"
                                   DESeq_metadata_type   = "file",           # c( "file", "r_matrix" )
-                                  DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" )
-                                  DESeq_sharingMode     = "maximum",  # c( "maximum", "fit-only", "gene-est-only" )
+                                  DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" ) # blind, treat everything as one group
+                                  DESeq_sharingMode     = "maximum",  # c( "maximum", "fit-only", "gene-est-only" ) # maximum is the most conservative choice
                                   DESeq_fitType         = "local",          # c( "parametric", "local" )
                                   scale_0_to_1          = FALSE,
                                   produce_boxplots      = FALSE,
@@ -307,6 +307,9 @@ DESeq_norm_data <- function (x, regression_filename,
   
   # add pseudocounts to prevent workflow from crashing on NaNs
   x = x + 1 
+
+  # create single condition for all samples if method is "blind" is selected -- all samples are modeled in a single group
+  if( identical(DESeq_method,"blind") ){ my_conditions <- rep(1,ncol(x))}
   
   # create dataset object
   my_dataset <- newCountDataSet( x, my_conditions )
