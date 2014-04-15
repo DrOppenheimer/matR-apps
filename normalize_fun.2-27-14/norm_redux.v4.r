@@ -11,7 +11,7 @@ MGRAST_preprocessing <<- function(
                                   DESeq_metadata_in     = NULL,
                                   DESeq_metadata_column = 1,
                                   DESeq_metadata_type   = "file",           # c( "file", "r_matrix" )
-                                  DESeq_method          = "per-condition",  # c( "pooled", "pooled-CR", "per-condition", "blind" )
+                                  DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" )
                                   DESeq_sharingMode     = "gene-est-only",  # c( "maximum", "fit-only", "gene-est-only" )
                                   DESeq_fitType         = "local",          # c( "parametric", "local" )
                                   scale_0_to_1          = FALSE,
@@ -300,6 +300,7 @@ DESeq_norm_data <- function (x, regression_filename,
   metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
   # create metadata factors
   my_conditions <- as.factor( metadata_matrix[,DESeq_metadata_column] )
+  if(debug==TRUE){ my.conditions <<- my_conditions; my.data <<- x }
 
   ## # possible solution if DESeq is used, but no metadata is imported - want to discourage this, so commented out for now
   ## my_conditions <- as.factor(rep(1,ncol(x)))
