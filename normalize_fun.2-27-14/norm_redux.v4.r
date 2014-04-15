@@ -12,7 +12,7 @@ MGRAST_preprocessing <<- function(
                                   DESeq_metadata_column = 1,
                                   DESeq_metadata_type   = "file",           # c( "file", "r_matrix" )
                                   DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" )
-                                  DESeq_sharingMode     = "gene-est-only",  # c( "maximum", "fit-only", "gene-est-only" )
+                                  DESeq_sharingMode     = "maximum",  # c( "maximum", "fit-only", "gene-est-only" )
                                   DESeq_fitType         = "local",          # c( "parametric", "local" )
                                   scale_0_to_1          = FALSE,
                                   produce_boxplots      = FALSE,
