@@ -1,24 +1,36 @@
 # functions that will cull data from abundance table and metadata file for a list of ids
 
-data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", new_file_suffix="CULLED" ){
+data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", pass_file_suffix="PASS", culled_file_suffix="CULLED", debug=FALSE){
 
   # import list of ids to cull
-  suppressMessages(id_list <- import_idList(cull_list))
+ id_list <- import_idList(cull_list)
  
   # cull data file
   if( is.null(data_in)==FALSE ){
     data_matrix <- import_data(data_in)
-    data_matrix <- data_matrix[ ,!(colnames(data_matrix) %in% id_list)]
-    new_data_file_name = paste(data_in, ".", new_file_suffix, ".txt", sep="", collapse="" )
-    write.table(data_matrix, file=new_data_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
+    # file  with data retained
+    pass_data_matrix <- data_matrix[ ,!(colnames(data_matrix) %in% id_list)]
+    pass_data_file_name = gsub("\\.\\.", "\\.", paste(data_in, ".", pass_file_suffix, ".txt", sep="", collapse="" ))
+    if(debug==TRUE){ test1 <<- pass_data_matrix; print(pass_data_file_name) }
+    write.table(pass_data_matrix, file=pass_data_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
+    # file with data culled
+    culled_data_matrix <- data_matrix[ ,(colnames(data_matrix) %in% id_list)]
+    culled_data_file_name = gsub("\\.\\.", "\\.", paste(data_in, ".", culled_file_suffix, ".txt", sep="", collapse="" ))
+    if(debug==TRUE){ test2 <<- culled_data_matrix; print(culled_data_file_name) }
+    write.table(culled_data_matrix, file=culled_data_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
   }
   
   # cull metadata file
   if( is.null(metadata_in)==FALSE ){
+    # file with metadata retained
     metadata_matrix <- import_metadata(metadata_in)
-    metadata_matrix <- metadata_matrix[!(rownames(metadata_matrix ) %in% id_list),]
-    new_metadata_file_name = paste(metadata_in, ".", new_file_suffix, ".txt", sep="", collapse="" )
-    write.table(metadata_matrix, file=new_metadata_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
+    pass_metadata_matrix <- metadata_matrix[!(rownames(metadata_matrix ) %in% id_list),]
+    pass_metadata_file_name = gsub("\\.\\.", "\\.", paste(metadata_in, ".", pass_file_suffix, ".txt", sep="", collapse="" ))
+    write.table(pass_metadata_matrix, file=pass_metadata_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
+    # file with metadata culled
+    culled_metadata_matrix <- metadata_matrix[(rownames(metadata_matrix ) %in% id_list),]
+    culled_metadata_file_name = gsub("\\.\\.", "\\.", paste(metadata_in, ".", culled_file_suffix, ".txt", sep="", collapse="" ))
+    write.table(culled_metadata_matrix, file=culled_metadata_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
   }
 
 }
@@ -27,7 +39,7 @@ data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.tx
 
 # func to import single column list of ids to cull
 import_idList <- function(cull_list){
-  id_list <- scan(file=cull_list, what="character")
+  id_list <- scan(file=cull_list, what="character", quiet=TRUE, comment.char="#")
   return(id_list)
 }
 

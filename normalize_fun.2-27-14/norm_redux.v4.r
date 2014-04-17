@@ -281,36 +281,41 @@ standardize_data <- function (x, ...){
 DESeq_norm_data <- function (x, regression_filename,
                              DESeq_metadata_in, DESeq_metadata_column, DESeq_metadata_type,
                              DESeq_method, DESeq_sharingMode, DESeq_fitType, debug, ...){
-  # much of the code in this function is borrowed from two sources
+  # much of the code in this function is adapted/borrowed from two sources
   # Orignal DESeq publication www.ncbi.nlm.nih.gov/pubmed/20979621
   #     also see vignette("DESeq")
   # and Paul J. McMurdie's example analysis in a later paper http://www.ncbi.nlm.nih.gov/pubmed/24699258
   #     with supporing material # http://joey711.github.io/waste-not-supplemental/simulation-cluster-accuracy/simulation-cluster-accuracy-server.html
 
-  # die if no metadata are supplied
-  if( is.null(DESeq_metadata_in) ){ stop("YOU MUST SUPPLY DESeq_metadata_in to use DESeq") }
+  # die if apprpropriate metadata selections are not made for DESeq selections
+  if( identical(DESeq_method, "blind")==FALSE && ( is.null(DESeq_metadata_in) || is.null(DESeq_metadata_column) ) ){
+    stop("You must supply metadata (DESeq_metadata_in) and selected a metadata column (DESeq_metadata_column) for any DESeq method other than blind")
+  }
   
   # import metadata matrix (from object or file)
-  if ( identical(DESeq_metadata_type, "r_matrix") ){
-    metadata_matrix <- DESeq_metadata_in
-  } else if ( identical(DESeq_metadata_type, "file") ) {
-    metadata_matrix <- import_metadata_from_file(DESeq_metadata_in)
-  }
+ 
   # make sure that the color matrix is sorted (ROWWISE) by id
   metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
-  # create metadata factors
+
+  # create or import metadata
+  if( identical(DESeq_method,"blind") ){
+    my_conditions <- rep(1,ncol(x))
+  }else{
+    if ( identical(DESeq_metadata_type, "r_matrix") ){
+      metadata_matrix <- DESeq_metadata_in
+    } else if ( identical(DESeq_metadata_type, "file") ) {
+      metadata_matrix <- import_metadata_from_file(DESeq_metadata_in)
+    }
+  }
+
+  # factor conditions
   my_conditions <- as.factor( metadata_matrix[,DESeq_metadata_column] )
   if(debug==TRUE){ my.conditions <<- my_conditions; my.data <<- x }
 
-  ## # possible solution if DESeq is used, but no metadata is imported - want to discourage this, so commented out for now
-  ## my_conditions <- as.factor(rep(1,ncol(x)))
   
   # add pseudocounts to prevent workflow from crashing on NaNs
   x = x + 1 
-
-  # create single condition for all samples if method is "blind" is selected -- all samples are modeled in a single group
-  if( identical(DESeq_method,"blind") ){ my_conditions <- rep(1,ncol(x))}
-  
+ 
   # create dataset object
   my_dataset <- newCountDataSet( x, my_conditions )
   
