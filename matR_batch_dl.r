@@ -128,7 +128,7 @@ matR_batch_dl <- function(
       batch_end <- (batch_count*batch_size)
       # batch_end <- batch_size
       
-      first_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
+      first_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug, num_batch, batch_remainder)
       my_data <- data.matrix(first_batch$count)
 
       # write information to the log
@@ -156,7 +156,7 @@ matR_batch_dl <- function(
       # Process the continuing (next) batch
       batch_start <- ((batch_count-1)*batch_size)+1
       batch_end <- (batch_count*batch_size)
-      next_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
+      next_batch <- process_batch(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug, num_batch, batch_remainder)
       
       # Add the next batch to my_data
       my_data <- merge(my_data, data.matrix(next_batch$count), by="row.names", all=TRUE) # This does not handle metadata yet
@@ -192,7 +192,7 @@ matR_batch_dl <- function(
     # Process the last batch (if there is a remainder
     batch_start <- (num_batch*batch_size)+1
     batch_end <- length(mgid_list)
-    last_batch <- process_batch( (batch_count+1) , batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug)
+    last_batch <- process_batch( (batch_count+1) , batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug, num_batch, batch_remainder)
 
     # Add the next batch to my_data
     my_data <- merge(my_data, data.matrix(last_batch$count), by="row.names", all=TRUE) # This does not handle metadata yet
@@ -252,7 +252,7 @@ matR_batch_dl <- function(
 ############################################################################
 ### SUBS
 
-process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug){
+process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log, my_entry, my_annot, my_source, my_level, sleep_int, debug, num_batch, batch_remainder){
 
   if( debug==TRUE ){ print("made it to process_batch 1") }
   
@@ -288,24 +288,29 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
 
   
   # check the status of the call -- proceed only when the data are available
-  check_status(collection_call, sleep_int, my_log, debug, batch_count)
+  check_status(collection_call, sleep_int, my_log, debug, batch_count, num_batch, batch_remainder)
       
   return(current_batch)
 }
 
 
+####
+# batch_remainder
+# num_batch
 
-check_status <- function (collection_call, sleep_int, my_log, debug, batch_count)  {
+check_status <- function (collection_call, sleep_int, my_log, debug, batch_count, num_batch, batch_remainder)  {
 
+  if( batch_remainder > 0){ num_batch <- num_batch + 1 }
+  
   if( debug==TRUE ){ print("made it to check_status function") }
   API_status_check<- fromJSON(getURL(collection_call))
   current_status <- API_status_check['status']      
   while ( grepl(current_status, "done")==FALSE ){
     Sys.sleep(sleep_int)
     sleep_int <- sleep_int+10
-    print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch ( ", batch_count," )", sep="", collapse="") )
+    print( paste("Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch ( ", batch_count," ) of ( ", num_batch, " )", sep="", collapse="") )
     write( paste("# API_CALL: (status check)\n", collection_call, sep="", collapse="" ), file = my_log, append = TRUE)
-    write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch ( ", batch_count," )", sep="", collapse=""), file = my_log, append = TRUE )
+    write( paste("# Sleeping for (", sleep_int, ") more seconds - waiting for call to complete; batch ( ", batch_count," ) of ( ", num_batch, " )", sep="", collapse=""), file = my_log, append = TRUE )
     API_status_check<- fromJSON(getURL(collection_call))
     current_status <- API_status_check['status']
   }
