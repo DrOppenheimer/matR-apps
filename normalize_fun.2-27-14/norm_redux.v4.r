@@ -301,18 +301,18 @@ DESeq_norm_data <- function (x, regression_filename,
   # create or import metadata
   if( identical(DESeq_method,"blind") ){
     my_conditions <- rep(1,ncol(x))
-    print("METHOD IS BLIND")
+    if(debug==TRUE){print("METHOD IS BLIND")}
   }else{
-    print("METHOD IS NOT BLIND")
+    if(debug==TRUE){print("METHOD IS NOT BLIND")}
     if ( identical(DESeq_metadata_type, "r_matrix") ){
       DESeq_metadata_in <- DESeq_metadata_in
     } else if ( identical(DESeq_metadata_type, "file") ) {
       DESeq_metadata_in <- import_metadata_from_file(DESeq_metadata_in)
     }
     # make sure that the color matrix is sorted (ROWWISE) by id
-    metadata_matrix <- metadata_matrix[order(rownames(DESeq_metadata_in)),]
+    DESeq_metadata_in <- DESeq_metadata_in[order(rownames(DESeq_metadata_in)),]
     # factor conditions
-    my_conditions <- as.factor( metadata_matrix[,DESeq_metadata_column] )
+    my_conditions <- as.factor( DESeq_metadata_in[,DESeq_metadata_column] )
     if(debug==TRUE){ my.conditions <<- my_conditions; my.data <<- x }
   }
 
