@@ -8,7 +8,7 @@ MGRAST_preprocessing <<- function(
                                   removeSg_rowMin       = 4, # lowest retained row sum (lower, row is removed)
                                   log_transform         = FALSE,
                                   norm_method           = "DESeq", #c("standardize", "quantile", "DESeq", none),
-                                  DESeq_metadata_in     = NULL, # only used if method is other than "blind"
+                                  DESeq_metadata_in     = NA, # only used if method is other than "blind"
                                   DESeq_metadata_column = NULL, # only used if method is other than "blind"
                                   DESeq_metadata_type   = "file",           # c( "file", "r_matrix" )
                                   DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" ) # blind, treat everything as one group
@@ -288,7 +288,7 @@ DESeq_norm_data <- function (x, regression_filename,
   #     with supporing material # http://joey711.github.io/waste-not-supplemental/simulation-cluster-accuracy/simulation-cluster-accuracy-server.html
 
   # die if apprpropriate metadata selections are not made for DESeq selections
-  if( identical(DESeq_method, "blind")==FALSE && ( is.null(DESeq_metadata_in) || is.null(DESeq_metadata_column) ) ){
+  if( identical(DESeq_method, "blind")==FALSE && ( is.null(DESeq_metadata_in) || is.na(DESeq_metadata_column) ) ){
     stop("You must supply metadata (DESeq_metadata_in) and selected a metadata column (DESeq_metadata_column) for any DESeq method other than blind")
   }
   
