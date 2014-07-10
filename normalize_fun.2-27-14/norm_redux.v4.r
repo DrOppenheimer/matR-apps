@@ -14,6 +14,7 @@ MGRAST_preprocessing <<- function(
                                   DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" ) # blind, treat everything as one group
                                   DESeq_sharingMode     = "maximum",  # c( "maximum", "fit-only", "gene-est-only" ) # maximum is the most conservative choice
                                   DESeq_fitType         = "local",          # c( "parametric", "local" )
+                                  DESeq_image           = TRUE, # create dispersion vs mean plot indicate DESeq regression
                                   scale_0_to_1          = FALSE,
                                   produce_boxplots      = FALSE,
                                   boxplot_height_in     = "default", # 11,
@@ -118,7 +119,7 @@ MGRAST_preprocessing <<- function(
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
              input_data <- DESeq_norm_data(input_data, regression_filename,
                                            DESeq_metadata_in, DESeq_metadata_column, DESeq_metadata_type,
-                                           DESeq_method, DESeq_sharingMode, DESeq_fitType, debug)
+                                           DESeq_method, DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)
              
            },
            none={
@@ -280,7 +281,7 @@ standardize_data <- function (x, ...){
 # sub to perform DESeq normalization
 DESeq_norm_data <- function (x, regression_filename,
                              DESeq_metadata_in, DESeq_metadata_column, DESeq_metadata_type,
-                             DESeq_method, DESeq_sharingMode, DESeq_fitType, debug, ...){
+                             DESeq_method, DESeq_sharingMode, DESeq_fitType, DESeq_image, debug, ...){
   # much of the code in this function is adapted/borrowed from two sources
   # Orignal DESeq publication www.ncbi.nlm.nih.gov/pubmed/20979621
   #     also see vignette("DESeq")
@@ -347,16 +348,18 @@ DESeq_norm_data <- function (x, regression_filename,
   my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
 
   # produce a plot of the regression
-  png(
-      filename = regression_filename,
-      height = 8.5,
-      width = 8.5,
-      res = 300,
-      units = 'in'
-      )
-  #plot.new()    
-  plotDispEsts( my_dataset )
-  dev.off()
+  if(DESeq_image==TRUE){
+    png(
+        filename = regression_filename,
+        height = 8.5,
+        width = 8.5,
+        res = 300,
+        units = 'in'
+        )
+        #plot.new()    
+    plotDispEsts( my_dataset )
+    dev.off()
+  }
   
   # return matrix of normed values
   x <- exprs(my_dataset.normed)
