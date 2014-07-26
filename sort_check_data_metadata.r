@@ -67,6 +67,8 @@ sort_check_data_metadata <- function(data_file="sample_data.txt", metadata_file=
     
   }
 
+  print("DONE")
+  
 }
 
 
