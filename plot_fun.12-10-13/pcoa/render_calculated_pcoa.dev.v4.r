@@ -18,7 +18,7 @@
 # It can handle the case when there is no metadata - painting all of points the same
 # users can also specify a pch table to control the shape of plotted icons (this feature may not be ready yet)
 
-render_pcoa.v3 <- function(
+render_pcoa.v4 <- function(
                            PCoA_in="", # annotation abundance table (raw or normalized values)
                            image_out="default",
                            figure_main ="principal coordinates",
@@ -28,8 +28,10 @@ render_pcoa.v3 <- function(
                            metadata_column_index=1, # column of the color matrix to color the pcoa (colors for the points in the matrix) -- rows = samples, columns = colorings
                            amethst_groups=NA,        
                            color_list=NA, # use explicit list of colors - trumps table if both are supplied
+                           pch_default=19,
                            pch_table=NA, # additional matrix that allows users to specify the shape of the data points
                            pch_column=1,
+                           pch_label_column=NA,
                            image_width_in=22,
                            image_height_in=17,
                            image_res_dpi=300,
@@ -70,9 +72,26 @@ render_pcoa.v3 <- function(
   my_data <- load_pcoa_data(PCoA_in) # import PCoA data from *.PCoA file --- this is always done
   eigen_values <- my_data$eigen_values
   eigen_vectors <- my_data$eigen_vectors
+  num_samples <- ncol(my_data$eigen_vectors)
+  #if ( debug == TRUE ){ print(paste("num_samples: ", num_samples)) } 
+
+  # Deal with pch options
+  plot_pch <- numeric()
+  if ( !is.na(pch_table) ){ # load pcg if it is not na - assumes that table has valid pch values, and uses the specified column
+    plot_pch <- load_pch(pch_table, pch_column, num_samples, debug) # This handles the pch if it is specified
+    #if ( debug == TRUE ){ print(paste("length table pch vector ( ", length(plot_pch), " )")); my_metadata <<- plot_pch }
+  } else {
+    plot_pch <- rep(pch_default, num_samples)
+    #if ( debug == TRUE ){ print(paste("length default pch vector ( ", length(plot_pch), " )")); my_metadata <<- plot_pch }
+  }
   
-  plot_pch <- load_pch(pch_table) # THIS PORTION WILL HANDLE PCH TABLE - NOT REALLY FUNCTIONAL AT PRESENT
-  
+  ## if( !is.na(pch_label_column) ){
+  ##   pch_labels <- unique()
+  ##   pch_pch <- unique(plot_pch)
+  ## }else{
+  ##   pch_labels <- "default pch"
+  ##   pch_pch <- 19
+  ## }
   #####################################################################################
   ########## PLOT WITH NO METADATA OR COLORS SPECIFIED (all point same color) #########
   #####################################################################################
@@ -147,6 +166,9 @@ render_pcoa.v3 <- function(
     }
     metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
     color_column <- create_colors(metadata_column, color_mode = "auto")
+
+    
+
     
     column_levels <- levels(as.factor(as.matrix(metadata_column))) 
     num_levels <- length(column_levels)
@@ -208,7 +230,8 @@ render_pcoa.v3 <- function(
   #####################################################################################
   #####################################################################################
 
-
+  
+  
   
   #####################################################################################
   ########### PLOT WITH METADATA_TABLE (colors produced from color_matrix) ############
@@ -469,14 +492,18 @@ load_pcoa_data <- function(PCoA_in){
 ######################
 # SUB(3): Function to import the pch information for the points # load pch matrix if one is specified
 ######################
-load_pch <- function(pch_table, pch_column){
-  if ( identical( is.na(pch_table), FALSE ) ){
-    pch_matrix <- data.matrix(read.table(file=pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
-    pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
-    plot_pch <- pch_matrix[,pch_column, drop=FALSE]
-  }else{
-    plot_pch <- 19
+load_pch <- function(pch_table, pch_column, num_samples, debug){
+  #if(debug==TRUE){"paste made it here line 485"}
+  #if ( identical( is.na(pch_table), FALSE ) ){
+  pch_matrix <- data.matrix(read.table(file=pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
+  pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
+  plot_pch <- pch_matrix[,pch_column, drop=FALSE]
+  if( nrow(plot_pch) != num_samples ){
+    stop("paste the number of samples in pch column ( ", length(plot_pch), " ) does not match number of samples ( ", num_samples, " )")
   }
+  #}else{
+  #  plot_pch <- rep(19, num_samples)
+  #}
   return(plot_pch)
 }
 ######################
@@ -504,13 +531,19 @@ create_plot <- function(
       )
   # CREATE THE LAYOUT
   my_layout <- layout(  matrix(c(1,1,2,3,4,4), 3, 2, byrow=TRUE ), widths=c(width_legend,width_figure), heights=c(0.1,0.8,0.1) )
+  # my_layout <- layout(  matrix(c(1,1,2,3,4,3,5,5), 4, 2, byrow=TRUE ), widths=c(width_legend,width_figure), heights=c(0.1,0.4,0.8,0.4,0.1) ) # for auto pch legend
   layout.show(my_layout)
   # PLOT THE TITLE
   plot.new()
   text(x=0.5, y=0.5, figure_main, cex=title_cex)
   # PLOT THE LEGEND
+  # color legend
   plot.new()
   legend( x="center", legend=column_levels, pch=15, col=color_levels, cex=legend_cex)
+       ##  pch legend # auto pch - not implemented yet
+       # plot.new()
+       #legend( x="center", legend=pch_labels, pch=(pch_pch), cex=legend_cex)
+
   # PLOT THE FIGURE
   # set par options (Most of the code in this section is copied/adapted from Dan Braithwaite's pco plotting in matR)
   par <- list ()
