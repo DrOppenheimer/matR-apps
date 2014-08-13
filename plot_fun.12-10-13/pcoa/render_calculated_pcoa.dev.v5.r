@@ -18,7 +18,7 @@
 # It can handle the case when there is no metadata - painting all of points the same
 # users can also specify a pch table to control the shape of plotted icons (this feature may not be ready yet)
 
-render_pcoa.v4 <- function(
+render_pcoa.v5 <- function(
                            PCoA_in="", # annotation abundance table (raw or normalized values)
                            image_out="default",
                            figure_main ="principal coordinates",
@@ -74,12 +74,20 @@ render_pcoa.v4 <- function(
   eigen_values <- my_data$eigen_values
   eigen_vectors <- my_data$eigen_vectors
   num_samples <- ncol(my_data$eigen_vectors)
-  #if ( debug == TRUE ){ print(paste("num_samples: ", num_samples)) } 
+  #if ( debug == TRUE ){ print(paste("num_samples: ", num_samples)) }
+
+
+  # ordering of vectors and values -- create index of samples here - the order will be used for data, colors(metadata), and pch(metadata)
+  names(eigen_values) <- rownames(eigen_vectors)
+  final_name_order <- rownames(eigen_vectors)
+  
+  
 
   # Deal with pch options
   plot_pch <- numeric()
   if ( !is.na(pch_table) ){ # load pcg if it is not na - assumes that table has valid pch values, and uses the specified column
     plot_pch <- load_pch(pch_table, pch_column, num_samples, debug) # This handles the pch if it is specified
+    plot_pch <- plot_pch[ order(final_name_order), ]
     #if ( debug == TRUE ){ print(paste("length table pch vector ( ", length(plot_pch), " )")); my_metadata <<- plot_pch }
   } else {
     plot_pch <- rep(pch_default, num_samples)
@@ -113,14 +121,14 @@ render_pcoa.v4 <- function(
     pcoa_colors <- "black"   
 
     create_plot( # generate the plot
-                PCoA_in,
+                PCoA_in, final_name_order,
                 ncol.color_matrix,
                 eigen_values, eigen_vectors, components,
                 column_levels, num_levels, color_levels, pcoa_colors, plot_pch,
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                 )
   }
   #####################################################################################
@@ -182,16 +190,17 @@ render_pcoa.v4 <- function(
     color_levels <- color_levels[ order(column_levels) ] # NEW (order by levels values)
 
     pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
+    pcoa_colors <- pcoa_colors[order(final_name_order),]
     
     create_plot( # generate the plot
-                PCoA_in,
+                PCoA_in, final_name_order,
                 ncol.color_matrix,
                 eigen_values, eigen_vectors, components,
                 column_levels, num_levels, color_levels, pcoa_colors, plot_pch,
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                 )
     
   }
@@ -220,14 +229,14 @@ render_pcoa.v4 <- function(
     pcoa_colors <- color_list
     
     create_plot( # generate the plot
-                PCoA_in,
+                PCoA_in, final_name_order,
                 ncol.color_matrix,
                 eigen_values, eigen_vectors, components,
                 column_levels, num_levels, color_levels, pcoa_colors, plot_pch,
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                 )
   }
   #####################################################################################
@@ -278,6 +287,8 @@ render_pcoa.v4 <- function(
           colnames(metadata_column) <- column_name
           rownames(metadata_column) <- row_names
         }
+
+        if(debug==TRUE){print("made it here 8")}
         
         if(debug==TRUE){ test2<<-metadata_column }
         
@@ -292,33 +303,44 @@ render_pcoa.v4 <- function(
         color_levels <- col.wheel(num_levels)
         rownames(eigen_vectors) <- gsub("\"", "", rownames(eigen_vectors)) # make sure that vectors are sorted identically to the colors
 
+        if(debug==TRUE){print("made it here 9")}
+        
         if(debug==TRUE){
           test.eigen_vectors <<- eigen_vectors
           test.eigen_values <<- eigen_values
           test.color_column <<- color_column
-          #test.pcoa_colors <<- pcoa_colors
         }
+
+        # color_column <- color_column[ order(final_name_order), ]
+        pcoa_colors <- color_column[ order(final_name_order), ]
+        eigen_vectors <- eigen_vectors[ order(final_name_order), ]
+        #pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
         
-        eigen_vectors <- eigen_vectors[ rownames(color_column), ]        
-        pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
-  
-        if(debug==TRUE){
-          test.color_column <<- color_column
-          test.pcoa_colors <<- pcoa_colors
-        }
+        ## if(debug==TRUE){
+        ##   test.eigen_vectors2 <<- eigen_vectors
+        ##   test.eigen_values2 <<- eigen_values
+        ##   test.color_column2 <<- color_column
+        ##   #test.pcoa_colors <<- pcoa_colors
+        ## }
+        
+        if(debug==TRUE){print("made it here 10")}
+       
+        if(debug==TRUE){print("made it here 11")}
         
         create_plot( # generate the plot
-                    PCoA_in,
+                    PCoA_in, final_name_order,
                     ncol.color_matrix,
                     eigen_values, eigen_vectors, components,
                     column_levels, num_levels, color_levels, pcoa_colors, plot_pch,
                     image_out,figure_main,
                     image_width_in, image_height_in, image_res_dpi,
                     width_legend, width_figure,
-                    title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                    title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                     )        
       }
       
+       if(debug==TRUE){print("made it here 12")}
+     
       
     }else if ( use_all_metadata_columns==FALSE ){ # ONLY CREATE A PLOT FOR THE SELECTED COLUMN IN THE METADATA FILE
       
@@ -350,17 +372,18 @@ render_pcoa.v4 <- function(
       num_levels <- length(column_levels)
       color_levels <- col.wheel(num_levels)
       rownames(eigen_vectors) <- gsub("\"", "", rownames(eigen_vectors)) # make sure that vectors are sorted identically to the colors
-      eigen_vectors <- eigen_vectors[ rownames(color_column), ]        
+      #eigen_vectors <- eigen_vectors[ rownames(color_column), ]
+      pcoa_colors <- pcoa_colors[order(final_name_order),]
       pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
       create_plot( # generate the plot
-                  PCoA_in,
+                  PCoA_in, final_name_order,
                   ncol.color_matrix,
                   eigen_values, eigen_vectors, components,
                   column_levels, num_levels, color_levels, pcoa_colors, plot_pch,
                   image_out,figure_main,
                   image_width_in, image_height_in, image_res_dpi,
                   width_legend, width_figure,
-                  title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                  title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                   )
       
     }else{
@@ -550,14 +573,14 @@ load_pch <- function(pch_table, pch_column, num_samples, debug){
 # SUB(4): Workhorse function that creates the plot
 ######################
 create_plot <- function(
-                        PCoA_in,
+                        PCoA_in, final_name_order,
                         ncol.color_matrix,
                         eigen_values, eigen_vectors, components,
                         column_levels, num_levels, color_levels, pcoa_colors, plot_pch,
                         image_out,figure_main,
                         image_width_in, image_height_in, image_res_dpi,
                         width_legend, width_figure,
-                        title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                        title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                         ){
 
   print("creating figure")
@@ -602,6 +625,11 @@ create_plot <- function(
   #par$pch <- 19
   par$cex <- figure_cex
   # main plot paramters - create the 2d or 3d plot
+
+  # doublecheck ordering of vectors and values - rows sorted by id order in original input data
+  eigen_vectors <- eigen_vectors[ order(final_name_order), ] # 8-13-14
+  eigen_values <- eigen_values[ order(final_name_order), ]   # 8-13-14
+  
   i <- eigen_vectors [ ,components [1]]
   j <- eigen_vectors [ ,components [2]]
   k <- if (length (components) == 3) eigen_vectors [ ,components [3]] else NULL
@@ -729,6 +757,7 @@ create_colors <- function(metadata_column, color_mode = "auto", debug){ # functi
     levels(column_factors) <- color_levels
     my_data.color[,1]<-as.character(column_factors)
   #}
+  if(debug==TRUE){test.my_data.color <<- my_data.color}
   return(my_data.color)
 }
 ## create_colors <- function(metadata_matrix, color_mode = "auto"){ # function to     

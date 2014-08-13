@@ -426,9 +426,9 @@ heatmap_dendrogram.from_file <- function (
   if (missing(lmat) || is.null(lmat)) {
     lmat <- rbind(4:3, 2:1)
     if (!missing(ColSideColors)) {
-      if (!is.character(ColSideColors) || length(ColSideColors) != 
-          nc) 
-        stop("'ColSideColors' must be a character vector of length ncol(x)")
+      #if (!is.character(ColSideColors) || length(ColSideColors) != 
+      #    nc) 
+      #  stop("'ColSideColors' must be a character vector of length ncol(x)")
       lmat <- rbind(lmat[1, ] + 1, c(NA, 1), lmat[2, ] + 
                     1)
       lhei <- c(lhei[1], 0.2, lhei[2])
