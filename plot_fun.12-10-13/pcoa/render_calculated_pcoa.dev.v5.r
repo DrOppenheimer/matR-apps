@@ -81,8 +81,6 @@ render_pcoa.v5 <- function(
   names(eigen_values) <- rownames(eigen_vectors)
   final_name_order <- rownames(eigen_vectors)
   
-  
-
   # Deal with pch options
   plot_pch <- numeric()
   if ( !is.na(pch_table) ){ # load pcg if it is not na - assumes that table has valid pch values, and uses the specified column
@@ -262,10 +260,10 @@ render_pcoa.v5 <- function(
                               )   
     metadata_matrix <- metadata_matrix[ order(rownames(metadata_matrix)),,drop=FALSE ]  # make sure that the metadata matrix is sorted (ROWWISE) by id
 
-     if(debug==TRUE){print("made it here 5")}
+    if(debug==TRUE){print("made it here 5")}
     
     if ( use_all_metadata_columns==TRUE ){ # AUTOGENERATE PLOTS FOR ALL COLUMNS IN THE METADATA FILE - ONE PLOT PER METADATA COLUMN
-
+      
       ncol.color_matrix <- ncol( metadata_matrix) # get then number of columns in the metadata data file = number of plots
       for (i in 1:ncol.color_matrix){ # loop to process through all columns
 
@@ -350,6 +348,8 @@ render_pcoa.v5 <- function(
       
       image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
       figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
+
+      if(debug==TRUE){print("made it here 13")}
       
       suppressWarnings( numericCheck <- as.numeric(metadata_column) ) # check to see if metadata are numeric, and sort accordingly
       if( is.na(numericCheck[1])==FALSE ){
@@ -364,6 +364,7 @@ render_pcoa.v5 <- function(
       
       metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
       if(debug==TRUE){ test3<<-metadata_column }
+
       
       color_column <- create_colors(metadata_column, color_mode = "auto", debug) # set parameters for plotting
       ncol.color_matrix <- 1 
@@ -373,6 +374,9 @@ render_pcoa.v5 <- function(
       color_levels <- col.wheel(num_levels)
       rownames(eigen_vectors) <- gsub("\"", "", rownames(eigen_vectors)) # make sure that vectors are sorted identically to the colors
       #eigen_vectors <- eigen_vectors[ rownames(color_column), ]
+
+      
+
       pcoa_colors <- pcoa_colors[order(final_name_order),]
       pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
       create_plot( # generate the plot
@@ -583,6 +587,15 @@ create_plot <- function(
                         title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                         ){
 
+
+  # sort data
+
+
+  # doublecheck ordering of vectors and values - rows sorted by id order in original input data
+  eigen_vectors <- eigen_vectors[ order(final_name_order), ] # 8-13-14
+  eigen_values <- eigen_values[ order(final_name_order), ]   # 8-13-14
+  
+  
   print("creating figure")
   
   png( # initialize the png 
@@ -626,9 +639,7 @@ create_plot <- function(
   par$cex <- figure_cex
   # main plot paramters - create the 2d or 3d plot
 
-  # doublecheck ordering of vectors and values - rows sorted by id order in original input data
-  eigen_vectors <- eigen_vectors[ order(final_name_order), ] # 8-13-14
-  eigen_values <- eigen_values[ order(final_name_order), ]   # 8-13-14
+
   
   i <- eigen_vectors [ ,components [1]]
   j <- eigen_vectors [ ,components [2]]
