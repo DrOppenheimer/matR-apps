@@ -3,9 +3,9 @@
 data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", cull_list_type="r_list", pass_file_suffix="PASS", culled_file_suffix="CULLED", debug=FALSE){
 
   # import list of ids to cull
-  if( identical(cull_list_type, "r_list"){
+  if( identical(cull_list_type, "r_list") ){
     id_list <- cull <- list
-  }else if (identical(cull_list_type, "file"){
+  }else if (identical(cull_list_type, "file")){
     id_list <- import_idList(cull_list)
   }else{
     stop("invalid cull_list_type - you can choose \"r_list\" or \"file\"")
