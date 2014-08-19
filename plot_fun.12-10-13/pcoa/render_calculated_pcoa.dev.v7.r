@@ -69,10 +69,16 @@ render_pcoa.v7 <- function(
   ######################
   ######## MAIN ########
   ######################
-  
+
+  # load data
   my_data <- load_pcoa_data(PCoA_in) # import PCoA data from *.PCoA file --- this is always done
   eigen_values <- my_data$eigen_values
   eigen_vectors <- my_data$eigen_vectors
+
+  # make sure everything is sorted by id
+  eigen_vectors <- eigen_vectors[ order(rownames(my_data$eigen_vectors)), ]
+  eigen_values <- eigen_values[ order(rownames(my_data$eigen_vectors)) ]
+  
   num_samples <- ncol(my_data$eigen_vectors)
   #if ( debug == TRUE ){ print(paste("num_samples: ", num_samples)) } 
 
@@ -80,6 +86,8 @@ render_pcoa.v7 <- function(
   plot_pch <- numeric()
   if ( !is.na(pch_table) ){ # load pcg if it is not na - assumes that table has valid pch values, and uses the specified column
     plot_pch <- load_pch(pch_table, pch_column, num_samples, debug) # This handles the pch if it is specified in a table # table may need 2 or more columns to work .... argh
+    # sort by id
+    plot_pch <- plot_pch[order(rownames(my_data$eigen_vectors)),]
   } else {
     plot_pch <- rep(pch_default, num_samples) # use default pch for all icons if no other is specified
   }
