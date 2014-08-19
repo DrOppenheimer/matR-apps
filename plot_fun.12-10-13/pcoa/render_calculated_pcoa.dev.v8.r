@@ -64,7 +64,7 @@ render_pcoa.v8 <- function(
          )
   }
 
-  if(debug==TRUE){print("made it here 1")}
+  
   ######################
   ######## MAIN ########
   ######################
@@ -81,6 +81,8 @@ render_pcoa.v8 <- function(
   num_samples <- ncol(my_data$eigen_vectors)
   #if ( debug == TRUE ){ print(paste("num_samples: ", num_samples)) } 
 
+  if(debug==TRUE){print("made it here 1")}
+  
   # Deal with pch options
   plot_pch <- numeric()
   if ( !is.na(pch_table) ){ # load pcg if it is not na - assumes that table has valid pch values, and uses the specified column
@@ -287,8 +289,8 @@ render_pcoa.v8 <- function(
         
         if(debug==TRUE){ test2<<-metadata_column }
         
-        #metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
-        metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
+        metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+        #metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
         if(debug==TRUE){ test3<<-metadata_column }
         
         color_column <- create_colors(metadata_column, color_mode = "auto", debug) # set parameters for plotting
@@ -297,16 +299,12 @@ render_pcoa.v8 <- function(
         column_levels <- levels(as.factor(metadata_column))
         num_levels <- length(column_levels)
         color_levels <- col.wheel(num_levels)
-        rownames(eigen_vectors) <- gsub("\"", "", rownames(eigen_vectors)) # make sure that vectors are sorted identically to the colors
 
-        if(debug==TRUE){
-          test.eigen_vectors <<- eigen_vectors
-          test.eigen_values <<- eigen_values
-          test.color_column <<- color_column
-          #test.pcoa_colors <<- pcoa_colors
-        }
+        rownames(eigen_vectors) <- gsub("\"", "", rownames(eigen_vectors)) # make sure that vectors are sorted identically to the colors
+        eigen_vectors <- eigen_vectors[ rownames(color_column), ]
+
+        plot_pch <- plot_pch[ rownames(color_column) ]# make sure pch is sorted identically to colors
         
-        eigen_vectors <- eigen_vectors[ rownames(color_column), ]        
         pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
   
         if(debug==TRUE){
@@ -541,16 +539,20 @@ load_pch <- function(pch_table, pch_column, num_samples, debug){
 
   pch_matrix <- data.matrix(read.table(pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
   
-  #pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
-  plot_pch <- pch_matrix[,pch_column, drop=FALSE]
-  if( nrow(plot_pch) != num_samples ){
+  if ( ncol(pch_matrix)==1 ){
+    plot_pch <- pch_matrix[ , 1, drop=FALSE]
+    plot_pch.vector <- as.vector(plot_pch)
+    names(plot_pch.vector) <- rownames(plot_pch)
+  }else{
+    plot_pch <- pch_matrix[ , pch_column, drop=FALSE]
+    plot_pch.vector <- as.vector(plot_pch)
+    names(plot_pch.vector) <- rownames(plot_pch)
+  }
+                                  
+  if( length(plot_pch.vector) != num_samples ){
     stop("paste the number of samples in pch column ( ", length(plot_pch), " ) does not match number of samples ( ", num_samples, " )")
   }
-  #}else{
-  #  plot_pch <- rep(19, num_samples)
-  #}
-  plot_pch.vector <- as.vector(plot_pch)
-  names(plot_pch.vector) <- rownames(plot_pch)
+
   
   return(plot_pch.vector)
 }
