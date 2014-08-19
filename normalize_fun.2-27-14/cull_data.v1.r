@@ -4,7 +4,7 @@ data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.tx
 
   # import list of ids to cull
   if( identical(cull_list_type, "r_list") ){
-    id_list <- cull <- list
+    id_list <- cull_list
   }else if (identical(cull_list_type, "file")){
     id_list <- import_idList(cull_list)
   }else{
