@@ -31,7 +31,6 @@ render_pcoa.v7 <- function(
                            pch_default=19,
                            pch_table=NA, # additional matrix that allows users to specify the shape of the data points
                            pch_column=1,
-                           pch_label_column=NA,
                            image_width_in=22,
                            image_height_in=17,
                            image_res_dpi=300,
@@ -120,7 +119,7 @@ render_pcoa.v7 <- function(
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                 )
   }
   #####################################################################################
@@ -191,7 +190,7 @@ render_pcoa.v7 <- function(
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                 )
     
   }
@@ -227,7 +226,7 @@ render_pcoa.v7 <- function(
                 image_out,figure_main,
                 image_width_in, image_height_in, image_res_dpi,
                 width_legend, width_figure,
-                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                 )
   }
   #####################################################################################
@@ -315,7 +314,7 @@ render_pcoa.v7 <- function(
                     image_out,figure_main,
                     image_width_in, image_height_in, image_res_dpi,
                     width_legend, width_figure,
-                    title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                    title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                     )        
       }
       
@@ -360,7 +359,7 @@ render_pcoa.v7 <- function(
                   image_out,figure_main,
                   image_width_in, image_height_in, image_res_dpi,
                   width_legend, width_figure,
-                  title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                  title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                   )
       
     }else{
@@ -638,10 +637,10 @@ create_plot <- function(
                         image_out,figure_main,
                         image_width_in, image_height_in, image_res_dpi,
                         width_legend, width_figure,
-                        title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line
+                        title_cex, legend_cex, figure_cex, figure_symbol_cex, bar_cex, label_points, vert_line, debug
                         ){
 
-  print("creating figure")
+  if(debug==TRUE){print("creating figure")}
   
   png( # initialize the png 
       filename = image_out,
@@ -661,7 +660,7 @@ create_plot <- function(
   par( oma = c(0,0,0,0) )
   plot.new()
   if ( identical(title_cex, "default") ){ # automatically scale cex for the legend
-    print("autoscaling the title cex")
+    if(debug==TRUE){print("autoscaling the title cex")}
     title_par <- par_fetch()
     title_cex <- calculate_cex(figure_main, title_par$my_pin, title_par$my_mai, reduce_by=0.10)
   }
@@ -670,7 +669,7 @@ create_plot <- function(
   # PLOT THE LEGEND (layout frame 2)
   plot.new()
   if ( identical(legend_cex, "default") ){ # automatically scale cex for the legend
-    print("autoscaling the legend cex")
+    if(debug==TRUE){print("autoscaling the legend cex")}
     legend_par <- par_fetch()
     legend_cex <- calculate_cex(column_levels, legend_par$my_pin, legend_par$my_mai, reduce_by=0.40)
   }
