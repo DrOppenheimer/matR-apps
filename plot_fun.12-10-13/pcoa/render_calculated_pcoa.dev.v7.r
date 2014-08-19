@@ -44,7 +44,7 @@ render_pcoa.v7 <- function(
                            vert_line="dotted", # "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash"
                            bar_cex = 2, 
                            use_all_metadata_columns=FALSE, # option to overide color_column -- if true, plots are generate for all of the metadata columns
-                           debug=TRUE
+                           debug=FALSE
                             )
   
 {
