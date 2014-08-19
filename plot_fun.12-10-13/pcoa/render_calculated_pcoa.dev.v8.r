@@ -18,7 +18,7 @@
 # It can handle the case when there is no metadata - painting all of points the same
 # users can also specify a pch table to control the shape of plotted icons (this feature may not be ready yet)
 
-render_pcoa.v7 <- function(
+render_pcoa.v8 <- function(
                            PCoA_in="", # annotation abundance table (raw or normalized values)
                            image_out="default",
                            figure_main ="principal coordinates",
@@ -69,14 +69,14 @@ render_pcoa.v7 <- function(
   ######## MAIN ########
   ######################
 
-  # load data
+  # load data - everything is sorted by id
   my_data <- load_pcoa_data(PCoA_in) # import PCoA data from *.PCoA file --- this is always done
   eigen_values <- my_data$eigen_values
   eigen_vectors <- my_data$eigen_vectors
-
+  
   # make sure everything is sorted by id
   eigen_vectors <- eigen_vectors[ order(rownames(my_data$eigen_vectors)), ]
-  eigen_values <- eigen_values[ order(rownames(my_data$eigen_vectors)) ]
+  eigen_values <- eigen_values[ order(rownames(my_data$eigen_vectors)) ] # order will reflect id
   
   num_samples <- ncol(my_data$eigen_vectors)
   #if ( debug == TRUE ){ print(paste("num_samples: ", num_samples)) } 
@@ -89,9 +89,10 @@ render_pcoa.v7 <- function(
       print("loaded pch table:")
       print(plot_pch)
       print(paste("plot_pch class: ", class(plot_pch), sep=""))
+      my_pch <<- plot_pch
     }
     # sort by id
-    #plot_pch <- plot_pch[order(rownames(my_data$eigen_vectors)),]
+    plot_pch <- plot_pch[order(names(plot_pch))]
   } else {
     plot_pch <- rep(pch_default, num_samples) # use default pch for all icons if no other is specified
     if(debug==TRUE){print("used default pch")}
@@ -172,12 +173,10 @@ render_pcoa.v7 <- function(
       colnames(metadata_column) <- column_name
       rownames(metadata_column) <- row_names
     }
-    metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+    #metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+    metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
     color_column <- create_colors(metadata_column, color_mode = "auto", debug)
 
-    
-
-    
     column_levels <- levels(as.factor(as.matrix(metadata_column))) 
     num_levels <- length(column_levels)
     color_levels <- col.wheel(num_levels)
@@ -257,8 +256,9 @@ render_pcoa.v7 <- function(
                                          comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
                                          )
                               )   
+    #metadata_matrix <- metadata_matrix[ order(rownames(metadata_matrix)),,drop=FALSE ]  # make sure that the metadata matrix is sorted (ROWWISE) by id
     metadata_matrix <- metadata_matrix[ order(rownames(metadata_matrix)),,drop=FALSE ]  # make sure that the metadata matrix is sorted (ROWWISE) by id
-
+    
      if(debug==TRUE){print("made it here 5")}
     
     if ( use_all_metadata_columns==TRUE ){ # AUTOGENERATE PLOTS FOR ALL COLUMNS IN THE METADATA FILE - ONE PLOT PER METADATA COLUMN
@@ -287,7 +287,8 @@ render_pcoa.v7 <- function(
         
         if(debug==TRUE){ test2<<-metadata_column }
         
-        metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+        #metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+        metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
         if(debug==TRUE){ test3<<-metadata_column }
         
         color_column <- create_colors(metadata_column, color_mode = "auto", debug) # set parameters for plotting
@@ -346,7 +347,8 @@ render_pcoa.v7 <- function(
 
       if(debug==TRUE){ test2<<-metadata_column }
       
-      metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+      #metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
+      metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
       if(debug==TRUE){ test3<<-metadata_column }
       
       color_column <- create_colors(metadata_column, color_mode = "auto", debug) # set parameters for plotting
@@ -539,7 +541,7 @@ load_pch <- function(pch_table, pch_column, num_samples, debug){
 
   pch_matrix <- data.matrix(read.table(pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
   
-  pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
+  #pch_matrix <- pch_matrix[order(rownames(pch_matrix)),]
   plot_pch <- pch_matrix[,pch_column, drop=FALSE]
   if( nrow(plot_pch) != num_samples ){
     stop("paste the number of samples in pch column ( ", length(plot_pch), " ) does not match number of samples ( ", num_samples, " )")
@@ -548,6 +550,7 @@ load_pch <- function(pch_table, pch_column, num_samples, debug){
   #  plot_pch <- rep(19, num_samples)
   #}
   plot_pch.vector <- as.vector(plot_pch)
+  names(plot_pch.vector) <- rownames(plot_pch)
   
   return(plot_pch.vector)
 }
@@ -761,9 +764,9 @@ create_plot <- function(
   bar_z <- matrix(1:num_levels, ncol=1)
   image(x=bar_x,y=bar_y,z=bar_z,col=color_levels,axes=FALSE,xlab="",ylab="")
   loc <- par("usr")
-  text(loc[1], (loc[3]+0.8), column_levels[1], pos = 4, xpd = T, cex=bar_cex, adj=c(0,0))
+  text(loc[1], (loc[3]+1), column_levels[1], pos = 4, xpd = T, cex=bar_cex, adj=c(0,0))
   
-  text(loc[2], (loc[3]+0.8), column_levels[num_levels], pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
+  text(loc[2], (loc[3]+1), column_levels[num_levels], pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
   
                                         #text(loc[1], loc[2], column_levels[1], pos = 4, xpd = T, cex=bar_cex, adj=c(0,0))
   #text(loc[2], loc[2], column_levels[num_levels], pos = 2, xpd = T, cex=bar_cex, adj=c(0,1))
