@@ -162,6 +162,11 @@ metadata_check <- function(my_data_file=NA, my_PCoA=NA, my_metadata="", debug=TR
   ######## MAIN:
   ######################
 
+  if( file.exists(output_filename) ){
+    print(paste("Deleting old log: ", output_filename, sep=""))
+    unlink(output_filename)
+  }
+  
   if ( is.na(my_data_file) && is.na(my_PCoA) && my_metadata=="" ){
     func_usage()
   }
