@@ -69,8 +69,12 @@ render_pcoa.v9 <- function(
   ######## MAIN ########
   ######################
 
-  # load data - everything is sorted by id
+  # load pch - everything is sorted by id
   my_data <- load_pcoa_data(PCoA_in) # import PCoA data from *.PCoA file --- this is always done
+
+  # CHECK FOR LEVELS OF PCH AS FACTOR _ DEFINE TWO TYPES OF LEGENDS
+  
+  # load data - everything is sorted by id
   eigen_values <- my_data$eigen_values
   eigen_vectors <- my_data$eigen_vectors
   
