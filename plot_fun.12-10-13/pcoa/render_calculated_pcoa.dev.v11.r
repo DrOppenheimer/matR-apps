@@ -18,12 +18,7 @@
 # It can handle the case when there is no metadata - painting all of points the same
 # users can also specify a pch table to control the shape of plotted icons (this feature may not be ready yet)
 
-# It can also use pch to specify the incons for the points -- this functionality is not inteligent
-# to use it you have to provide a table and column that contains valid pch integers for the points
-# labels for these have to to be specified in a vector of strings
-# labeling is not that bad - legend will be order with respect to ascending pch number
-
-render_pcoa.v10 <- function(
+render_pcoa.v11 <- function(
                             PCoA_in="", # annotation abundance table (raw or normalized values)
                             image_out="default",
                             figure_main ="principal coordinates",
@@ -33,8 +28,9 @@ render_pcoa.v10 <- function(
                             metadata_column_index=1, # column of the color matrix to color the pcoa (colors for the points in the matrix) -- rows = samples, columns = colorings
                             amethst_groups=NA,        
                             color_list=NA, # use explicit list of colors - trumps table if both are supplied
+                            pch_behavior="default", #  "default" use pch_default for all; "auto" automatically assign pch from table; "asis" use integer values in the column
                             pch_default=16,
-                            pch_table="default", # additional matrix that allows users to specify the shape of the data points
+                            pch_table="default",
                             pch_column=1,
                             pch_labels="default",
                             image_width_in=22,
@@ -48,7 +44,7 @@ render_pcoa.v10 <- function(
                             figure_symbol_cex=2,
                             vert_line="dotted", # "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash"
                             bar_cex = 2,
-                            bar_vert_adjust = 0,  
+                            bar_vert_adjust = 1.5,  
                             use_all_metadata_columns=FALSE, # option to overide color_column -- if true, plots are generate for all of the metadata columns
                             debug=FALSE
                             )
@@ -94,8 +90,25 @@ render_pcoa.v10 <- function(
 
   # CHECK FOR LEVELS OF PCH AS FACTOR _ DEFINE TWO TYPES OF LEGENDS
   # load pch - handles table or integer(pch_default)
-  plot_pch <- load_pch(pch_table, pch_column, num_samples, pch_default, rownames(my_data$eigen_vectors), debug) 
 
+
+
+
+  
+  # somwhere here logic for three pch options
+  #  pch_behavior = c("default", "auto", "asis")
+
+
+  plot_pch <- load_pch(pch_behavior, pch_default, pch_table, pch_column, pch_labels, num_samples, rownames(my_data$eigen_vectors), debug) 
+
+
+
+  return(list( "pch.values"=plot_pch.vector, "pch.levels"=pch.levels, "pch.labels"=pch_labels)
+
+
+  
+
+  
   if(debug==TRUE){print("made it here 2")}
   
   #####################################################################################
@@ -520,39 +533,60 @@ load_pcoa_data <- function(PCoA_in){
 ######################
 # SUB(3): Function to import the pch information for the points # load pch matrix if one is specified
 ######################
-load_pch <- function(pch_table, pch_column, num_samples, pch_default, my_names, debug){
+load_pch <- function(pch_behavior, pch_default, pch_table, pch_column, pch_labels, num_samples, my_names, debug){
 
-  if(debug==TRUE){print(paste("class(my_names): ", class(my_names), sep=""))}
+
+#pch_behavior=c("default", "auto", "asis")
+
   
-  if( identical(pch_table, "default") ){
+  if(debug==TRUE){print(paste("class(my_names): ", class(my_names), sep=""))}
+
+  if( identical(pch_behavior,"default") ){
+  
     my_names <- gsub("\"", "", my_names)
     pch_matrix <- data.matrix(matrix(rep(pch_default, num_samples), ncol=1))
     plot_pch <- pch_matrix[ , 1, drop=FALSE]
     plot_pch.vector <- as.vector(plot_pch)
     names(plot_pch.vector) <- my_names
+    pch.levels <- pch_labels
+    pch_labels <- pch_labels
     if(debug==TRUE){
       print(paste("plot_pch.vector class: ", class(plot_pch.vector)))
       print(plot_pch.vector)
       my_pch <<- plot_pch.vector
     }
-  }else{
+  }else if ( identical(pch_behavior,"asis") ){
     pch_matrix <- data.matrix(read.table(pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
     plot_pch <- pch_matrix[ , pch_column, drop=FALSE]
     plot_pch.vector <- as.vector(plot_pch)
     names(plot_pch.vector) <- rownames(pch_matrix)
+    pch.levels <- pch_labels
+    pch_labels <- pch_labels
     if(debug==TRUE){
       print(paste("class(rownames(pch_matrix)): ", class(rownames(pch_matrix)), sep=""))
       print(paste("plot_pch.vector class: ", class(plot_pch.vector)))
       print(plot_pch.vector)
       my_pch <<- plot_pch.vector
     }
+  }else if( identical(pch_behavior, "auto") ){
+
+    pch_table <- read.table(pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE)
+
+    created_pch <- create_pch(pch_table, pch_column, debug)
+
+    plot_pch.vector <- as.vector(created_pch$my_pch)
+    pch.levels <- created_pch$my_pch_levels
+    pch_labels <- created_pch$my_pch_levels_text  
+
+  }else{
+    stop(paste("( ",pch_behavior, " )", "is an invalid pch_behavior option value - try \"default\", \"asis\", or \"auto\"")
   }
-                                  
+                                    
   if( length(plot_pch.vector) != num_samples ){
     stop("paste the number of samples in pch column ( ", length(plot_pch), " ) does not match number of samples ( ", num_samples, " )")
   }
 
-  return(plot_pch.vector)
+  return(list( "pch.values"=plot_pch.vector, "pch.levels"=pch.levels, "pch.labels"=pch_labels)
 }
 ######################
 ######################
@@ -765,7 +799,7 @@ create_plot <- function(
   #invisible (P)
   #})
 
-  # PCH LEGEND (4 or doesn't exist)
+  # PCH LEGEND (4 or doesn't exist) ############ <-
 
   if (num_pch>1){
     #par( mai = c(0,0,0,0) )
@@ -888,6 +922,33 @@ create_colors <- function(metadata_column, color_mode = "auto", debug){ # functi
   #}
   return(my_data.color)
 }
+######################
+######################
+
+
+######################
+# SUB(10): Automtically generate pch from metadata with identical text or values
+######################
+create_pch <- function(metadata_table, metadata_column, debug){ # function to     
+ #return(list("my_pch"=my_pch, "pch_levels"=pch_levels, "pch_levels_text"=pch_levels_text))
+  my_data_frame <- data.frame(metadata_table)
+  pch_levels_text <- levels(as.factor(my_data_frame[,metadata_column]))
+  num_levels <- length(pch_levels_text)
+  if( num_levels>25 ){ stop("too many pch levels - must be 25 or less") }
+  pch_levels <- 1:num_levels
+  names(pch_levels) <- pch_levels_text
+
+  my_pch <- integer()
+  for i in 1:nrow(my_data_frame){
+    my_pch <- c(my_pch, pch_levels_text[ my_data_frame[i,metadata_column] ])
+  }
+   
+  return(list("my_pch"=my_pch, "pch_levels"=pch_levels, "pch_levels_text"=pch_levels_text))
+}
+######################
+######################
+
+    
 ## create_colors <- function(metadata_matrix, color_mode = "auto"){ # function to     
 ##   #my_data.color <- data.frame(metadata_matrix)
 ##   my_data.color <- vector(length=nrow(metadata_matrix), mode="character")
