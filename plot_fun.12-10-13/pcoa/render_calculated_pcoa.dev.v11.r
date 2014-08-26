@@ -84,7 +84,13 @@ render_pcoa.v11 <- function(
   
   # make sure everything is sorted by id
   eigen_vectors <- eigen_vectors[ order(sample_names), ]
-  eigen_values <- eigen_values[ order(sample_names) ] 
+  eigen_values <- eigen_values[ order(sample_names) ]
+
+  if(debug==TRUE){
+    eigen_vectors.test<<-eigen_vectors
+    eigen_values.test<<-eigen_values  
+  }
+  
   #eigen_vectors <- eigen_vectors[ order(rownames(my_data$eigen_vectors)), ]
   #eigen_values <- eigen_values[ order(rownames(my_data$eigen_vectors)) ] # order will reflect id
   
