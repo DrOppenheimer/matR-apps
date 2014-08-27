@@ -103,7 +103,7 @@ MGRAST_preprocessing <<- function(
            DESeq_blind={
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
-             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count
+             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
                                            DESeq_metadata_table, DESeq_metadata_column, sample_names,
                                            DESeq_method="blind", DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)
            },
@@ -112,7 +112,7 @@ MGRAST_preprocessing <<- function(
              if( is.na(DESeq_metadata_in) ){ stop("To DESeq_norm_by_group you must specify a DESeq_metadata_table") }
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
-             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count
+             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
                                            DESeq_metadata_table, DESeq_metadata_column, sample_names,
                                            DESeq_method="per-condition", DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)    
            },
@@ -121,7 +121,7 @@ MGRAST_preprocessing <<- function(
              if( is.na(DESeq_metadata_in) ){ stop("To DESeq_pooled you must specify a DESeq_metadata_table") }
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
-             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count
+             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
                                            DESeq_metadata_table, DESeq_metadata_column, sample_names,
                                            DESeq_method="pooled", DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)
            },
@@ -130,7 +130,7 @@ MGRAST_preprocessing <<- function(
              if( is.na(DESeq_metadata_in) ){ stop("To DESeq_pooled_CR you must specify a DESeq_metadata_table") }             
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
-             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count
+             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
                                            DESeq_metadata_table, DESeq_metadata_column, sample_names,
                                            DESeq_method="pooled-CR", DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)  
            },
@@ -309,7 +309,7 @@ standardize_data <- function (x, ...){
 ######################################################################
 ### sub to perform DESeq normalization
 ######################################################################
-DESeq_norm_data <- function (x, regression_filename, pseudo_count
+DESeq_norm_data <- function (x, regression_filename, pseudo_count,
                              DESeq_metadata_table, DESeq_metadata_column, sample_names,
                              DESeq_method, DESeq_sharingMode, DESeq_fitType, DESeq_image, debug, ...){
   # much of the code in this function is adapted/borrowed from two sources

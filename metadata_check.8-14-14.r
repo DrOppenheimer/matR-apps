@@ -90,11 +90,14 @@ metadata_check <- function(my_data_file=NA, my_PCoA=NA, my_metadata="", debug=TR
   ######################
   find_discrepancies <- function(data_names, metadata_names, data_out_name){
     ids_in_both <- intersect(data_names, metadata_names)
+    write( paste("ids_in_both (", length(ids_in_both) ,")"), file=output_filename, append=TRUE)
     #ids_in_both <- ids_in_both[ order(ids_in_both) ]
     ids_only_in_data <- setdiff(data_names, metadata_names)
+    write( paste("ids_in_data_or_PCoA_only (", length(ids_only_in_data) ,")"), file=output_filename, append=TRUE)
     if(debug==TRUE){ ids_only_in_data.test<<-ids_only_in_data }
     #if( length(ids_only_in_data)==0 ){ ids_only_in_data<-"none" }
     ids_only_in_metadata <- setdiff(metadata_names, data_names)
+    write( paste("ids_in_metadata_only (", length(ids_only_in_metadata) ,")"), file=output_filename, append=TRUE)
     if(debug==TRUE){ ids_only_in_metadata.test<<-ids_only_in_metadata }
     #if( length(ids_only_in_metadata)==0){ ids_only_in_metadata<-"none" }  
 
@@ -110,7 +113,7 @@ metadata_check <- function(my_data_file=NA, my_PCoA=NA, my_metadata="", debug=TR
     if(debug==TRUE){output_matrix.test<<-output_matrix}
     colnames(output_matrix) <- c("in both", data_out_name, paste("in ", my_metadata," only",sep=""))
     #if( (length(ids_only_in_data) + length(ids_only_in_metadata))==0 ){
-    if( identical(ids_only_in_data, "none") && identical(ids_only_in_metadata, "none") ){
+    if( (length(ids_only_in_data) + length(ids_only_in_metadata)) == 0 ) ){
       write("***\t***\t***\t***", file=output_filename, append=TRUE)
       export_data(output_matrix, output_filename)
       print(paste("Data look ok - see output file ( ", output_filename, " ) for details", sep=""))
