@@ -113,7 +113,7 @@ metadata_check <- function(my_data_file=NA, my_PCoA=NA, my_metadata="", debug=TR
     if(debug==TRUE){output_matrix.test<<-output_matrix}
     colnames(output_matrix) <- c("in both", data_out_name, paste("in ", my_metadata," only",sep=""))
     #if( (length(ids_only_in_data) + length(ids_only_in_metadata))==0 ){
-    if( (length(ids_only_in_data) + length(ids_only_in_metadata)) == 0 ) ){
+    if( (length(ids_only_in_data) + length(ids_only_in_metadata)) == 0 ){
       write("***\t***\t***\t***", file=output_filename, append=TRUE)
       export_data(output_matrix, output_filename)
       print(paste("Data look ok - see output file ( ", output_filename, " ) for details", sep=""))
