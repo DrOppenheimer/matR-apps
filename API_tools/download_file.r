@@ -41,15 +41,15 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
   my_file_url <- NA
   for (i in 1:length(my_setlist)){     
     #if(debug==TRUE){ print(my_setlist[[i]]["file_id"])  }
-    if (identical(  as.character(my_setlist[[i]]["file_id"]), as.character(file_id) ) ){
+    if (identical( as.character(my_setlist[[i]]["file_id"]), as.character(file_id) ) ){
       my_file_name <- my_setlist[[i]]["file_name"]
       if(debug==TRUE){print(paste("my_file_name", my_file_name))}
       my_file_url <- my_setlist[[i]]["url"]
       if(debug==TRUE){print(paste("my_file_url", my_file_url))}
     } 
-  }    
-  
-  if( !is.na(mgid) ){  
+  }
+
+  if( !is.na(new_file_name) ){  
     new_file_name <- paste(mgid, ".", my_file_name, sep="")
     new_file_name.no_path <- new_file_name
     # create the new directory if it does not exist     
@@ -57,7 +57,7 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
       dir.create(file.path(destination_dir), showWarnings = FALSE)
       new_file_name <- paste(destination_dir, "/", new_file_name, sep="")
     }  
-  }
+  
   
   if(debug==TRUE){print(paste("new_file_name: ", new_file_name))}
   
