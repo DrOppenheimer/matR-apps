@@ -1,4 +1,4 @@
-download_file <- function(mgid, file_id="100.2", unzip_file=TRUE,  destination_dir="/Users/kevin/test_dir", print_setlist=FALSE, auth="default", debug=TRUE){
+download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destination_dir="/Users/kevin/test_dir", print_setlist=FALSE, auth="default", debug=TRUE){
   
   require(matR)
   require(RCurl)
@@ -49,7 +49,7 @@ download_file <- function(mgid, file_id="100.2", unzip_file=TRUE,  destination_d
     } 
   }    
   
-  if( !is.na(my_file_name) ){  
+  if( !is.na(mgid) ){  
     new_file_name <- paste(mgid, ".", my_file_name, sep="")
     new_file_name.no_path <- new_file_name
     # create the new directory if it does not exist     
