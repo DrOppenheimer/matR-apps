@@ -1,4 +1,4 @@
-download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_file_id="100.2", my_unzip_file=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="/Users/kevin/test_dir", add_qiime_labels=TRUE, debug=TRUE){  
+download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_file_id="100.2", my_unzip_file=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="/Users/kevin/test_dir", output_filename="my_combined_seqs.fna", add_qiime_labels=TRUE, debug=TRUE){  
   
   require(matR)
   require(RCurl)
@@ -31,15 +31,23 @@ download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_fil
   # Use qiime add_qiime_labels.py to create input for qiime (fasta, mapping is the other input) 
   if( add_qiime_labels==TRUE ){
     
-    output_dir <- paste(my_destination_dir, "/", "add_qiime_labels.output", sep="")
+    #output_dir <- paste(my_destination_dir, "/", "add_qiime_labels.output", sep="")
     add_qiime_labels.string <- paste("add_qiime_labels.py -i ", my_destination_dir,
                                      " -m ", mapping_file,
-                                     " -o ", output_dir,
+                                     " -o ", my_destination_dir,
                                      " -c InputFileName",
                                      sep=""
                                      )
     if( debug==TRUE ){ print(cat("\n\n", "add_qiime_labels.string:","\n", add_qiime_labels.string, "\n\n"))  }
     system(add_qiime_labels.string)
+    # rename the file from qiimes default
+    rename_string <- paste("mv ", my_destination_dir, "/combined_seqs.fna ", my_destination_dir, "/", output_filename)
+    if(debug=TRUE){ print(rename_string) }
+    system(rename_string)
+    
   }
+
+  
+  
     
 }
