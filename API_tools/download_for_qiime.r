@@ -1,4 +1,4 @@
-download_for_qiime <- function(mgid_list="./test_id_list.txt", my_stage_name="dereplication" , my_file_type="fna", my_file_name="150.dereplication.passed.fna.gz", my_unzip_file=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="./output", output_filename="my_combined_seqs.fna", add_qiime_labels=TRUE, debug=TRUE){  
+download_for_qiime <- function(mgid_list="./test_id_list.txt", my_stage_name="dereplication" , my_file_type="fna", my_file_name="150.dereplication.passed.fna.gz", my_unzip_file=TRUE, cleanup=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="./output", output_filename="my_combined_seqs.fna", add_qiime_labels=TRUE, debug=TRUE){  
   
   require(matR)
   require(RCurl)
@@ -32,7 +32,6 @@ download_for_qiime <- function(mgid_list="./test_id_list.txt", my_stage_name="de
   
   # Use qiime add_qiime_labels.py to create input for qiime (fasta, mapping is the other input) 
   if( add_qiime_labels==TRUE ){
-    
     #output_dir <- paste(my_destination_dir, "/", "add_qiime_labels.output", sep="")
     add_qiime_labels.string <- paste("add_qiime_labels.py -i ", my_destination_dir,
                                      " -m ", mapping_file,
@@ -45,11 +44,14 @@ download_for_qiime <- function(mgid_list="./test_id_list.txt", my_stage_name="de
     # rename the file from qiimes default
     rename_string <- paste("mv ", my_destination_dir, "/combined_seqs.fna ", my_destination_dir, "/", output_filename, sep="")
     if(debug==TRUE){ print(rename_string) }
-    system(rename_string)
-    
+    system(rename_string)  
   }
 
-  
-  
-    
+  if( cleanup==TRUE ){
+    for (i in nrow(mapping_matrix)){
+      file_to_delete <- paste(my_destination_dir, "/", mapping_matrix[i] , sep="")
+      if( file.exists(file_to_delete) ){ unlink(file_to_delete) }
+    }  
+  }
+   
 }
