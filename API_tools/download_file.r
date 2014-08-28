@@ -49,7 +49,7 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
     } 
   }
 
-  if( !is.na(new_file_name) ){  
+  if( !is.na(my_file_name) ){  
     new_file_name <- paste(mgid, ".", my_file_name, sep="")
     new_file_name.no_path <- new_file_name
     # create the new directory if it does not exist     
