@@ -59,20 +59,22 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
     }  
   
   
-  if(debug==TRUE){print(paste("new_file_name: ", new_file_name))}
+    if(debug==TRUE){print(paste("new_file_name: ", new_file_name))}
   
-  if( !is.na(auth) ){
-    my_file_url <- paste(my_file_url, "&auth=", auth, sep="" )  
+    if( !is.na(auth) ){
+      my_file_url <- paste(my_file_url, "&auth=", auth, sep="" )  
+    }
+  
+    bdown(my_file_url, new_file_name)  
+  
+    if( unzip_file==TRUE ){
+      unzip_string <- paste("gunzip", new_file_name)
+      system(unzip_string)
+      new_file_name.no_path <- gsub(pattern=".gz$", replacement="", new_file_name.no_path)
+    }
+  
+    return(new_file_name.no_path)
+
   }
-  
-  bdown(my_file_url, new_file_name)  
-  
-  if( unzip_file==TRUE ){
-    unzip_string <- paste("gunzip", new_file_name)
-    system(unzip_string)
-    new_file_name.no_path <- gsub(pattern=".gz$", replacement="", new_file_name.no_path)
-  }
-  
-  return(new_file_name.no_path)
   
 }
