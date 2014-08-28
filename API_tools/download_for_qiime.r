@@ -1,6 +1,8 @@
 download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_file_id="100.2", my_unzip_file=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="/Users/kevin/test_dir", add_qiime_labels=TRUE, debug=TRUE){  
   
   require(matR)
+  require(RCurl)
+  require(RJSONIO)
   
   my_ids <- readIDs(mgid_list)
   
