@@ -1,4 +1,4 @@
-download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_file_id="100.2", my_unzip_file=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="/Users/kevin/test_dir", output_filename="my_combined_seqs.fna", add_qiime_labels=TRUE, debug=TRUE){  
+download_for_qiime <- function(mgid_list="./test_id_list.txt", my_stage_name="dereplication" , my_file_type="fna", my_file_name="150.dereplication.passed.fna.gz", my_unzip_file=TRUE, mapping_file="/Users/kevin/test_dir/test_mapping.txt", my_destination_dir="./output", output_filename="my_combined_seqs.fna", add_qiime_labels=TRUE, debug=TRUE){  
   
   require(matR)
   require(RCurl)
@@ -15,7 +15,9 @@ download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_fil
   
   # perform the downloads and create a mapping file
   for (i in 1:length(my_ids)){
-    new_file_name <- download_file(mgid=my_ids[i], file_id=my_file_id, unzip_file=my_unzip_file, destination_dir=my_destination_dir, debug=debug )
+
+    #download_file <- function(mgid=NA, stage_name="dereplication", file_type="fna", file_name="150.dereplication.passed.fna.gz", unzip_file=TRUE,  destination_dir="/Users/kevin/test_dir", print_setlist=FALSE, auth="default", debug=TRUE){
+    new_file_name <- download_file(mgid=my_ids[i], stage_name=my_stage_name, file_type=my_file_type, file_name=my_file_name, unzip_file=my_unzip_file, destination_dir=my_destination_dir, debug=debug )
     if( !is.na(mapping_file) ){
       mapping_matrix[i,1]<-my_ids[i]
       mapping_matrix[i,4]<-new_file_name

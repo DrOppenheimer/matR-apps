@@ -1,4 +1,4 @@
-mg_setlist_fetch <- function(mgid, print_setlist, auth="default", debug=FALSE){
+mg_setlist_fetch <- function(mgid, print_setlist=FALSE, auth="default", debug=FALSE){
   
   require(matR)
   require(RCurl)

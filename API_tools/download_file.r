@@ -1,4 +1,4 @@
-download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destination_dir="/Users/kevin/test_dir", print_setlist=FALSE, auth="default", debug=TRUE){
+download_file <- function(mgid=NA, stage_name="dereplication", file_type="fna", file_name="150.dereplication.passed.fna.gz", unzip_file=TRUE,  destination_dir="/Users/kevin/test_dir", print_setlist=FALSE, auth="default", debug=TRUE){
   
   require(matR)
   require(RCurl)
@@ -20,35 +20,50 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
   }
   
   #### Sub to fetch and optionally display the setlist
-  mg_setlist_fetch <- function(mgid, print_setlist){
-    my_url <- paste("http://api.metagenomics.anl.gov//download/", mgid, "?name=setlist", sep="")
+  mg_setlist_fetch <- function(mgid, print_setlist=FALSE, auth="default", debug=FALSE){
+  
+    if( identical(auth,"default") ){
+      auth <- msession$getAuth()
+    }
+  
+    my_url <- paste("http://api.metagenomics.anl.gov//download/", mgid, "?name=setlist", "&auth=", auth, sep="")
+    if(debug==TRUE){ print(my_url) }
+    
     my_json <- fromJSON(getURL(my_url))  
     if ( print_setlist==TRUE ){
       for (i in 1:length(my_json)){ 
-        my_entry <- my_json[[i]][ c("id", "stage_id", "stage_name", "file_type", "file_name", "file_id", "url" ) ]
+        my_entry <- my_json[[i]][ c("id", "stage_id", "stage_name", "file_type", "file_name", "stage_name", "url" ) ]
         for (j in 1:length(my_entry)){ print(paste( names(my_entry)[j], "::", (my_entry)[j]))  }
         print("##############################################")
       }
     }
     return(my_json)
   }
-  
-  my_setlist <- mg_setlist_fetch(mgid, print_setlist)
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ### MAIN
+  # mg_setlist_fetch <- function(mgid, print_setlist=FALSE, auth="default", debug=FALSE)
+  my_setlist <- mg_setlist_fetch(mgid, print_setlist, auth, debug)
   
   if(debug==TRUE){  my_setlist.test <<- my_setlist }
   
   my_file_name <- NA
   my_file_url <- NA
   for (i in 1:length(my_setlist)){     
-    #if(debug==TRUE){ print(my_setlist[[i]]["file_id"])  }
-    if (identical( as.character(my_setlist[[i]]["file_id"]), as.character(file_id) ) ){
-      my_file_name <- my_setlist[[i]]["file_name"]
-      if(debug==TRUE){print(paste("my_file_name", my_file_name))}
-      my_file_url <- my_setlist[[i]]["url"]
-      if(debug==TRUE){print(paste("my_file_url", my_file_url))}
+    # File has to match stage, type, and name
+    if (identical( as.character(my_setlist[[i]]["stage_name"]), as.character(stage_name) ) ){
+      if ( identical( as.character(my_setlist[[i]]["file_type"]), as.character(file_type) ) ){
+        if ( identical( as.character(my_setlist[[i]]["file_name"]), as.character(file_name) ) ){          
+          my_file_name <- my_setlist[[i]]["file_name"]
+          if(debug==TRUE){print(paste("my_file_name", my_file_name))}
+          my_file_url <- my_setlist[[i]]["url"]
+          if(debug==TRUE){print(paste("my_file_url", my_file_url))}
+        }
+      }
     } 
   }
-
+  
   if( !is.na(my_file_name) ){  
     new_file_name <- paste(mgid, ".", my_file_name, sep="")
     new_file_name.no_path <- new_file_name
@@ -57,7 +72,6 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
       dir.create(file.path(destination_dir), showWarnings = FALSE)
       new_file_name <- paste(destination_dir, "/", new_file_name, sep="")
     }  
-  
   
     if(debug==TRUE){print(paste("new_file_name: ", new_file_name))}
   
@@ -76,6 +90,8 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
     if( debug==TRUE ){ print(paste("new_file_name.no_path ::",new_file_name.no_path)) }
     return(new_file_name.no_path)
 
+  }else{
+    stop(paste("cannot find requested file"))
   }
   
 }
