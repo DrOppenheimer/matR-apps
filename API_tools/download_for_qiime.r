@@ -42,7 +42,7 @@ download_for_qiime <- function(mgid_list="/Users/kevin/test_id_list.txt", my_fil
     system(add_qiime_labels.string)
     # rename the file from qiimes default
     rename_string <- paste("mv ", my_destination_dir, "/combined_seqs.fna ", my_destination_dir, "/", output_filename)
-    if(debug=TRUE){ print(rename_string) }
+    if(debug==TRUE){ print(rename_string) }
     system(rename_string)
     
   }
