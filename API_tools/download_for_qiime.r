@@ -49,7 +49,8 @@ download_for_qiime <- function(mgid_list="./test_id_list.txt", my_stage_name="de
 
   if( cleanup==TRUE ){
     for (i in nrow(mapping_matrix)){
-      file_to_delete <- paste(my_destination_dir, "/", mapping_matrix[i] , sep="")
+      file_to_delete <- paste(my_destination_dir, "/", mapping_matrix[i,4] , sep="")
+      if(debug==TRUE){ print(paste("file_to_delete:",file_to_delete)) }
       if( file.exists(file_to_delete) ){ unlink(file_to_delete) }
     }  
   }
