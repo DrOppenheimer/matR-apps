@@ -1,4 +1,4 @@
-mg_setlist_fetch <- function(mgid, print_setlist, auth="default"){
+mg_setlist_fetch <- function(mgid, print_setlist, auth="default", debug=FALSE){
   
   require(matR)
   require(RCurl)
@@ -9,6 +9,8 @@ mg_setlist_fetch <- function(mgid, print_setlist, auth="default"){
   }
   
   my_url <- paste("http://api.metagenomics.anl.gov//download/", mgid, "?name=setlist", "$auth=", auth, sep="")
+  if(debug==TRUE){ print(my_url) }
+  
   my_json <- fromJSON(getURL(my_url))  
   if ( print_setlist==TRUE ){
     for (i in 1:length(my_json)){ 
