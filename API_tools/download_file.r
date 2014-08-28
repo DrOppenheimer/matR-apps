@@ -72,7 +72,8 @@ download_file <- function(mgid=NA, file_id="100.2", unzip_file=TRUE,  destinatio
       system(unzip_string)
       new_file_name.no_path <- gsub(pattern=".gz$", replacement="", new_file_name.no_path)
     }
-  
+
+    if( debug==TRUE ){ print(paste("new_file_name.no_path ::",new_file_name.no_path)) }
     return(new_file_name.no_path)
 
   }
