@@ -1,13 +1,14 @@
-download_file <- function(mgid, file_id="100.2", auth=msession$getAuth(), print_setlist=FALSE, debug=TRUE){
+# Function to download selected file from the setlist for a particular metagenome
+download_file <- function(mgid, file_id="100.2", unzip_file=TRUE,  destination_dir="/Users/kevin/test_dir", print_setlist=FALSE, auth="default", debug=TRUE){
 
-  ## preprocess
-  ##file_id="100.2"
-
-  ## derep
-  ## file_id="150.2"
-
-  
   require(matR)
+
+  # get the auth from matR
+  if( identical(auth,"default") ){ 
+    auth=msession$setAuth()
+  }else{
+    auth="na"
+  }
   #### Sub to perform download
   bdown=function(url, file){
     library('RCurl')
@@ -47,17 +48,26 @@ download_file <- function(mgid, file_id="100.2", auth=msession$getAuth(), print_
     } 
   }    
   
-  if( !is.na(my_file_name) ){
-    
+  if( !is.na(my_file_name) ){  
     new_file_name <- paste(mgid, ".", my_file_name, sep="")
-    if(debug==TRUE){print(paste("new_file_name", new_file_name))}
+    # create the new directory if it does not exist     
+    if( !is.na(destination_dir) ){ 
+      dir.create(file.path(destination_dir), showWarnings = FALSE)
+      new_file_name <- paste(destination_dir, "/", new_file_name, sep="")
+    }  
+  }
     
-    if( !is.na(auth) ){
-      my_file_url <- paste(my_file_url, "&auth=", auth, sep="" )  
-    }
+  if(debug==TRUE){print(paste("new_file_name: ", new_file_name))}
     
-    bdown(my_file_url, new_file_name)  
+  if( !is.na(auth) ){
+    my_file_url <- paste(my_file_url, "&auth=", auth, sep="" )  
+  }
     
+  bdown(my_file_url, new_file_name)  
+   
+  if( unzip_file==TRUE ){
+    unzip_string <- paste("gunzip", new_file_name)
+      system(unzip_string)
   }
   
 }
