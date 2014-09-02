@@ -1,4 +1,4 @@
-merge_data <- function(mode="file", file1="", file2="", output="default", duplicate_log = "default"){
+merge_data <- function(mode="file", data_type = "data", file1="", file2="", output="default", duplicate_log = "default"){
 
   
 
@@ -13,8 +13,15 @@ merge_data <- function(mode="file", file1="", file2="", output="default", duplic
   
   # can merge from flat file or data matrices
   if ( identical(mode, "file")==TRUE ){
-    data1 <- import_data(file1)
-    data2 <- import_data(file2)
+    if (identical(data_type, "data")){
+      data1 <- import_data(file1)
+      data2 <- import_data(file2)
+    }else if (identical(data_type, "metadata")){
+      data1 <- import_metadata(file1)
+      data2 <- import_metadata(file2)
+    }else{
+      stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\"")
+    }
   }else{
     data1 <- file1
     data2 <- file2
@@ -46,3 +53,17 @@ import_data <- function(file_name)
 {
   data.matrix(read.table(file_name, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
 }
+
+
+import_metadata <- function(file_name){
+
+  metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
+                              read.table(
+                                         file=file_name,row.names=1,header=TRUE,sep="\t",
+                                         colClasses = "character", check.names=FALSE,
+                                         comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                         )
+                              ) 
+}
+
+
