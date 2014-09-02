@@ -1,4 +1,4 @@
-merge_metadata <- function(file1="", file2="", output="default", duplicate_log = "default"){
+merge_metadata <- function(file1="", file2="", output="default"){
   
   if( identical( output, "default" )==TRUE ){
     output <- paste( file1, ".AND.", file2,".merged_metadata.txt" ,sep="", collapse="" )

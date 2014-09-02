@@ -1,4 +1,4 @@
-merge_data <- function(mode="file", file1="", file2="", output="default", duplicate_log = "default"){
+merge_data <- function(mode="file", file1="", file2="", output="default"){ # ,duplicate_log = "default"){
 
   
 
