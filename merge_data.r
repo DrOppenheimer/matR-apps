@@ -73,7 +73,7 @@ import_data <- function(file_name)
 
 import_metadata <- function(file_name){
 
-  metadata_matrix <- rot90(
+  metadata_matrix <- #rot90(
                            as.matrix( # Load the metadata table (same if you use one or all columns)
                               read.table(
                                          file=file_name,row.names=1,header=TRUE,sep="\t",
@@ -81,7 +81,7 @@ import_metadata <- function(file_name){
                                          comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
                                          )
                               )
-                           )
+                           #)
 }
 
 
