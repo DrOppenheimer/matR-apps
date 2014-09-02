@@ -27,17 +27,17 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
     data2 <- file2
   }
 
-  if  (identical(data_type, "data")){
+  #if  (identical(data_type, "data")){
     merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
     rownames(merged_data) <- merged_data$Row.names
     merged_data$Row.names <- NULL
-  }else if (identical(data_type, "metadata")){
-    merged_data <- merge(data1, data2, by.x="col.names", all=TRUE, suffixes=(c("rep1","rep2")))
-    rownames(merged_data) <- merged_data$Row.names
-    merged_data$Row.names <- NULL
-  }else{
-    stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
-  }
+  #}else if (identical(data_type, "metadata")){
+  #  merged_data <- merge(data1, data2, by.x="col.names", all=TRUE, suffixes=(c("rep1","rep2")))
+  #  rownames(merged_data) <- merged_data$Row.names
+  #  merged_data$Row.names <- NULL
+  #}else{
+  #  stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
+  #}
 
   ## # determine if there are dupilcate datasets -- report if there are
   ## duplicate_entries <- duplicated( c( dimnames(data1)[2], dimnames(data2)[2] ) )
