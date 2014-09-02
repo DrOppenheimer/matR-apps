@@ -4,7 +4,7 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
 
 # duplicated()
   
-
+  require(matlab)
   
   
   if( identical( output, "default" )==TRUE ){
@@ -27,17 +27,17 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
     data2 <- file2
   }
 
-  if  (identical(data_type, "data")){
+  #if  (identical(data_type, "data")){
     merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
     rownames(merged_data) <- merged_data$Row.names
     merged_data$Row.names <- NULL
-  }else if (identical(data_type, "metadata")){
-    merged_data <- merge(data1, data2, by.y="col.names", all=TRUE, suffixes=(c("rep1","rep2")))
-    rownames(merged_data) <- merged_data$Row.names
-    merged_data$Row.names <- NULL
-  }else{
-    stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
-  }
+  #}else if (identical(data_type, "metadata")){
+  #  merged_data <- merge(data1, data2, by.y="col.names", all=TRUE, suffixes=(c("rep1","rep2")))
+  #  rownames(merged_data) <- merged_data$Row.names
+  #  merged_data$Row.names <- NULL
+  #}else{
+  #  stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
+  #}
 
   ## # determine if there are dupilcate datasets -- report if there are
   ## duplicate_entries <- duplicated( c( dimnames(data1)[2], dimnames(data2)[2] ) )
@@ -52,8 +52,16 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
     merged_data[is.na(merged_data)] <- 0
   
   # write output
-  write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
-
+  if ( identical(mode, "file")==TRUE ){
+    write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  }else if (identical(data_type, "metadata")){
+    rot90(rot90(rot90(merged_data)))
+    write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  }else{
+    stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
+  }
+    
+  
 }
 
 #### SUBS
@@ -65,13 +73,15 @@ import_data <- function(file_name)
 
 import_metadata <- function(file_name){
 
-  metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
+  metadata_matrix <- rot90(
+                           as.matrix( # Load the metadata table (same if you use one or all columns)
                               read.table(
                                          file=file_name,row.names=1,header=TRUE,sep="\t",
                                          colClasses = "character", check.names=FALSE,
                                          comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
                                          )
-                              ) 
+                              )
+                           )
 }
 
 
