@@ -23,7 +23,7 @@ merge_metadata <- function(file1="", file2="", output="default", duplicate_log =
   
   sum_colnames <- length(colnames_in_both) + length(colnames_in.1.only) + length(colnames_in.2.only)
   
-  merged_matrix <- (NA, sum_rownames, sum_colnames)
+  merged_matrix <- matrix(NA, sum_rownames, sum_colnames)
   
   rownames(merged_matrix) <- c(rownames_in.1.only, rownames_in.2.only)
   colnames(merged_matrix) <- c(colnames_in_both, colnames_in.1.only, colnames_in.2.only)
