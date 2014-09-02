@@ -20,7 +20,7 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
       data1 <- import_metadata(file1)
       data2 <- import_metadata(file2)
     }else{
-      stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\"")
+      stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
     }
   }else{
     data1 <- file1
