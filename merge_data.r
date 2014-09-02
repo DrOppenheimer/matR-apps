@@ -26,10 +26,18 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
     data1 <- file1
     data2 <- file2
   }
-  
-  merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
-  rownames(merged_data) <- merged_data$Row.names
-  merged_data$Row.names <- NULL
+
+  if  (identical(data_type, "data")){
+    merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
+    rownames(merged_data) <- merged_data$Row.names
+    merged_data$Row.names <- NULL
+  }else if (identical(data_type, "metadata")){
+    merged_data <- merge(data1, data2, by="col.names", all=TRUE, suffixes=(c("rep1","rep2")))
+    rownames(merged_data) <- merged_data$Row.names
+    merged_data$Row.names <- NULL
+  }else{
+    stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
+  }
 
   ## # determine if there are dupilcate datasets -- report if there are
   ## duplicate_entries <- duplicated( c( dimnames(data1)[2], dimnames(data2)[2] ) )
