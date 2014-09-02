@@ -28,7 +28,7 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
   }
 
   #if  (identical(data_type, "data")){
-    merged_data <- merge(data1, data2, by=0, all=TRUE, suffixes=(c("rep1","rep2")))
+    merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
     rownames(merged_data) <- merged_data$Row.names
     merged_data$Row.names <- NULL
   #}else if (identical(data_type, "metadata")){
