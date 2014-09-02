@@ -990,13 +990,15 @@ create_colors <- function(metadata_column, color_mode = "auto", debug){ # functi
   #ids <- rownames(metadata_column)
   #color_categories <- colnames(metadata_column)
   #for ( i in 1:dim(metadata_matrix)[2] ){
-    column_factors <- as.factor(metadata_column[,1])
-    column_levels <- levels(as.factor(metadata_column[,1]))
-    num_levels <- length(column_levels)
-    color_levels <- col.wheel(num_levels)
-    levels(column_factors) <- color_levels
-    my_data.color[,1]<-as.character(column_factors)
+  column_factors <- as.factor(metadata_column[,1])
+  column_levels <- levels(as.factor(metadata_column[,1]))
+  num_levels <- length(column_levels)
+  color_levels <- col.wheel(num_levels)
+  levels(column_factors) <- color_levels
+  my_data.color[,1]<-as.character(column_factors)
   #}
+  if(debug==TRUE){my_data.color.test <<-my_data.color}
+  
   return(my_data.color)
 }
 ######################
