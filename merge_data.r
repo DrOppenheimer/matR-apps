@@ -1,44 +1,27 @@
-merge_data <- function(mode="file", data_type = "data", file1="", file2="", output="default", duplicate_log = "default"){
+merge_data <- function(mode="file", file1="", file2="", output="default", duplicate_log = "default"){
 
   
 
 # duplicated()
   
-  require(matlab)
-  
-  
+ 
   if( identical( output, "default" )==TRUE ){
     output <- paste( file1, ".AND.", file2,".data" ,sep="", collapse="" )
   }
   
   # can merge from flat file or data matrices
   if ( identical(mode, "file")==TRUE ){
-    if (identical(data_type, "data")){
-      data1 <- import_data(file1)
-      data2 <- import_data(file2)
-    }else if (identical(data_type, "metadata")){
-      data1 <- import_metadata(file1)
-      data2 <- import_metadata(file2)
-    }else{
-      stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
-    }
+    data1 <- import_data(file1)
+    data2 <- import_data(file2)
   }else{
     data1 <- file1
     data2 <- file2
   }
 
-  #if  (identical(data_type, "data")){
-    merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
-    rownames(merged_data) <- merged_data$Row.names
-    merged_data$Row.names <- NULL
-  #}else if (identical(data_type, "metadata")){
-  #  merged_data <- merge(data1, data2, by.x="col.names", all=TRUE, suffixes=(c("rep1","rep2")))
-  #  rownames(merged_data) <- merged_data$Row.names
-  #  merged_data$Row.names <- NULL
-  #}else{
-  #  stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
-  #}
-
+  merged_data <- merge(data1, data2, by="row.names", all=TRUE, suffixes=(c("rep1","rep2")))
+  rownames(merged_data) <- merged_data$Row.names
+  merged_data$Row.names <- NULL
+  
   ## # determine if there are dupilcate datasets -- report if there are
   ## duplicate_entries <- duplicated( c( dimnames(data1)[2], dimnames(data2)[2] ) )
   ## if ( length(duplicate_entries) > 0 ){
@@ -53,7 +36,7 @@ merge_data <- function(mode="file", data_type = "data", file1="", file2="", outp
   
   # write output
   #if ( identical(mode, "file")==TRUE ){
-    write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+  write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
   #}else if (identical(data_type, "metadata")){
   #  rot90(rot90(rot90(merged_data)))
   #  write.table(merged_data, file = output, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
@@ -69,19 +52,4 @@ import_data <- function(file_name)
 {
   data.matrix(read.table(file_name, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
 }
-
-
-import_metadata <- function(file_name){
-
-  metadata_matrix <- #rot90(
-                           as.matrix( # Load the metadata table (same if you use one or all columns)
-                              read.table(
-                                         file=file_name,row.names=1,header=TRUE,sep="\t",
-                                         colClasses = "character", check.names=FALSE,
-                                         comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
-                                         )
-                              )
-                           #)
-}
-
 
