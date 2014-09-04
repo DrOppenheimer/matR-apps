@@ -7,16 +7,15 @@ MGRAST_preprocessing <<- function(
                                   removeSg_valueMin     = 2, # lowest retained value (lower converted to 0)
                                   removeSg_rowMin       = 4, # lowest retained row sum (lower, row is removed)
                                   log_transform         = FALSE,
-                                  norm_method           = "DESeq", #c("standardize", "quantile", "DESeq_blind", "DESeq_per_condition", "DESeq_pooled", "DESeq_pooled_CR", "none"),
-                                  pseudo_count          = 0.0001,
-                                  DESeq_metadata_in     = NA, # only used if method is other than "blind"
+                                  norm_method           = "DESeq_blind", #c("standardize", "quantile", "DESeq_blind", "DESeq_per_condition", "DESeq_pooled", "DESeq_pooled_CR", "none"), # USE blind if not replicates -- use pooled to get DESeq default
+                                  pseudo_count          = 1, # has to be integer for DESeq
+                                  DESeq_metadata_table  = NA, # only used if method is other than "blind"
                                   DESeq_metadata_column = 1, # only used if method is other than "blind"
                                   DESeq_metadata_type   = "file",           # c( "file", "r_matrix" )
                                   #DESeq_method          = "blind",  # c( "pooled", "pooled-CR", "per-condition", "blind" ) # blind, treat everything as one group
                                   DESeq_sharingMode     = "maximum",  # c( "maximum", "fit-only", "gene-est-only" ) # maximum is the most conservative choice
                                   DESeq_fitType         = "local",          # c( "parametric", "local" )
                                   DESeq_image           = TRUE, # create dispersion vs mean plot indicate DESeq regression
-                                  DESeq_norm_by_group   = FALSE,
                                   scale_0_to_1          = FALSE,
                                   produce_boxplots      = FALSE,
                                   boxplot_height_in     = "default", # 11,
@@ -34,8 +33,10 @@ MGRAST_preprocessing <<- function(
     setRepositories(ind=1:2)
     require(preprocessCore) || install.packages("preprocessCore")
     #source("http://bioconductor.org/biocLite.R")
-    require(DESeq) || biocLite("DESeq")
-    # (DESeq): www.ncbi.nlm.nih.gov/pubmed/20979621
+    #require(DESeq) || biocLite("DESeq")
+    require(DESeq) || biocLite("DESeq") # update to DESeq2 when I have a chance 
+
+                                        # (DESeq): www.ncbi.nlm.nih.gov/pubmed/20979621
 
     #library(preprocessCore)
     #library(DESeq)
@@ -109,16 +110,22 @@ MGRAST_preprocessing <<- function(
            },
 
            DESeq_per_condition={
-             if( is.na(DESeq_metadata_in) ){ stop("To DESeq_norm_by_group you must specify a DESeq_metadata_table") }
-             regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
-             regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
-             input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
-                                           DESeq_metadata_table, DESeq_metadata_column, sample_names,
-                                           DESeq_method="per-condition", DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)    
+             stop( cat("The DESeq_per_condition option does not work as it should. DESeq authors advise using the pooled method (DESeq_pooled here) instead.\n
+You can accomplish a normalization equivalent to per-condition if you break your data into one matrix per-condition and use the pooled option.
+Given that the method athors advise using the pooled methods anyways, I don't plan to fix this unless it is requested. For future reference, it
+works up through estimateDispersions(), but fails on varianceStabilizingTransformation().  I can't find examples - and would not be able to debug
+quickly"
+                       ))
+             #if( is.na(DESeq_metadata_table) ){ stop("To DESeq_norm_by_group you must specify a DESeq_metadata_table") }
+             #regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
+             #regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
+             #input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
+             #                              DESeq_metadata_table, DESeq_metadata_column, sample_names,
+             #                              DESeq_method="per-condition", DESeq_sharingMode, DESeq_fitType, DESeq_image, debug)    
            },
            
            DESeq_pooled={
-             if( is.na(DESeq_metadata_in) ){ stop("To DESeq_pooled you must specify a DESeq_metadata_table") }
+             if( is.na(DESeq_metadata_table) ){ stop("To DESeq_pooled you must specify a DESeq_metadata_table") }
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
              input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
@@ -127,7 +134,7 @@ MGRAST_preprocessing <<- function(
            },
 
            DESeq_pooled_CR={
-             if( is.na(DESeq_metadata_in) ){ stop("To DESeq_pooled_CR you must specify a DESeq_metadata_table") }             
+             if( is.na(DESeq_metadata_table) ){ stop("To DESeq_pooled_CR you must specify a DESeq_metadata_table") }             
              regression_filename = paste(  input_name, ".DESeq_regression.png", sep="", collapse="" )
              regression_message <- paste("DESeq regression:      ", regression_filename, sep="", collapse="" )
              input_data <- DESeq_norm_data(input_data, regression_filename, pseudo_count,
@@ -201,7 +208,7 @@ MGRAST_preprocessing <<- function(
                        "removeSg_rowMin:       ", removeSg_rowMin, "\n",
                        "log_transform          ", as.character(log_transform), "\n",
                        "norm_method:           ", norm_method, "\n",
-                       "DESeq_metadata_in:     ", as.character(DESeq_metadata_in), "\n",
+                       "DESeq_metadata_table:  ", as.character(DESeq_metadata_table), "\n",
                        "DESeq_metadata_column: ", DESeq_metadata_column, "\n",
                        "DESeq_metadata_type:   ", DESeq_metadata_type, "\n",
                        #"DESeq_method:          ", DESeq_method, "\n",
@@ -243,7 +250,7 @@ MGRAST_preprocessing <<- function(
 load_metadata <- function(group_table, group_column, sample_names){
   metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
                                read.table(
-                                          file=metadata_table,row.names=1,header=TRUE,sep="\t",
+                                          file=group_table,row.names=1,header=TRUE,sep="\t",
                                           colClasses = "character", check.names=FALSE,
                                           comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
                                           )
@@ -317,30 +324,48 @@ DESeq_norm_data <- function (x, regression_filename, pseudo_count,
   #     also see vignette("DESeq")
   # and Paul J. McMurdie's example analysis in a later paper http://www.ncbi.nlm.nih.gov/pubmed/24699258
   #     with supporing material # http://joey711.github.io/waste-not-supplemental/simulation-cluster-accuracy/simulation-cluster-accuracy-server.html
+  if(debug==TRUE)(print("made it here DESeq (1)"))
+
+  # check that pseudo counts are integer - must for DESeq
+  if ( all.equal(pseudo_count, as.integer(pseudo_count)) != TRUE ){
+    stop(paste("DESeq requires an integer pseudo_count, (", pseudo_count, ") is not an integer" ))
+  }
 
   
   # import metadata matrix (from object or file)
-  my_metadata <- load_metadata(DESeq_metadata_table, DESeq_metadata_column, sample_names)
-  metadata_factors <- as.factor(my_metadata)
-  
-  #metadata_matrix <- metadata_matrix[order(rownames(metadata_matrix)),]
-  
-  # create or import metadata
+  #if(!is.na(DESeq_metadata_table)){
+  #  my_metadata <- load_metadata(DESeq_metadata_table, DESeq_metadata_column, sample_names)
+  #}
+
+  # create metdata for the "blind" case -- all samples treated as if they are in the same group
   if( identical(DESeq_method,"blind") ){
-    my_conditions <- rep(1,ncol(x))
+    my_conditions <- as.factor(rep(1,ncol(x)))
+    if(debug==TRUE){my_conditions.test<<-my_conditions}
   }else{
-     my_conditions <- metadata_factors
+    my_metadata <- load_metadata(DESeq_metadata_table, DESeq_metadata_column, sample_names)
+    metadata_factors <- as.factor(my_metadata)
+    if(debug==TRUE){my_metadata.test<<-my_metadata}
+    my_conditions <- metadata_factors
+    if(debug==TRUE){my_conditions.test<<-my_conditions}
   }
 
-  # add pseudocounts to prevent workflow from crashing on NaNs
+  if(debug==TRUE)(print("made it here DESeq (2)"))
+  
+  # add pseudocount to prevent workflow from crashing on NaNs - DESeq will crash on non integer counts
   x = x + pseudo_count 
  
   # create dataset object
+  if(debug==TRUE){my_conditions.test<<-my_conditions}
   my_dataset <- newCountDataSet( x, my_conditions )
+  if(debug==TRUE){my_dataset.test1 <<- my_dataset}
+  if(debug==TRUE)(print("made it here DESeq (3)"))
   
   # estimate the size factors
   my_dataset <- estimateSizeFactors(my_dataset)
- 
+
+  if(debug==TRUE)(print("made it here DESeq (4)"))
+  if(debug==TRUE){my_dataset.test2 <<- my_dataset}
+  
   # estimate dispersions
   # reproduce this: deseq_varstab(physeq, method = "blind", sharingMode = "maximum", fitType = "local")
   #      see https://stat.ethz.ch/pipermail/bioconductor/2012-April/044901.html
@@ -349,18 +374,30 @@ DESeq_norm_data <- function (x, regression_filename, pseudo_count,
   # but this is what they did in the supplemental material for the DESeq paper (I think) -- and in figure 1 of McMurdie et al.
   #my_dataset <- estimateDispersions(my_dataset, method = "pooled", sharingMode = "fit-only", fitType="local") ### THIS WORKS
   # This is what they suggest in the DESeq vignette for multiple replicats
+
   my_dataset <- estimateDispersions(my_dataset, method = DESeq_method, sharingMode = DESeq_sharingMode, fitType = DESeq_fitType)
+
+  # in the case of per-condition, creates an envrionment called fitInfo
+  # ls(my_dataset.test4@fitInfo)
+
+                                        #  my_dataset <- estimateDispersions(my_dataset, method = DESeq_method, sharingMode = DESeq_sharingMode, fitType = DESeq_fitType)
+  
+  if(debug==TRUE){my_dataset.test3 <<- my_dataset}
+
+  if(debug==TRUE)(print("made it here DESeq (5)"))
   
   # Determine which column(s) have the dispersion estimates
   dispcol = grep("disp\\_", colnames(fData(my_dataset)))
 
   # Enforce that there are no infinite values in the dispersion estimates
-  if (any(!is.finite(fData(my_dataset)[, dispcol]))) {
-    fData(cds)[which(!is.finite(fData(my_dataset)[, dispcol])), dispcol] <- 0
-  }
+  #if (any(!is.finite(fData(my_dataset)[, dispcol]))) {
+  #  fData(cds)[which(!is.finite(fData(my_dataset)[, dispcol])), dispcol] <- 0
+  #}
 
+  if(debug==TRUE)(print("made it here DESeq (6)"))
+  
   # apply variance stabilization normalization
-  my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
+  #if ( identical(DESeq_method, "per-condition") ){
 
   # produce a plot of the regression
   if(DESeq_image==TRUE){
@@ -375,6 +412,30 @@ DESeq_norm_data <- function (x, regression_filename, pseudo_count,
     plotDispEsts( my_dataset )
     dev.off()
   }
+
+if(debug==TRUE)(print("made it here DESeq (7)"))
+  
+
+  
+  my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
+  # ls(my_dataset.test4@fitInfo)
+  # my_dataset.test4@fitInfo$Kirsten$fittedDispEsts
+
+  if(debug==TRUE){my_dataset.test4 <<- my_dataset.normed}
+
+  #}else{
+   # my_dataset.normed <- varianceStabilizingTransformation(my_dataset)
+  #}
+    
+
+
+
+
+
+
+
+
+  
   
   # return matrix of normed values
   x <- exprs(my_dataset.normed)

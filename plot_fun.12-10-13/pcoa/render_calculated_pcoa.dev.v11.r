@@ -43,8 +43,8 @@ render_pcoa.v11 <- function(
                             figure_cex = 2, # cex for the figure
                             figure_symbol_cex=2,
                             vert_line="dotted", # "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash"
-                            bar_cex = 2,
-                            bar_vert_adjust = 2,  
+                            bar_cex = "default",
+                            bar_vert_adjust = 0,  
                             use_all_metadata_columns=FALSE, # option to overide color_column -- if true, plots are generate for all of the metadata columns
                             debug=FALSE
                             )
@@ -208,7 +208,7 @@ render_pcoa.v11 <- function(
     #sample_names
     metadata_column <- metadata_column[ order(sample_names),,drop=FALSE ] # order the metadata by sample 1d
     #metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
-    color_column <- create_colors(metadata_column, color_mode = "auto", debug)
+    color_column <- create_colors(metadata_column, color_mode = "auto", debug=debug)
 
     column_levels <- levels(as.factor(as.matrix(metadata_column))) 
     num_levels <- length(column_levels)
@@ -338,7 +338,7 @@ render_pcoa.v11 <- function(
         #metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
         if(debug==TRUE){ test3<<-metadata_column }
         
-        color_column <- create_colors(metadata_column, color_mode = "auto", debug) # set parameters for plotting
+        color_column <- create_colors(metadata_column, color_mode = "auto", debug=debug) # set parameters for plotting
         ncol.color_matrix <- 1 
         column_factors <- as.factor(metadata_column) 
         column_levels <- levels(as.factor(metadata_column))
@@ -406,7 +406,7 @@ render_pcoa.v11 <- function(
       metadata_column <- metadata_column[ order(sample_names),,drop=FALSE ] # order the metadata by value
       if(debug==TRUE){ test3<<-metadata_column }
       
-      color_column <- create_colors(metadata_column, color_mode = "auto", debug) # set parameters for plotting
+      color_column <- create_colors(metadata_column, color_mode = "auto", debug=debug) # set parameters for plotting
       ncol.color_matrix <- 1 
       column_factors <- as.factor(metadata_column) 
       column_levels <- levels(as.factor(metadata_column))
@@ -908,10 +908,20 @@ create_plot <- function(
   bar_z <- matrix(1:num_levels, ncol=1)
   image(x=bar_x,y=bar_y,z=bar_z,col=color_levels,axes=FALSE,xlab="",ylab="")
   loc <- par("usr")
+  if( identical(bar_cex,"default") ){
+    bar_texts <- paste(column_levels[1], column_levels[num_levels])
+    bar_par <- par_fetch()
+    bar_cex <- calculate_cex(bar_texts, bar_par$my_pin, bar_par$my_mai, reduce_by=0.10)
+  }
   text(loc[1], (loc[1]+bar_vert_adjust), column_levels[1], pos = 4, xpd = T, cex=bar_cex, adj=c(0,0))
 #1 3
   
-  text(loc[2], (loc[3]+bar_vert_adjust), column_levels[num_levels], pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
+  text(loc[2], (loc[1]+bar_vert_adjust), column_levels[num_levels], pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
+
+  #text(loc[2], (loc[1]+bar_vert_adjust), paste(column_levels[num_levels],":1",sep=""), pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
+  #text(loc[2], (loc[2]+bar_vert_adjust), paste(column_levels[num_levels],":2",sep=""), pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
+  #text(loc[2], (loc[3]+bar_vert_adjust), paste(column_levels[num_levels],":3",sep=""), pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
+  #text(loc[2], (loc[4]+bar_vert_adjust), paste(column_levels[num_levels],":4",sep=""), pos = 2, xpd = T, cex=bar_cex, adj=c(0,0))
   
                                         #text(loc[1], loc[2], column_levels[1], pos = 4, xpd = T, cex=bar_cex, adj=c(0,0))
   #text(loc[2], loc[2], column_levels[num_levels], pos = 2, xpd = T, cex=bar_cex, adj=c(0,1))
