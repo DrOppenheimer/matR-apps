@@ -208,7 +208,7 @@ render_pcoa.v11 <- function(
     #sample_names
     metadata_column <- metadata_column[ order(sample_names),,drop=FALSE ] # order the metadata by sample 1d
     #metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
-    color_column <- create_colors(metadata_column, color_mode = "auto", debug=debug)
+    color_column <- create_colors(metadata_column, color_mode = "auto")
 
     column_levels <- levels(as.factor(as.matrix(metadata_column))) 
     num_levels <- length(column_levels)
@@ -338,7 +338,7 @@ render_pcoa.v11 <- function(
         #metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
         if(debug==TRUE){ test3<<-metadata_column }
         
-        color_column <- create_colors(metadata_column, color_mode = "auto", debug=debug) # set parameters for plotting
+        color_column <- create_colors(metadata_column, color_mode = "auto") # set parameters for plotting
         ncol.color_matrix <- 1 
         column_factors <- as.factor(metadata_column) 
         column_levels <- levels(as.factor(metadata_column))
@@ -406,7 +406,7 @@ render_pcoa.v11 <- function(
       metadata_column <- metadata_column[ order(sample_names),,drop=FALSE ] # order the metadata by value
       if(debug==TRUE){ test3<<-metadata_column }
       
-      color_column <- create_colors(metadata_column, color_mode = "auto", debug=debug) # set parameters for plotting
+      color_column <- create_colors(metadata_column, color_mode = "auto") # set parameters for plotting
       ncol.color_matrix <- 1 
       column_factors <- as.factor(metadata_column) 
       column_levels <- levels(as.factor(metadata_column))
@@ -995,7 +995,7 @@ getColorTable <- function(col) {
 ######################
 # SUB(9): Automtically generate colors from metadata with identical text or values
 ######################
-create_colors <- function(metadata_column, color_mode = "auto", debug){ # function to     
+create_colors <- function(metadata_column, color_mode = "auto"){ # function to     
   my_data.color <- data.frame(metadata_column)
   #ids <- rownames(metadata_column)
   #color_categories <- colnames(metadata_column)
@@ -1007,7 +1007,7 @@ create_colors <- function(metadata_column, color_mode = "auto", debug){ # functi
   levels(column_factors) <- color_levels
   my_data.color[,1]<-as.character(column_factors)
   #}
-  if(debug==TRUE){my_data.color.test <<-my_data.color}
+
   
   return(my_data.color)
 }
