@@ -638,7 +638,16 @@ load_pch <- function(pch_behavior, pch_default, pch_table, pch_column, pch_label
 
     if(debug==TRUE){print(paste("(in loop) PCH_BEHAVIOR: ", pch_behavior))}
 
-    pch_matrix <- data.matrix(read.table(pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
+    # pch_matrix <- data.matrix(read.table(pch_table, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
+
+      pch_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
+                              read.table(
+                                         file=pch_table,row.names=1,header=TRUE,sep="\t",
+                                         colClasses = "character", check.names=FALSE,
+                                         comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                         )
+                              )   
+
     if(debug==TRUE){ pch_matrix.test <<- pch_matrix }
     pch_temp <- create_pch(pch_matrix, pch_column, sample_names, debug)
     plot_pch_vector <- as.vector(pch_temp$my_pch)
@@ -1023,9 +1032,13 @@ create_pch <- function(metadata_table, metadata_column, sample_names, debug){ # 
 
   
   #pch_matrix <- data.matrix(metadata_table)
-
+  if(debug==TRUE){metadata_table.test <<- metadata_table}
+  
   plot_pch <- metadata_table[ order(sample_names), metadata_column, drop=FALSE ]
   plot_pch_vector <- as.vector(plot_pch)
+
+  if(debug==TRUE){plot_pch_vector.test <<- plot_pch_vector}
+  
   names(plot_pch_vector) <- sample_names
   pch_labels <- levels(as.factor(plot_pch_vector))
   
@@ -1039,8 +1052,6 @@ create_pch <- function(metadata_table, metadata_column, sample_names, debug){ # 
 
   my_pch <- integer()
   for (i in 1:nrow(plot_pch)){
-
-    
     my_pch <- c(my_pch, pch_levels[ as.character( plot_pch[i,metadata_column] ) ])
     if(debug==TRUE){ print(paste("my_pch: ", my_pch)) }
   }
