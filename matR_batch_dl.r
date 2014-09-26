@@ -262,7 +262,7 @@ process_batch <- function(batch_count, batch_start, batch_end, mgid_list, my_log
   # write batch informatin to log
   write( date(), file = my_log, append = TRUE)
   write( paste("BATCH:", batch_count," :: batch_start(", batch_start, ") batch_end(", batch_end, ")", sep="", collapse="" ), file = my_log, append = TRUE)
-  write( paste("# batch ( ", batch_count, ") members:", file = my_log, append = TRUE) )
+  #write( paste("# batch ( ", batch_count, " ) members:", file = my_log, append = TRUE) )
   for (i in 1:length(batch_list)){ write(batch_list[i], file = my_log, append = TRUE) }
 
   # make the call
