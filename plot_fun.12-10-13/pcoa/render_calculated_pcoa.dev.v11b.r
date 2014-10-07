@@ -18,7 +18,7 @@
 # It can handle the case when there is no metadata - painting all of points the same
 # users can also specify a pch table to control the shape of plotted icons (this feature may not be ready yet)
 
-render_pcoa.v11 <- function(
+render_pcoa.v11b <- function(
                             PCoA_in="", # annotation abundance table (raw or normalized values)
                             image_out="default",
                             figure_main ="principal coordinates",
@@ -894,7 +894,7 @@ create_plot <- function(
     plot.new()
     par_legend_par <- par_fetch()
     par_legend_cex <- calculate_cex(column_levels, par_legend_par$my_pin, par_legend_par$my_mai, reduce_by=0.40)
-    #my_pch_levels <<- as.integer(levels(as.factor(plot_pch)))
+    #my_pch_levels <<- as.integer(levels(as.factor(plot_pch))) ##### ? does this need to be a global ? 10-7-14
 
 
     if(debug==TRUE){print("made it here 11")}
