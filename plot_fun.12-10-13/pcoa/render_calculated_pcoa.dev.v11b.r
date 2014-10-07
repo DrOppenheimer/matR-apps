@@ -91,8 +91,8 @@ render_pcoa.v11 <- function(
   eigen_values <- eigen_values[ order(sample_names) ]
 
   if(debug==TRUE){
-    eigen_vectors.test<<-eigen_vectors
-    eigen_values.test<<-eigen_values  
+    #eigen_vectors.test<<-eigen_vectors
+    #eigen_values.test<<-eigen_values  
   }
   
   #eigen_vectors <- eigen_vectors[ order(rownames(my_data$eigen_vectors)), ]
@@ -120,13 +120,16 @@ render_pcoa.v11 <- function(
   #pch_object <- load_pch(pch_behavior, pch_default, pch_table, pch_column, pch_labels, sample_names, num_samples, rownames(my_data$eigen_vectors), debug)
   pch_object <- load_pch(pch_behavior, pch_default, pch_table, pch_column, pch_labels, sample_names, num_samples, rownames(eigen_vectors), debug)
 
-  if(debug==TRUE){ pch_object.test <<- pch_object}
+  #if(debug==TRUE){ pch_object.test <<- pch_object}
 #return(list( "plot_pch_values"=plot_pch_values, "pch.levels"=pch_levels, "pch.labels"=pch_labels) )
   
   plot_pch <- pch_object$plot_pch_vector
   pch_levels <- pch_object$pch_levels
   pch_labels <- pch_object$pch_labels
 
+  # save some space by removing pch_object
+  rm(pch_object)
+  
   if(debug==TRUE){print("made it here 2")}
 
                                         #if(debug==TRUE){print(paste("main.pch_levels", pch_levels))}
@@ -312,7 +315,7 @@ render_pcoa.v11 <- function(
         if(debug==TRUE){print("made it here 6")}
         
         metadata_column <- metadata_matrix[ ,i,drop=FALSE ] # get column i from the metadata matrix
-        if(debug==TRUE){ test1<<-metadata_column }
+        #if(debug==TRUE){ test1<<-metadata_column }
 
         if(debug==TRUE){print("made it here 7")}
         if(debug==TRUE){print(paste("7.pch_levels", pch_levels))}
@@ -337,11 +340,11 @@ render_pcoa.v11 <- function(
        
 
         
-        if(debug==TRUE){ test2<<-metadata_column }
+        #if(debug==TRUE){ test2<<-metadata_column }
         
         metadata_column <- metadata_column[ order(sample_names),,drop=FALSE ] # order the metadata by value
         #metadata_column <- metadata_column[ order(rownames(metadata_column)),,drop=FALSE ] # order the metadata by value
-        if(debug==TRUE){ test3<<-metadata_column }
+        #if(debug==TRUE){ test3<<-metadata_column }
         
         color_column <- create_colors(metadata_column, color_mode = "auto") # set parameters for plotting
         ncol.color_matrix <- 1 
@@ -363,8 +366,8 @@ render_pcoa.v11 <- function(
         pcoa_colors <- as.character(color_column[,1]) # convert colors to a list after they've been used to sort the eigen vectors
   
         if(debug==TRUE){
-          test.color_column <<- color_column
-          test.pcoa_colors <<- pcoa_colors
+          #test.color_column <<- color_column
+          #test.pcoa_colors <<- pcoa_colors
         }
 
 
@@ -391,7 +394,7 @@ render_pcoa.v11 <- function(
       
 
       metadata_column <- metadata_matrix[ ,metadata_column_index,drop=FALSE ] # get column i from the metadata matrix
-      if(debug==TRUE){ test1<<-metadata_column }
+      #if(debug==TRUE){ test1<<-metadata_column }
       
       image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
       figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
@@ -405,11 +408,11 @@ render_pcoa.v11 <- function(
         rownames(metadata_column) <- row_names
       }
 
-      if(debug==TRUE){ test2<<-metadata_column }
+      #if(debug==TRUE){ test2<<-metadata_column }
       
       #metadata_column <- metadata_column[ order(metadata_column),,drop=FALSE ] # order the metadata by value
       metadata_column <- metadata_column[ order(sample_names),,drop=FALSE ] # order the metadata by value
-      if(debug==TRUE){ test3<<-metadata_column }
+      #if(debug==TRUE){ test3<<-metadata_column }
       
       color_column <- create_colors(metadata_column, color_mode = "auto") # set parameters for plotting
       ncol.color_matrix <- 1 
@@ -613,7 +616,7 @@ load_pch <- function(pch_behavior, pch_default, pch_table, pch_column, pch_label
     if(debug==TRUE){
       print(paste("plot_pch_vector: ", class(plot_pch_vector)))
       print(plot_pch_vector)
-      plot_pch_vector.test <<- plot_pch_vector
+      #plot_pch_vector.test <<- plot_pch_vector
     }
    
   }else if ( identical(pch_behavior,"asis") ){
@@ -627,9 +630,9 @@ load_pch <- function(pch_behavior, pch_default, pch_table, pch_column, pch_label
     plot_pch_vector <- as.vector(plot_pch)
     names(plot_pch_vector) <- sample_names
     pch_levels <- levels(as.factor(plot_pch_vector))
-    if(debug==TRUE){pch_levels.test<<-pch_levels}
+    #if(debug==TRUE){pch_levels.test<<-pch_levels}
     pch_labels <- pch_labels
-    if(debug==TRUE){pch_labels.test<<-pch_labels}
+    #if(debug==TRUE){pch_labels.test<<-pch_labels}
     
     if(debug==TRUE){print(paste("ASIS.pch_labels", pch_labels))}
     if(debug==TRUE){print(paste("ASIS.pch_levels", pch_levels))}
@@ -639,7 +642,7 @@ load_pch <- function(pch_behavior, pch_default, pch_table, pch_column, pch_label
     if(debug==TRUE){
       print(paste("plot_pch_vector class: ", class(plot_pch_vector)))
       print(paste("plot_pch_vector: ",plot_pch_vector))
-      plot_pch_vector.test <<- plot_pch_vector
+      #plot_pch_vector.test <<- plot_pch_vector
     }
     
   }else if( identical(pch_behavior, "auto") ){
@@ -656,7 +659,7 @@ load_pch <- function(pch_behavior, pch_default, pch_table, pch_column, pch_label
                                          )
                               )   
 
-    if(debug==TRUE){ pch_matrix.test <<- pch_matrix }
+    #if(debug==TRUE){ pch_matrix.test <<- pch_matrix }
     pch_temp <- create_pch(pch_matrix, pch_column, sample_names, debug)
     plot_pch_vector <- as.vector(pch_temp$my_pch)
     pch_levels <- pch_temp$pch_levels
@@ -1040,12 +1043,12 @@ create_pch <- function(metadata_table, metadata_column, sample_names, debug){ # 
 
   
   #pch_matrix <- data.matrix(metadata_table)
-  if(debug==TRUE){metadata_table.test <<- metadata_table}
+  #if(debug==TRUE){metadata_table.test <<- metadata_table}
   
   plot_pch <- metadata_table[ order(sample_names), metadata_column, drop=FALSE ]
   plot_pch_vector <- as.vector(plot_pch)
 
-  if(debug==TRUE){plot_pch_vector.test <<- plot_pch_vector}
+  #if(debug==TRUE){plot_pch_vector.test <<- plot_pch_vector}
   
   names(plot_pch_vector) <- sample_names
   pch_labels <- levels(as.factor(plot_pch_vector))
@@ -1056,7 +1059,7 @@ create_pch <- function(metadata_table, metadata_column, sample_names, debug){ # 
 
   pch_levels <- 1:num_labels
   names(pch_levels) <- pch_labels
-  if(debug==TRUE){ pch_levels.test <<- pch_levels }
+  #if(debug==TRUE){ pch_levels.test <<- pch_levels }
 
   my_pch <- integer()
   for (i in 1:nrow(plot_pch)){
@@ -1064,7 +1067,7 @@ create_pch <- function(metadata_table, metadata_column, sample_names, debug){ # 
     if(debug==TRUE){ print(paste("my_pch: ", my_pch)) }
   }
 
-  if(debug==TRUE){ my_pch.test <<- my_pch; pch_levels.test <<- pch_levels}
+  #if(debug==TRUE){ my_pch.test <<- my_pch; pch_levels.test <<- pch_levels}
   
   return(list("my_pch"=my_pch, "pch_levels"=pch_levels))
 }
