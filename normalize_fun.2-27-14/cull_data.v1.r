@@ -1,6 +1,6 @@
 # functions that will cull data from abundance table and metadata file for a list of ids
 
-data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", cull_list_type="r_list", pass_file_suffix="PASS", culled_file_suffix="CULLED", debug=FALSE){
+data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", cull_list_type="file", pass_file_suffix="PASS", culled_file_suffix="CULLED", debug=FALSE){
 
   # import list of ids to cull
   if( identical(cull_list_type, "r_list") ){
@@ -31,6 +31,13 @@ data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.tx
     # file with metadata retained
     metadata_matrix <- import_metadata(metadata_in)
     pass_metadata_matrix <- metadata_matrix[!(rownames(metadata_matrix ) %in% id_list),]
+
+
+    if(debug==TRUE){
+      metadata_matrix.test <<- metadata_matrix
+      id_list.test <<- id_list
+                  }
+    
     pass_metadata_file_name = gsub("\\.\\.", "\\.", paste(metadata_in, ".", pass_file_suffix, ".txt", sep="", collapse="" ))
     write.table(pass_metadata_matrix, file=pass_metadata_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
     # file with metadata culled
