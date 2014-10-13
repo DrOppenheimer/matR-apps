@@ -76,6 +76,7 @@ import_metadata <- function(metadata_in){
   
   return(metadata_matrix)
 }
+# NOTE
 
 # http://stackoverflow.com/questions/9805507/deselecting-a-column-by-name-r
 # dd[ ,!(colnames(dd) %in% c("A", "B"))] # remove multiple
