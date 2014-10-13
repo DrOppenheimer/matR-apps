@@ -75,6 +75,8 @@ data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.tx
     write.table(culled_metadata_matrix, file=culled_metadata_file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
   }
 
+  print("NOTE")
+  
 }
 
 
