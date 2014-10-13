@@ -2,6 +2,8 @@
 
 data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", cull_list_type="file", pass_file_suffix="PASS", culled_file_suffix="CULLED", debug=FALSE){
 
+  if(debug==TRUE){print("RUNNING IN DEBUG MODE")}
+  
   # import list of ids to cull
   if( identical(cull_list_type, "r_list") ){
     id_list <- cull_list
