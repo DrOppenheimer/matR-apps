@@ -2,6 +2,33 @@
 
 data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.txt", cull_list_type="file", pass_file_suffix="PASS", culled_file_suffix="CULLED", debug=FALSE){
 
+  # func to import single column list of ids to cull
+  import_idList <- function(cull_list){
+    id_list <- scan(file=cull_list, what="character", quiet=TRUE, comment.char="#")
+    return(id_list)
+  }
+
+  # func to import the data; columns are samples, rows are categories
+  import_data <- function(data_in){
+    data_matrix <- data.matrix(read.table(data_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
+    return(data_matrix)
+  }
+
+  # func to import metadata; columns are metadata conditions, rows are samples
+  import_metadata <- function(metadata_in){
+    metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
+                                 read.table(
+                                            file=metadata_in,row.names=1,header=TRUE,sep="\t",
+                                            colClasses = "character", check.names=FALSE,
+                                            comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+                                            )
+                                 )   
+    
+    return(metadata_matrix)
+    
+    print("NOTE")
+  }
+  
   if(debug==TRUE){print("RUNNING IN DEBUG MODE")}
   
   # import list of ids to cull
@@ -52,32 +79,7 @@ data_cull.v1 <- function( data_in=NULL, metadata_in=NULL, cull_list="cull_ids.tx
 
 
 
-# func to import single column list of ids to cull
-import_idList <- function(cull_list){
-  id_list <- scan(file=cull_list, what="character", quiet=TRUE, comment.char="#")
-  return(id_list)
-}
 
-# func to import the data; columns are samples, rows are categories
-import_data <- function(data_in){
-  data_matrix <- data.matrix(read.table(data_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
-  return(data_matrix)
-}
-
-# func to import metadata; columns are metadata conditions, rows are samples
-import_metadata <- function(metadata_in){
-  metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
-                               read.table(
-                                          file=metadata_in,row.names=1,header=TRUE,sep="\t",
-                                          colClasses = "character", check.names=FALSE,
-                                          comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
-                                          )
-                               )   
-  
-  return(metadata_matrix)
-
-  print("NOTE")
-}
 # NOTE
 
 # http://stackoverflow.com/questions/9805507/deselecting-a-column-by-name-r
