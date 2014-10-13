@@ -75,6 +75,8 @@ import_metadata <- function(metadata_in){
                                )   
   
   return(metadata_matrix)
+
+  print("NOTE")
 }
 # NOTE
 
