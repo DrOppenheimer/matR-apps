@@ -294,10 +294,9 @@ render_pcoa.v11b <- function(
   #####################################################################################
   if ( identical( is.na(metadata_table), FALSE ) ){
 
-    
+    num_lines_string <- paste("wc -l ", metadata_table)
+    num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]]
     metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
-                                 num_lines_string <- paste("wc -l ", metadata_table)
-                                 num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]] 
                                  read.table(
                                             file=metadata_table,row.names=1,header=TRUE,sep="\t",
                                             colClasses = "character", check.names=FALSE,
