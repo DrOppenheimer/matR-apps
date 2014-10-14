@@ -129,7 +129,9 @@ metadata_check <- function(my_data_file=NA, my_PCoA=NA, my_metadata="", debug=TR
   
   # import tab delimited table
   import_data <- function(file_name){
-    data.matrix(read.table(file_name, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
+    num_lines_string <- paste("wc -l ", file_name)
+    num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]]  
+    data.matrix(read.table(file_name, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE, nrows=num_lines))
   }
   
   # export matrix as tab delimited table
@@ -147,11 +149,13 @@ metadata_check <- function(my_data_file=NA, my_PCoA=NA, my_metadata="", debug=TR
   
   # import metadata
   import_metadata <- function(metadata_file){
+    num_lines_string <- paste("wc -l ", metadata_file)
+    num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]]
     metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
     read.table(
       file=metadata_file,row.names=1,header=TRUE,sep="\t",
       colClasses = "character", check.names=FALSE,
-      comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
+      comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE, nrows=num_lines
       )
     )   
     metadata_matrix <- metadata_matrix[ order(rownames(metadata_matrix)),,drop=FALSE ]

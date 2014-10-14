@@ -296,12 +296,14 @@ render_pcoa.v11b <- function(
 
     
     metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
-                              read.table(
-                                         file=metadata_table,row.names=1,header=TRUE,sep="\t",
-                                         colClasses = "character", check.names=FALSE,
-                                         comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE
-                                         )
-                              )   
+                                 num_lines_string <- paste("wc -l ", metadata_table)
+                                 num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]] 
+                                 read.table(
+                                            file=metadata_table,row.names=1,header=TRUE,sep="\t",
+                                            colClasses = "character", check.names=FALSE,
+                                            comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE, nrows=num_lines
+                                            )
+                                 )   
     #metadata_matrix <- metadata_matrix[ order(rownames(metadata_matrix)),,drop=FALSE ]  # make sure that the metadata matrix is sorted (ROWWISE) by id
     metadata_matrix <- metadata_matrix[ order(sample_names),,drop=FALSE ]  # make sure that the metadata matrix is sorted (ROWWISE) by id
     
