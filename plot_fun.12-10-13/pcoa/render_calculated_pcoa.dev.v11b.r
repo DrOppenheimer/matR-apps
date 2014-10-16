@@ -294,13 +294,13 @@ render_pcoa.v11b <- function(
   #####################################################################################
   if ( identical( is.na(metadata_table), FALSE ) ){
 
-    num_lines_string <- paste("wc -l ", metadata_table)
-    num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]]
+    #num_lines_string <- paste("wc -l ", metadata_table)
+    #num_lines <- scan(pipe(num_lines_string), what=list(0, NULL))[[1]]
     metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
                                  read.table(
                                             file=metadata_table,row.names=1,header=TRUE,sep="\t",
                                             colClasses = "character", check.names=FALSE,
-                                            comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE, nrows=num_lines
+                                            comment.char = "",quote="",fill=TRUE,blank.lines.skip=FALSE #, nrows=num_lines
                                             )
                                  )   
     #metadata_matrix <- metadata_matrix[ order(rownames(metadata_matrix)),,drop=FALSE ]  # make sure that the metadata matrix is sorted (ROWWISE) by id
