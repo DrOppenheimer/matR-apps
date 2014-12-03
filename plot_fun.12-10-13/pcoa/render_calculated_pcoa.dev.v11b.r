@@ -55,10 +55,13 @@ render_pcoa.v11b <- function(
   require(scatterplot3d)
   
   argument_test <- is.na(c(metadata_table,amethst_groups,color_list)) # check that incompatible options were not selected
+  if(debug==TRUE){print(paste("argument test:", argument_test))}
+
+  
   if ( 3 - length(subset(argument_test, argument_test==TRUE) ) > 1){
     stop(
          paste(
-               "\n\nOnly on of these can have a non NA value:\n",
+               "\n\nOnly one of these can have a non NA value:\n",
                "     metadata_table: ", metadata_table,"\n",
                "     amethst_groups: ", amethst_groups, "\n",
                "     color_list    : ", color_list, "\n\n",
@@ -74,7 +77,7 @@ render_pcoa.v11b <- function(
 
   # load data - everything is sorted by id
   my_data <- load_pcoa_data(PCoA_in) # import PCoA data from *.PCoA file --- this is always done
-
+  
   # load data - everything is sorted by id
   eigen_values <- my_data$eigen_values
   eigen_vectors <- my_data$eigen_vectors
