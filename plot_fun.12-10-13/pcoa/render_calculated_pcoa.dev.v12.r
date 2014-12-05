@@ -401,9 +401,14 @@ render_pcoa.v12 <- function(
 
       metadata_column <- metadata_matrix[ ,metadata_column_index,drop=FALSE ] # get column i from the metadata matrix
       if(debug==TRUE){ test1<<-metadata_column }
-      
-      image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
-      figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
+
+      if ( identical(image_out, "default") ){
+        image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
+        figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
+      }else{
+        image_out = paste(image_out, ".png", sep="", collapse="")
+        figure_main = paste( image_out,".PCoA", sep="", collapse="")
+      }
       
       suppressWarnings( numericCheck <- as.numeric(metadata_column) ) # check to see if metadata are numeric, and sort accordingly
       if( is.na(numericCheck[1])==FALSE ){
