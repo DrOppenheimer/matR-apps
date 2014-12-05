@@ -150,7 +150,7 @@ render_pcoa.v12 <- function(
   #####################################################################################
   ########## PLOT WITH NO METADATA OR COLORS SPECIFIED (all point same color) #########
   #####################################################################################
-  if ( length(argument_test==TRUE)==0 ){ # create names for the output files
+  if ( length(argument_test==TRUE)==3 ){ # create names for the output files
     if ( identical(image_out, "default") ){
       image_out = paste( PCoA_in,".NO_COLOR.PCoA.png", sep="", collapse="" )
       figure_main = paste( PCoA_in, ".NO_COLOR.PCoA", sep="", collapse="" )
