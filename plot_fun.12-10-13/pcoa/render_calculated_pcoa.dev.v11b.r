@@ -60,7 +60,7 @@ render_pcoa.v11b <- function(
 
   
   #if ( 3 - length(subset(argument_test, argument_test==TRUE) ) > 1){
-  if ( argument_test > 1){
+  if ( argument_test != 2){
     stop(
          paste(
                "\n\nOnly one of these can have a non NA value:\n",
