@@ -56,6 +56,7 @@ render_pcoa.v12 <- function(
   
   argument_test <- is.na(c(metadata_table,amethst_groups,color_list)) # check that incompatible options were not selected
   if(debug==TRUE){print(paste("argument_test:", argument_test))}
+  if(debug==TRUE){print(paste("length argument_test == TRUE:", length(argument_test==TRUE)))}
   
   if ( 3 - length(subset(argument_test, argument_test==TRUE) ) > 1){
     stop(
