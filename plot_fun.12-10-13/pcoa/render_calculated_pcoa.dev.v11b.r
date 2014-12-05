@@ -54,7 +54,8 @@ render_pcoa.v11b <- function(
   require(matR)
   require(scatterplot3d)
   
-  argument_test <- is.na(c(metadata_table,amethst_groups,color_list)) # check that incompatible options were not selected
+  argument_list <- is.na(c(metadata_table,amethst_groups,color_list)) # check that incompatible options were not selected
+  argument_test = length(argument_list[argument_list==TRUE])
   if(debug==TRUE){print(paste("argument test:", argument_test))}
 
   
@@ -147,7 +148,7 @@ render_pcoa.v11b <- function(
   #####################################################################################
   ########## PLOT WITH NO METADATA OR COLORS SPECIFIED (all point same color) #########
   #####################################################################################
-  if ( length(argument_test==TRUE)==3 ){ # create names for the output files
+  if ( argument_test==3 ){ # create names for the output files
 
     if(debug==TRUE){print("RENDERING PCoA WIH NO METADATA")}
     
