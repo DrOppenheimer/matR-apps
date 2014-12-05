@@ -55,6 +55,8 @@ render_pcoa.v12 <- function(
   require(scatterplot3d)
   
   argument_test <- is.na(c(metadata_table,amethst_groups,color_list)) # check that incompatible options were not selected
+  if(debug==TRUE){print(paste("argument_test:", argument_test))}
+  
   if ( 3 - length(subset(argument_test, argument_test==TRUE) ) > 1){
     stop(
          paste(
@@ -309,7 +311,6 @@ render_pcoa.v12 <- function(
   #####################################################################################
   if ( identical( is.na(metadata_table), FALSE ) ){
 
-    
     metadata_matrix <- as.matrix( # Load the metadata table (same if you use one or all columns)
                               read.table(
                                          file=metadata_table,row.names=1,header=TRUE,sep="\t",
