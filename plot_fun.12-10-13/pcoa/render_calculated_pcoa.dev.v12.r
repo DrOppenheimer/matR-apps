@@ -60,7 +60,8 @@ render_pcoa.v12 <- function(
   if(debug==TRUE){print(paste("argument_test:", argument_test))}
   if(debug==TRUE){print(paste("length argument_test == TRUE:", length(argument_test==TRUE)))}
   
-  if ( 3 - length(subset(argument_test, argument_test==TRUE) ) > 1){
+  #if ( 3 - length(subset(argument_test, argument_test==TRUE) ) > 1){
+  if ( argument_test > 1){
     stop(
          paste(
                "\n\nOnly on of these can have a non NA value:\n",
