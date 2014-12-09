@@ -30,18 +30,15 @@ MGRAST_preprocessing <<- function(
     # check for necessary packages, install if they are not there
     #require(matR) || install.packages("matR", repo="http://mcs.anl.gov/~braithwaite/R", type="source")
     #chooseCRANmirror()
-    #setRepositories(ind=1:2)
+    setRepositories(ind=1:8)
     source("http://bioconductor.org/biocLite.R")
-    require(preprocessCore) || install.packages("preprocessCore")
-    #source("http://bioconductor.org/biocLite.R")
-    #require(DESeq) || biocLite("DESeq")
-    
-    require(DESeq) || biocLite("DESeq") # update to DESeq2 when I have a chance 
-
-                                        # (DESeq): www.ncbi.nlm.nih.gov/pubmed/20979621
-
-    #library(preprocessCore)
-    #library(DESeq)
+    #require(preprocessCore) || install.packages("preprocessCore")
+    #require(DESeq) || biocLite("DESeq") # update to DESeq2 when I have a chance
+    require(preprocessCore) || biocLite("preprocessCore")
+    require(DESeq) || biocLite("DESeq") # update to DESeq2 when I have a chance
+    # (DESeq): www.ncbi.nlm.nih.gov/pubmed/20979621
+    library(preprocessCore)
+    library(DESeq)
     ###### MAIN
     
     # get the name of the data object if an object is used -- use the filename if input is filename string
