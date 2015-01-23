@@ -43,8 +43,7 @@ merge_data <- function(mode="file", file1="", file2="", output="default"){ # ,du
   #}else{
   #  stop(paste("invalid data_type(", data_type, ") please use \"data\" or \"metadata\""))
   #}
-    
-  
+
 }
 
 #### SUBS
