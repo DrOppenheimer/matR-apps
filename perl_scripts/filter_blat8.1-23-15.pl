@@ -39,7 +39,7 @@ open(FILE_IN, "<", blat8_in) or die "Can't open FILE_IN $file_in";
 open(FILE_OUT, ">", $file_out) or die "Can't open FILE_OUT $file_out";
 
 # write header to output
-print FILE_OUT "# Query id"."\t"."Subject id"."\t"."% identity"."\t"."alignment length"."\t"."mismatches"."\t"."gap openings"."\t"." q. start"."\t"."q. end"."\t".s. start""."\t"."s. end"."\t"."e-value"."\t"."bit score";
+print FILE_OUT "# Query id"."\t"."Subject id"."\t"."% identity"."\t"."alignment length"."\t"."mismatches"."\t"."gap openings"."\t"."q. start"."\t"."q. end"."\t"."s. start"."\t"."s. end"."\t"."e-value"."\t"."bit score";
 
 # read one time to get the best values
 # ready through second time to print key sorted values that match best (could be more than 1)
