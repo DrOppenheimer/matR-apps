@@ -94,11 +94,12 @@ while( my( $key, $value ) = each $min_evalue_hash ){
   open(FILE_IN, "<", $blat8_in) or die "Can't open FILE_IN $blat8_in";
   while (my $line = <FILE_IN>){
     chomp $line;
+    my $line_copy = $line;
     my @line_array = split("\t", $line);
     my $query_id = $line_array[0];
     my $evalue = $line_array[10];
     if ( $evalue==$min_evalue ){
-      print FILE_OUT $line."\n";
+      print FILE_OUT $line_copy."\n";
     }
   }
   close(FILE_IN);
