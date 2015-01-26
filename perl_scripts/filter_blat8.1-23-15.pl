@@ -94,9 +94,8 @@ while( my( $key, $value ) = each $min_evalue_hash ){
     if ( $evalue==$min_evalue ){
       print FILE_OUT $line."\n";
     }
-    close(FILE_IN);
   }
-
+  close(FILE_IN);
 }
   
 
