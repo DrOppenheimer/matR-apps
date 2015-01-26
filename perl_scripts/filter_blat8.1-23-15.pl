@@ -30,12 +30,12 @@ if ( ! GetOptions (
 		  )
    ) { &usage(); }
 
-unless ( @ARGV > 0 || $file_in ) { &usage(); }
+unless ( @ARGV > 0 || $blat8_in ) { &usage(); }
 if( $help ){ &usage(); }
 
 # open files
-$file_out= $blat8_in."SUMMARY.txt";
-open(FILE_IN, "<", blat8_in) or die "Can't open FILE_IN $file_in";
+$file_out= $blat8_in.".FILTER_SUMMARY.txt";
+open(FILE_IN, "<", $blat8_in) or die "Can't open FILE_IN $blat8_in";
 open(FILE_OUT, ">", $file_out) or die "Can't open FILE_OUT $file_out";
 
 # write header to output
@@ -85,7 +85,7 @@ while( my( $key, $value ) = each $min_evalue_hash ){
   my $min_evalue = $hash_line_array[11];
 
   # match evalues of hits to the same query to the min, print if they match
-  open(FILE_IN, "<", blat8_in) or die "Can't open FILE_IN $file_in";
+  open(FILE_IN, "<", $blat8_in) or die "Can't open FILE_IN $blat8_in";
   while (my $line = <FILE_IN>){
     chomp $line;
     my @line_array = split("\t", $line);
