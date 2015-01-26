@@ -87,7 +87,7 @@ while( my( $key, $value ) = each $min_evalue_hash ){
 
   # get the min evalue found in the first pass for a query
   my @hash_line_array = split("\t", $value);
-  my $min_evalue = $hash_line_array[11];
+  my $min_evalue = $hash_line_array[10];
   if($debug){ print STDOUT "min evalue: ".$min_evalue."\n"; }
 
   # match evalues of hits to the same query to the min, print if they match
