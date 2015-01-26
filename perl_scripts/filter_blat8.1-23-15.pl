@@ -62,14 +62,14 @@ while (my $line = <FILE_IN>){
   
   # load line into hash if there is not one for the query
   unless( %min_evalue_hash <- { $query_id } ){
-    %min_evalue_hash <- { $query_id } = $line
+    %min_evalue_hash <- { $query_id } = $line;
   # replace existing line if it has a smaller e-value for the same query (just to find min e value used below)
   } else {
-    my $hash_line = %min_evalue_hash <- { $query_id }
-    my @hash_line_array = split("\t", $hash_line)
-    my $hash_evalue = $hash_line_array[11]
+    my $hash_line = %min_evalue_hash <- { $query_id };
+    my @hash_line_array = split("\t", $hash_line);
+    my $hash_evalue = $hash_line_array[11];
       if( $evalue < $hash_evalue ){
-	%min_evalue_hash <- { $query_id } = $line
+	%min_evalue_hash <- { $query_id } = $line;
       }
   }
 }
@@ -81,8 +81,8 @@ close(FILE_IN)
 while( my( $key, $value ) = each %min_evalue_hash ){
 
   # get the min evalue found in the first pass for a query
-  my @hash_line_array = split("\t", $value)
-  my $min_evalue = $hash_line_array[11]
+  my @hash_line_array = split("\t", $value);
+  my $min_evalue = $hash_line_array[11];
 
   # match evalues of hits to the same query to the min, print if they match
   open(FILE_IN, "<", blat8_in) or die "Can't open FILE_IN $file_in";
@@ -94,7 +94,7 @@ while( my( $key, $value ) = each %min_evalue_hash ){
     if ( $evalue==$min_evalue ){
       print FILE_OUT $line."\n";
     }
-    close(FILE_IN)
+    close(FILE_IN);
   }
 
 }
