@@ -71,7 +71,7 @@ while (my $line = <FILE_IN>){
   } else {
     my $hash_line = $min_evalue_hash -> { $query_id };
     my @hash_line_array = split("\t", $hash_line);
-    my $hash_evalue = $hash_line_array[11];
+    my $hash_evalue = $hash_line_array[10];
     if( $evalue < $hash_evalue ){
       $min_evalue_hash -> { $query_id } = $line;
       if($debug){ print STDOUT $query_id.":      ".$evalue." < ".$hash_evalue."\n"; }
