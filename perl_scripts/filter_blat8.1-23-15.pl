@@ -54,7 +54,7 @@ my $min_evalue_hash;
 while (my $line = <FILE_IN>){
   chomp $line;
   my @line_array = split("\t", $line);
-  if($debug)( print STDOUT "input line: ".$line."\n"; )
+  if($debug){ print STDOUT "input line: ".$line."\n"; }
   my $query_id = $line_array[0];
   if($debug){ print STDOUT "ID: ".$query_id."\n"; }
   #my $pid = $line_array[2];
