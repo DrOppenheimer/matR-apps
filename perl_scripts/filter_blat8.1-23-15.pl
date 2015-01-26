@@ -54,19 +54,19 @@ my $min_evalue_hash;
 while (my $line = <FILE_IN>){
   chomp $line;
   my @line_array = split("\t", $line);
-  if($debug){ print STDOUT "input line: ".$line."\n"; }
+  #if($debug){ print STDOUT "input line: ".$line."\n"; }
   my $query_id = $line_array[0];
-  if($debug){ print STDOUT "ID: ".$query_id."\n"; }
+  #if($debug){ print STDOUT "ID: ".$query_id."\n"; }
   #my $pid = $line_array[2];
   #my $al = $line_array[3];
   my $evalue = $line_array[10];
-  if($debug){ print STDOUT "evalue: ".$evalue."\n"; }  
+  #if($debug){ print STDOUT "evalue: ".$evalue."\n"; }  
   #my $bscore = $line_array[11];
   
   # load line into hash if there is not one for the query
   unless( $min_evalue_hash -> { $query_id } ){
     $min_evalue_hash -> { $query_id } = $line;
-    if($debug){ print STDOUT "FIRST ENTERED ".$query_id."\n"; }
+    #if($debug){ print STDOUT "FIRST ENTERED ".$query_id."\n"; }
   # replace existing line if it has a smaller e-value for the same query (just to find min e value used below)
   } else {
     my $hash_line = $min_evalue_hash -> { $query_id };
@@ -74,7 +74,7 @@ while (my $line = <FILE_IN>){
     my $hash_evalue = $hash_line_array[10];
     if( $evalue < $hash_evalue ){
       $min_evalue_hash -> { $query_id } = $line;
-      if($debug){ print STDOUT $query_id.":      ".$evalue." < ".$hash_evalue."\n"; }
+      #if($debug){ print STDOUT $query_id.":      ".$evalue." < ".$hash_evalue."\n"; }
     }
   }
 }
@@ -88,6 +88,7 @@ while( my( $key, $value ) = each $min_evalue_hash ){
   # get the min evalue found in the first pass for a query
   my @hash_line_array = split("\t", $value);
   my $min_evalue = $hash_line_array[11];
+  if($debug){ print STDOUT "min evalue: ".$min_evalue."\n"; }
 
   # match evalues of hits to the same query to the min, print if they match
   open(FILE_IN, "<", $blat8_in) or die "Can't open FILE_IN $blat8_in";
