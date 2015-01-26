@@ -61,15 +61,15 @@ while (my $line = <FILE_IN>){
   #my $bscore = $line_array[11];
   
   # load line into hash if there is not one for the query
-  unless( %min_evalue_hash{ $query_id } ){
-    %min_evalue_hash{ $query_id } = $line;
+  unless( %min_evalue_hash -> { $query_id } ){
+    %min_evalue_hash -> { $query_id } = $line;
   # replace existing line if it has a smaller e-value for the same query (just to find min e value used below)
   } else {
-    my $hash_line = %min_evalue_hash{ $query_id };
+    my $hash_line = %min_evalue_hash -> { $query_id };
     my @hash_line_array = split("\t", $hash_line);
     my $hash_evalue = $hash_line_array[11];
     if( $evalue < $hash_evalue ){
-      %min_evalue_hash{ $query_id } = $line;
+      %min_evalue_hash -> { $query_id } = $line;
     }
   }
 }
