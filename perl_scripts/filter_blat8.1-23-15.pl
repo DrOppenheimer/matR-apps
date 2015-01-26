@@ -24,9 +24,9 @@ if ( (@ARGV > 0) && ($ARGV[0] =~ /-h/) ) { &usage(); }
 
 if ( ! GetOptions (
 		   "b|blat8_in=s" => \$blat8_in,
-		   "h|help!"              => \$help, 
-		   "v|verbose!"           => \$verbose,
-		   "d|debug!"             => \$debug
+		   "h|help!"      => \$help, 
+		   "v|verbose!"   => \$verbose,
+		   "d|debug!"     => \$debug
 		  )
    ) { &usage(); }
 
@@ -46,7 +46,7 @@ print FILE_OUT "# Query id"."\t"."Subject id"."\t"."% identity"."\t"."alignment 
 
 
 # one hash for each of the values 
-my %min_evalue_hash;
+my $min_evalue_hash;
 #my %max_pid_hash;
 
 
@@ -61,15 +61,15 @@ while (my $line = <FILE_IN>){
   #my $bscore = $line_array[11];
   
   # load line into hash if there is not one for the query
-  unless( %min_evalue_hash -> { $query_id } ){
-    %min_evalue_hash -> { $query_id } = $line;
+  unless( $min_evalue_hash -> { $query_id } ){
+    $min_evalue_hash -> { $query_id } = $line;
   # replace existing line if it has a smaller e-value for the same query (just to find min e value used below)
   } else {
-    my $hash_line = %min_evalue_hash -> { $query_id };
+    my $hash_line = $min_evalue_hash -> { $query_id };
     my @hash_line_array = split("\t", $hash_line);
     my $hash_evalue = $hash_line_array[11];
     if( $evalue < $hash_evalue ){
-      %min_evalue_hash -> { $query_id } = $line;
+      $min_evalue_hash -> { $query_id } = $line;
     }
   }
 }
@@ -78,7 +78,7 @@ close(FILE_IN);
 
 
 # second read -- go through the hash keys - print every line with an evalue that matches the min found above
-while( my( $key, $value ) = each %min_evalue_hash ){
+while( my( $key, $value ) = each $min_evalue_hash ){
 
   # get the min evalue found in the first pass for a query
   my @hash_line_array = split("\t", $value);
