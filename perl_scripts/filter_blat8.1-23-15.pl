@@ -72,7 +72,7 @@ while (my $line = <FILE_IN>){
     my $hash_line = $min_evalue_hash -> { $query_id };
     my @hash_line_array = split("\t", $hash_line);
     my $hash_evalue = $hash_line_array[11];
-    if( $evalue < $hash_evalue ){
+    if( $evalue lt $hash_evalue ){
       $min_evalue_hash -> { $query_id } = $line;
       if($debug){ print STDOUT "UPDAPTED    ".$query_id."\n"; }
     }
