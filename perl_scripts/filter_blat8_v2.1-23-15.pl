@@ -58,7 +58,7 @@ while (my $line = <FILE_IN>){
   #if($debug){ print STDOUT "evalue: ".$evalue."\n"; }  
   my $my_bitscore = $line_array[11];
   
-  if( ($my_pid >= $min_pid) && ($my_al >= $min_al) && ($my_evale <= $min_evalue) && ($my_bitscore >= $min_bitscore) ){
+  if( ($my_pid >= $min_pid) && ($my_al >= $min_al) && ($my_evalue <= $max_evalue) && ($my_bitscore >= $min_bitscore) ){
     print FILE_OUT $line."\n";
   }
 
