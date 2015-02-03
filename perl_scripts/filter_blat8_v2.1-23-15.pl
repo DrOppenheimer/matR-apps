@@ -11,9 +11,9 @@ use File::Basename;
 my($blat8_in, $help, $verbose, $debug);
 
 my $min_pid = 90 ;
-my $min_al = 50 ;
-my $max_evalue = 1.0e-10 ;
-my $min_bitscore = 300 ;
+my $min_al = 30 ;
+my $max_evalue = 1.0e-30 ;
+my $min_bitscore = 200 ;
 
 
 # check input args and display usage if not suitable
