@@ -98,7 +98,8 @@ load_pcoa_data.new <- function(PCoA_in){
   
   eigen_vectors.raw <- as.matrix(
                                  fread(
-                                       input=metadata_file, sep="\t", stringsAsFactors=FALSE,
+                                       #input=metadata_file, sep="\t", stringsAsFactors=FALSE,
+                                       input=PCoA_in, sep="\t", stringsAsFactors=FALSE,
                                        skip="mgm", showProgress=TRUE, colClasses="character"
                                        )
                                  )
