@@ -74,6 +74,8 @@ load_pcoa_data.original <- function(PCoA_in){
 
 #my_object2 <- load_pcoa_data.new("fierer_data.raw.genus_counts.10-7-14.txt.DESeq_blind.PREPROCESSED.txt.bray-curtis.PCoA")
 
+library(data.table)
+
 load_pcoa_data.new <- function(PCoA_in){
   
   start <- Sys.time ()
