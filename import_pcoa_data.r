@@ -175,7 +175,3 @@ class(eigen_vectors) <- "numeric"
 runtime <- Sys.time () - start
 print(paste("runtime:", round(runtime, digits=2), "seconds"))
 return(list(eigen_values=eigen_values, eigen_vectors=eigen_vectors))
-
-
-
-
