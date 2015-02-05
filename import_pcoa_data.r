@@ -82,7 +82,7 @@ load_pcoa_data.new <- function(PCoA_in){
   print(paste("start:", start))
   
   con_1 <- file(PCoA_in)
-  
+
   open(con_1);
   num_values <- 0
   data_type = "NA"
