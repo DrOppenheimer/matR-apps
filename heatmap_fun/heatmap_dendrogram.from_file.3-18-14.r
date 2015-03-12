@@ -648,7 +648,8 @@ heatmap_dendrogram.from_file <- function (
     rot_x <- t(x[1:nrow(x),])
     rowsort_rot_x <- rot_x[nrow(rot_x):1,]
     #output_filename <- gsub(" ", "", paste(file_in, ".HD_sorted_table.txt"))
-    write.table(rot_x, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+    #write.table(rot_x, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
+    write.table(rowsort_rot_x, file = file_out, col.names=NA, row.names = TRUE, sep="\t", quote=FALSE)
     print(paste("Wrote heatmap dendrogram sorted data as file: ", file_out, sep="", collapse=""))
   }
 
