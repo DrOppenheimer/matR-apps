@@ -8,13 +8,15 @@ get_mgrast_metadata.v2 <- function(
                                    debug=FALSE
                                 ){
 
+
+  start <- Sys.time ()
+  print(paste("start:", start))
+  
   # load packages
   require(matR) 
   require(RJSONIO)
   require(RCurl)
   require(plyr)
-
-# Still have to pull out some of the other stats that appear in the browse page -- must be in other parts of the API - not metadata ....
 
   #import the list of mgids from file
   #if (list_is_file==TRUE){
@@ -54,6 +56,9 @@ get_mgrast_metadata.v2 <- function(
   
   # export metadata to file
   export_data(my_metadata_matrix, output_file)
+  
+  runtime <- Sys.time () - start
+  print(paste("runtime:", round(runtime, digits=2), "seconds"))
                                      
 }
 
@@ -63,7 +68,7 @@ get_mgrast_metadata.v2 <- function(
 get_single_metagenome_metadata <- function(mgid, use_auth, auth, debug){
 
   if ( use_auth==TRUE ){
-    my_auth <- scan(file=auth, what="character")
+    my_auth <- scan(file=auth, what="character", quiet=TRUE)
     my_call <- paste("http://api.metagenomics.anl.gov//metagenome/", mgid, "?verbosity=full&asynchronous=1&auth=", my_auth, sep="", collapse="")
   }else{
     my_call <- paste("http://api.metagenomics.anl.gov//metagenome/", mgid, "?verbosity=full&asynchronous=1", sep="", collapse="")

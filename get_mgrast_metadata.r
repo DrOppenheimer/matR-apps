@@ -8,6 +8,9 @@ get_mgrast_metadata <- function(
                                 debug=FALSE
                                 ){
 
+  start <- Sys.time ()
+  print(paste("start:", start))
+
   # load packages
   require(matR) 
   require(RJSONIO)
@@ -164,6 +167,9 @@ get_mgrast_metadata <- function(
   
   # export metadata to file
   export_data(my_metadata_matrix, output_file)
+
+  runtime <- Sys.time () - start
+  print(paste("runtime:", round(runtime, digits=2), "seconds"))
                                      
 }
 
@@ -172,7 +178,7 @@ get_single_metagenome_metadata <- function(mgid, use_auth, auth, debug){
   
   
   if ( use_auth==TRUE ){
-    my_auth <- scan(file=auth, what="character")
+   my_auth <-  scan(file=auth, what="character", quiet=TRUE)
     if( debug==TRUE ){ print(paste("auth:", auth)) }
     my_call <- paste("http://api.metagenomics.anl.gov//metagenome/", mgid, "?verbosity=metadata&auth=", my_auth, sep="", collapse="")
     if( debug==TRUE ){ print(paste("my_call:", my_call)) }
