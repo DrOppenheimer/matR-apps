@@ -62,11 +62,11 @@ MGRAST_preprocessing <<- function(
 
     # Input the data
     if ( identical( data_type, "file") ){
-      input_data <- data.matrix(read.table(data_in, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE, as.is=TRUE))
+      input_data <- data.matrix(read.table(data_in, row.names=1, header=TRUE, sep="\t", comment.char="", quote="", check.names=FALSE))
     }else if( identical( data_type, "r_matrix") ){
       input_data <- data.matrix(data_in)
     }else{
-      stop( paste( data_type, " is not a valid option for data_type", sep="", collapse="", check.names=FALSE, as.is=TRUE))
+      stop( paste( data_type, " is not a valid option for data_type", sep="", collapse=""))
     }
     
     # sort the data (COLUMNWISE) by id
