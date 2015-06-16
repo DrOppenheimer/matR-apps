@@ -16,7 +16,7 @@ MGRAST_preprocessing <<- function(
                                   DESeq_sharingMode     = "maximum",  # c( "maximum", "fit-only", "gene-est-only" ) # maximum is the most conservative choice
                                   DESeq_fitType         = "local",          # c( "parametric", "local" )
                                   DESeq_image           = TRUE, # create dispersion vs mean plot indicate DESeq regression
-                                  scale_0_to_1          = FALSE,
+                                  scale_0_to_1          = TRUE,
                                   produce_boxplots      = FALSE,
                                   boxplot_height_in     = "default", # 11,
                                   boxplot_width_in      = "default", #"8.5,
