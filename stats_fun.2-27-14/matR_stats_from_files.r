@@ -21,7 +21,7 @@ stats_from_files <<- function(
   }
   
   # read in the abundance data
-  if(identical(input_type,"file")){
+  if( identical(input_type,"file") ){
     data_matrix <- data.matrix(read.table(
                                           data_table,
                                           row.names=1,
@@ -32,11 +32,12 @@ stats_from_files <<- function(
                                           check.names=FALSE
                                           )
                                )
-                             }else{ if(identical(input_type,"r_table")){
-                                data_matrix <- data_table       
-                              }else{
-                                stop("data_table value is not valid, must be file or r_table")
-                             }
+  } else { 
+    if(identical(input_type,"r_table"))
+    data_matrix <- data_table       
+  } else {
+    stop("data_table value is not valid, must be file or r_table")
+  }
   # Here, make sure that the data are sorted COLUMNWISE by mgid
   data_matrix <-  data_matrix[,order(colnames(data_matrix))]
   
