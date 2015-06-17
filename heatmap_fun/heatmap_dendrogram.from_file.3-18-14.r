@@ -4,7 +4,7 @@ heatmap_dendrogram.from_file <- function (
 
                                           file_in,
                                           file_type="file",
-                                          file_in.name = if(identical(file_type,"file")) file_in else if(identical(file_type,"file")) deparse(substitute(file_in)) else stop("file_type is not valid, must be file or r_matrix"), # define type of input "file or r_matrix")
+                                          file_in.name = if(identical(file_type,"file")) file_in else if(identical(file_type,"r_matrix")) deparse(substitute(file_in)) else stop("file_type is not valid, must be file or r_matrix"), # define type of input "file or r_matrix")
 
                                           metadata_table=NA,
                                           metadata_column=1,
