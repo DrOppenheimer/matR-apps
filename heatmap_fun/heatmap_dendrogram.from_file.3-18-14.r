@@ -4,7 +4,7 @@ heatmap_dendrogram.from_file <- function (
 
                                           file_in,
                                           file_type="file",
-                                          file_in.name = if( identical(file_type,"file") file_in else deparse(substitute(file_in)),
+                                          file_in.name = if(identical(file_type,"file")) file_in else deparse(substitute(file_in)),
 
                                           metadata_table=NA,
                                           metadata_column=1,
