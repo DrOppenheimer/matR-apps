@@ -32,12 +32,23 @@ stats_from_files <<- function(
                                           check.names=FALSE
                                           )
                                )
-  } else { 
-    if(identical(input_type,"r_table"))
+  } else if (identical(input_type,"r_table")) {
     data_matrix <- data_table       
   } else {
     stop("data_table value is not valid, must be file or r_table")
   }
+  
+  csvfile <- function(id) {
+    if (id < 10) { 
+        paste0(0,0,id,".csv")
+    } else if (id < 100) {
+        paste0(0,id,".csv")
+    } else paste0(id,".csv")
+}
+  
+  
+  
+  
   # Here, make sure that the data are sorted COLUMNWISE by mgid
   data_matrix <-  data_matrix[,order(colnames(data_matrix))]
   
