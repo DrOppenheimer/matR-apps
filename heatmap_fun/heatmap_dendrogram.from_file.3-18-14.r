@@ -162,6 +162,8 @@ heatmap_dendrogram.from_file <- function (
     x = data.matrix(read.table(file_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
   }else if ( identical(file_type, "r_matrix")  ){
     x = file_in
+  }else{
+    stop("file_type is not valid, must be file or r_matrix")
   }
 
 
