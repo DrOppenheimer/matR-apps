@@ -3,6 +3,8 @@
 heatmap_dendrogram.from_file <- function (
 
                                           file_in,
+                                          file_type="file",
+                                          file_in.name = if( identical(file_type,"file") file_in else deparse(substitute(file_in)),
 
                                           metadata_table=NA,
                                           metadata_column=1,
@@ -10,14 +12,14 @@ heatmap_dendrogram.from_file <- function (
                                           legend_cex=1,
 
                                           produce_flat_output = TRUE,
-                                          file_out = if (produce_flat_output) paste(file_in, ".HD_sorted.txt", sep="", collapse="") else NA, # produce HD sorted flat output
+                                          file_out = if (produce_flat_output) paste(file_in.name, ".HD_sorted.txt", sep="", collapse="") else NA, # produce HD sorted flat output
      
                                           return_heatmap_object = TRUE,
-                                          heatmap_objectname = if (return_heatmap_object) paste(file_in, ".heatmap", sep="", collapse=""),
+                                          heatmap_objectname = if (return_heatmap_object) paste(file_in.name, ".heatmap", sep="", collapse=""),
 
                                           scale_0_to_1 = TRUE,                  # scale all values in matrix between 0 and 1
                                           figure_type   = "png",                # c("jpg" "pdf" "ps" or "png") # added this as an input argument 8-10-10
-                                          image_out = gsub(" ", "", paste(file_in, ".HD.", figure_type)),
+                                          image_out = gsub(" ", "", paste(file_in.name, ".HD.", figure_type)),
                                           image_title = image_out, # image_out
                                                            
                                           # colors
@@ -156,8 +158,10 @@ heatmap_dendrogram.from_file <- function (
 
 ###### sub to import the input_file
 #import_data <- function(file_name)
-  {
+  if( identical(file_type, "file") ){
     x = data.matrix(read.table(file_in, row.names=1, check.names=FALSE, header=TRUE, sep="\t", comment.char="", quote=""))
+  }else if ( identical(file_type, "r_matrix")  )
+    x = file_in
   }
 
 
