@@ -167,8 +167,9 @@ quickly"
     if ( produce_boxplots==TRUE ) {
       boxplots_file <- paste(input_name, ".boxplots.png", "\n", sep="", collapse="")
       
-      if( identical(boxplot_height_in, "default") ){ boxplot_height_in <- 11 }
-      if( identical(boxplot_width_in, "default") ){ boxplot_width_in <- round(ncol(input_data)/14) }
+      if( identical(boxplot_height_in, "default") ){ boxplot_height_in <- 8.5 }
+      #if( identical(boxplot_width_in, "default") ){ boxplot_width_in <- round(ncol(input_data)/14) }
+      if( identical(boxplot_width_in, "default") ){ boxplot_width_in <- 11 }
 
       png(
           filename = boxplots_file,
