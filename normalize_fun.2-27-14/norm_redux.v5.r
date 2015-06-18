@@ -18,6 +18,7 @@ MGRAST_preprocessing <<- function(
                                   DESeq_image           = TRUE, # create dispersion vs mean plot indicate DESeq regression
                                   scale_0_to_1          = TRUE,
                                   produce_boxplots      = FALSE,
+                                  boxplots_file_out     = "default",
                                   boxplot_height_in     = "default", # 11,
                                   boxplot_width_in      = "default", #"8.5,
                                   boxplot_res_dpi       = 300,
@@ -165,7 +166,12 @@ quickly"
     # produce boxplots
     boxplot_message <- "output boxplot:        NA"
     if ( produce_boxplots==TRUE ) {
-      boxplots_file <- paste(input_name, ".boxplots.png", "\n", sep="", collapse="")
+    
+      if( identical(boxplots_file_out, "default") ){
+        boxplots_file <- paste(input_name, ".boxplots.png", "\n", sep="", collapse="")
+      }else{
+        boxplots_file <- boxplots_file_out
+      }
       
       if( identical(boxplot_height_in, "default") ){ boxplot_height_in <- 8.5 }
       #if( identical(boxplot_width_in, "default") ){ boxplot_width_in <- round(ncol(input_data)/14) }
