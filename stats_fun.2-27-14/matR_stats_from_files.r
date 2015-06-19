@@ -1,5 +1,6 @@
 stats_from_files <<- function(
                                data_table="HMP_WGS.data.quantile_norm.txt",
+                               input_type="file",
                                metadata_table="HMP_WGS.meta_data.tab_delim.txt.enviroment_package.groups.txt",
                                metadata_column=8,
                                stat_test="Kruskal-Wallis", # c("Kruskal-Wallis", "t-test-paired", "Wilcoxon-paired", "t-test-unpaired", "Mann-Whitney-unpaired-Wilcoxon", "ANOVA-one-way")
@@ -20,16 +21,34 @@ stats_from_files <<- function(
   }
   
   # read in the abundance data
-  data_matrix <- data.matrix(read.table(
-                                        data_table,
-                                        row.names=1,
-                                        header=TRUE,
-                                        sep="\t",
-                                        comment.char="",
-                                        quote="",
-                                        check.names=FALSE
-                                        )
-                             )
+  if( identical(input_type,"file") ){
+    data_matrix <- data.matrix(read.table(
+                                          data_table,
+                                          row.names=1,
+                                          header=TRUE,
+                                          sep="\t",
+                                          comment.char="",
+                                          quote="",
+                                          check.names=FALSE
+                                          )
+                               )
+  } else if (identical(input_type,"r_table")) {
+    data_matrix <- data_table       
+  } else {
+    stop("data_table value is not valid, must be file or r_table")
+  }
+  
+  csvfile <- function(id) {
+    if (id < 10) { 
+        paste0(0,0,id,".csv")
+    } else if (id < 100) {
+        paste0(0,id,".csv")
+    } else paste0(id,".csv")
+}
+  
+  
+  
+  
   # Here, make sure that the data are sorted COLUMNWISE by mgid
   data_matrix <-  data_matrix[,order(colnames(data_matrix))]
   

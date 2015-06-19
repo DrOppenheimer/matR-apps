@@ -92,9 +92,12 @@ render_pcoa.v12 <- function(
   if(debug==TRUE){sample_names.test1<<-sample_names}
   
   if(debug==TRUE){sample_names.test2<<-sample_names}
-  eigen_vectors <- eigen_vectors[ order(sample_names), ]
-  eigen_values <- eigen_values[ order(sample_names) ]
-  sample_names <- sample_names[ order(sample_names) ]
+  ##eigen_vectors <- eigen_vectors[ order(sample_names), ]
+  ##eigen_values <- eigen_values[ order(sample_names) ]
+  ##sample_names <- sample_names[ order(sample_names) ]
+  #eigen_vectors <- eigen_vectors[ order(eigen_values), ]
+  #eigen_values <- eigen_values[ order(eigen_values) ]
+  #sample_names <- sample_names[ order(eigen_values) ]
   
   if(debug==TRUE){
     eigen_vectors.test<<-eigen_vectors
