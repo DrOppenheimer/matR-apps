@@ -86,8 +86,8 @@ open(FILE_IN, "<", $current_dir."/".$mgid_list) or die "Couldn't open FILE_IN $m
 # create workflow
 my $workflow = new AWE::Workflow(
 "pipeline"=> "M5NR Mapping",
-"name"=> "ARDB",
-"project"=> "ARDB",
+"name"=> "KODB",
+"project"=> "KODB",
 #"user"=> "wilke",
 "user"=> "keegan",
 "clientgroups"=> $config->{clientgroup} ,
@@ -140,7 +140,7 @@ while (my $mgid = <FILE_IN>){
       my $task1 = $workflow->newTask('M5NR/Mapping.sims2annotation.default',
 				     shock_resource( $config->{shockurl} , $shock_sims_node ) ,
 				     shock_resource( $config->{shockurl} , $dbfile ) ,
-				     string_resource( 'ARDB')
+				     string_resource( 'KODB')
 				    );
       $task1->userattr( %$usrattributes );
       
@@ -148,7 +148,7 @@ while (my $mgid = <FILE_IN>){
 
       my $task2 = $workflow->newTask('M5NR/Mapping.splitBySource.default',
 				     task_resource($task1->taskid() , 0) ,
-				     string_resource('ARDB_')
+				     string_resource('KODB_')
 				    );
       
       $task2->userattr( %$usrattributes );
