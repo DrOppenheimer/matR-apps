@@ -23,7 +23,7 @@ my $dbfile     = "b3411bbd-3603-4add-8e54-f7cee078a0b6" ; # Andi's test db
 my $shock_host  = "http://shock.metagenomics.anl.gov/" ;
 my $awe_host    = "http://140.221.67.82:8001" ;
 my $clientgroup = "kevin_starlord" ;
-my $token       = "un=thulsadoon|tokenid=0b33976a-3874-11e4-9fb3-12313b077182|expiry=1441839178|client_id=thulsadoon|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/aa346168-3523-11e4-928a-22000ab68755|sig=42bdee25bc51e4563d94244c458a1eb33e39363724c4511952fce14b17adc5591c3f475806969a5cb5acc11706b7230226dcfffc9adc2a5ea80cf31efe72a2a22659707e461e3ddcdc1a52453f109e7fde767979c89584a77490beb56882f887d087c605fe5880cb923111eec206be5c41dc04b1d4fba2ddeb764ab5772d3795" ;
+my $token       = "un=thulsadoon|tokenid=0b33976a-3874-11e4-9fb3-12313b077182|expiry=1441839178|client_id=thulsadoon|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/aa346168-3523-11e4-928a-22000ab68755|sig=42bdee25bc51e4563d94244c458a1eb33e39363724c4511952fce14b17adc5591c3f475806969a5cb5acc11706b7230226dcfffc9adc2a5ea80cf31efe72a2a22659707e461e3ddcdc1a52453f109e7fde767979c89584a77490beb56882f887d087c605fe5880cb923111eec206be5c41dc04b1d4fba2ddeb764ab5772d3795";
 my $date        = `date` ; chomp $date ;
 my $myJobName   = $date ;
 my $user        = 'keegan' ;
@@ -57,7 +57,7 @@ shocktoken
 user
 =>   $user ,
 project         => ( $project || 'undef' ) ,
-workflow_name   => 'ARDB' , # Kevin change this for your wf 
+workflow_name   => 'KODB' , # Kevin change this for your wf 
 };
 
 
@@ -91,8 +91,8 @@ print STDERR Dumper $nodes ;
 
 
 
-# init ARDB object with config
-my $ardb =  ARDB->new(%$config);
+# init KODB object with config
+my $ardb =  KODB->new(%$config);
 
 # init workflow
 
@@ -187,7 +187,7 @@ return $list;
 
 # Workflow specific functions
 
-package ARDB ;
+package KODB ;
 
 use strict ;
 use warnings;
@@ -247,8 +247,8 @@ map { $config->{$_} = $new_config{$_} } keys %new_config ;
 my $workflow = new AWE::Workflow(
 "pipeline"=> ( $config->{pipeline}      
 || "M5NR Mapping" ),
-"name"    => ( $config->{workflow_name} || "ARDB" ),
-"project" => ( $config->{project} || "ARDB" ),
+"name"    => ( $config->{workflow_name} || "KODB" ),
+"project" => ( $config->{project} || "KODB" ),
 "user"    => ( $config->{user} || (die "No user!\n") ) ,
 "clientgroups" => $config->{clientgroup} ,
 "noretry"      => JSON::true,
@@ -268,7 +268,7 @@ $self->{workflow} = $wf ;
 }
 
 unless(defined $self->{workflow} and ref $self->{workflow}){
-print STDERR "No workflow object defined in ARDB->workflow!\n" ;
+print STDERR "No workflow object defined in KODB->workflow!\n" ;
 }
 
 return $self->{workflow} ;
@@ -337,7 +337,7 @@ my $usrattributes = {
 my $task1 = $workflow->newTask('M5NR/Mapping.sims2annotation.default',
 shock_resource( $config->{shockurl} , $shock_node ) ,
 shock_resource( $config->{shockurl} , $dbfile ) ,
-string_resource( 'ARDB')
+string_resource( 'KODB')
 );
 $task1->userattr( %$usrattributes );
 
@@ -345,7 +345,7 @@ $task1->userattr( %$usrattributes );
 
 my $task2 = $workflow->newTask('M5NR/Mapping.splitBySource.default',
 task_resource($task1->taskid() , 0) ,
-string_resource('ARDB_')
+string_resource('KODB_')
 );
 
 $task2->userattr( %$usrattributes );
