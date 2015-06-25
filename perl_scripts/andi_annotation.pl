@@ -17,8 +17,8 @@ use AWE::Client;
 my $verbose    = 0 ;
 my $debug      = 0 ;
 my $shock_node = undef; # "edc3f835-e04b-4d5d-81d3-0928fb2c9188" ; Andi's original test file -- owned by awilke
-my $dbfile     = "7ae17089-16cc-4ae1-ac43-ad1ece344d87" ; # vita_db.berkeleyDB
-#my $dbfile     = "b3411bbd-3603-4add-8e54-f7cee078a0b6" ; # Andi's test db
+#my $dbfile     = "7ae17089-16cc-4ae1-ac43-ad1ece344d87" ; # vita_db.berkeleyDB
+my $dbfile     = "b3411bbd-3603-4add-8e54-f7cee078a0b6" ; # Andi's test db
 
 my $shock_host  = "http://shock.metagenomics.anl.gov/" ;
 my $awe_host    = "http://140.221.67.82:8001" ;
