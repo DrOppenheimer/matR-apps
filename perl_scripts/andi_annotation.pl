@@ -23,7 +23,7 @@ my $dbfile     = "b3411bbd-3603-4add-8e54-f7cee078a0b6" ; # Andi's test db
 my $shock_host  = "http://shock.metagenomics.anl.gov/" ;
 my $awe_host    = "http://140.221.67.82:8001" ;
 my $clientgroup = "kevin_starlord" ;
-my $token       = "un=thulsadoon|tokenid=0b33976a-3874-11e4-9fb3-12313b077182|expiry=1441839178|client_id=thulsadoon|token_type=Bearer|SigningSubject=https://nexus.api.globusonline.org/goauth/keys/aa346168-3523-11e4-928a-22000ab68755|sig=42bdee25bc51e4563d94244c458a1eb33e39363724c4511952fce14b17adc5591c3f475806969a5cb5acc11706b7230226dcfffc9adc2a5ea80cf31efe72a2a22659707e461e3ddcdc1a52453f109e7fde767979c89584a77490beb56882f887d087c605fe5880cb923111eec206be5c41dc04b1d4fba2ddeb764ab5772d3795";
+my $token       = undef ;
 my $date        = `date` ; chomp $date ;
 my $myJobName   = $date ;
 my $user        = 'thulsadoon' ;
