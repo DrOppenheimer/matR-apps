@@ -27,7 +27,7 @@ my $token       = undef ;
 my $date        = `date` ; chomp $date ;
 my $myJobName   = $date ;
 my $user        = 'thulsadoon' ;
-my $project     = undef ;
+my $project     = "vitametagenomics" ;
 my $file        = undef ; #"test.sim_shock_node_list.andi" ;
 
 
