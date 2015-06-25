@@ -28,7 +28,7 @@ my $date        = `date` ; chomp $date ;
 my $myJobName   = $date ;
 my $user        = 'keegan' ;
 my $project     = undef ;
-my $file        = "test.sim_shock_node_list.andi" ;
+my $file        = undef ; #"test.sim_shock_node_list.andi" ;
 
 
 GetOptions ( 
