@@ -20,14 +20,17 @@ my($mgid_list, $verbose, $debug, $help);
 #my $verbose    = 0 ;
 #my $debug      = 0 ;
 #my $shock_sims_node = "edc3f835-e04b-4d5d-81d3-0928fb2c9188" ;
-my $dbfile     = "7ae17089-16cc-4ae1-ac43-ad1ece344d87" ; # vita_db.berkeleyDB
+my $dbfile     = "f755bf50-4405-476e-a035-3a666da8665a" ; # vita_db.berkeleyDB
 my $shock_host  = "http://shock.metagenomics.anl.gov/" ;
-my $awe_host    = "http://140.221.67.82:8001" ;
+my $awe_host    = "http://140.221.67.82" ;
+#my $awe_host    = "http://140.221.67.82:8001" ;
+#my $awe_host    = "http://10.1.16.74:8001" ; # try the local ip
 my $clientgroup = "starlord" ;
-
+my $workflow_name = "KODB";
+my $project_name = "KODB_test";
 my $token       = undef ;
-my $date        = `date` ; chomp $date ;
-my $myJobName   = $date ;
+my $date        = `date` ; chomp $date;
+my $myJobName   = "Custom_Annotation::".$date;
 #my $date        = $date ; 
 
 
@@ -55,7 +58,7 @@ if ( ! GetOptions (
 		   "j|job_name=s"        => \$myJobName ,
 		   "v|verbose!"          => \$verbose,
 		   "h|help!"             => \$help,
-		   "d|debug!"            => \$debug
+		   "debug!"              => \$debug
 		  )
    ) { &usage(); }
 
@@ -84,17 +87,19 @@ open(FILE_IN, "<", $current_dir."/".$mgid_list) or die "Couldn't open FILE_IN $m
 
 
 # create workflow
+if( $debug ){ print "\nStart to create workflow\n"; }
 my $workflow = new AWE::Workflow(
-"pipeline"=> "M5NR Mapping",
-"name"=> "KODB",
-"project"=> "KODB",
-#"user"=> "wilke",
-"user"=> "keegan",
-"clientgroups"=> $config->{clientgroup} ,
-"noretry"=> JSON::true,
-"shockhost" =>  $config->{shockurl}   || (die "No Host\n"), # default shock server for output files
-"shocktoken" => $config->{shocktoken} || (die "No token!\n"),
+				 "pipeline"=> "M5NR Mapping",
+				 "name"=> $workflow_name,
+				 "project"=> $project_name,
+				 #"user"=> "wilke",
+				 "user"=> "thulsadoon",
+				 "clientgroups"=> $config->{clientgroup} ,
+				 "noretry"=> JSON::true,
+				 "shockhost" =>  $config->{shockurl}   || (die "No Host\n"), # default shock server for output files
+				 "shocktoken" => $config->{shocktoken} || (die "No token!\n"),
 );
+if( $debug ){ print "\nWorkflow created\n"; }
 
 
 # create user attributes
@@ -131,7 +136,7 @@ while (my $mgid = <FILE_IN>){
     if ($entry->{stage_name} eq "protein.sims"){
 
       #print  join "\t" , "Found:" , $entry->{node_id} , "\n";
-      if($debug){print FILE_OUT $mgid."\t".$entry->{node_id}."\n";}
+      if($debug){print STDERR "MG-RAST_id:".$mgid."\t"."SHOCK_id: ".$entry->{node_id}."\n";}
       
       # get the node id for the sims file 
       my $shock_sims_node = $entry->{node_id};
@@ -164,21 +169,17 @@ while (my $mgid = <FILE_IN>){
 				    );  
 
 
-
       $task4->userattr( %$usrattributes );
-
 
       my $task5 = $workflow->newTask('M5NR/Mapping.hits2summary.function',
 				     task_resource($task3->taskid() , 0)
 				    );  
-   
-   
+      
       $task5->userattr( %$usrattributes );
       my $task6 = $workflow->newTask('M5NR/Mapping.hits2summary.organism',
 				     task_resource($task3->taskid() , 0)
 				    );  
-   
-   
+      
       $task6->userattr( %$usrattributes );
       
       my $awe = new AWE::Client($awe_host, $config->{shocktoken}, $config->{shocktoken}, $debug); # second token is for AWE
