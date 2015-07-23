@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 # adapted from get_shock_id_from_mgid.pl
 # and Andi's code for the annotation service
