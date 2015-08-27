@@ -10,10 +10,6 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
     write.table(data_object, file=file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
   }
   
-  # add auth for private datasets here
-  
-  source("~/git/matR-apps.DrOppenheimer/matR-apps/fix_lt.r")
-  fix_lt(mgid_list)
   
   id_list <- scan(file=mgid_list, comment.char="#", what="character", blank.lines.skip=TRUE)
     
@@ -26,6 +22,7 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   
   for ( i in 1:num_entries){
     
+    # This bit is for auth of private data -- needs work - syntax is not correct
     if ( is.na(my_auth_file)==TRUE ){
       api_call <- paste("http://api.metagenomics.anl.gov/1/metadata/export/", id_list[i], sep="")
     }else{
