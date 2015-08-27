@@ -1,0 +1,80 @@
+#setwd("~/Documents/Projects/get_metadata/")
+
+library(RCurl)
+library(RJSONIO)
+
+get_metadata <- function( mgid_list, output_file=NA, debug=FALSE ){ 
+  
+  # sub to export data
+  export_data <- function(data_object, file_name){
+    write.table(data_object, file=file_name, sep="\t", col.names = NA, row.names = TRUE, quote = FALSE, eol="\n")
+  }
+  
+  # add auth for private datasets here
+  
+  source("~/git/matR-apps.DrOppenheimer/matR-apps/fix_lt.r")
+  fix_lt(mgid_list)
+  
+  id_list <- scan(file=mgid_list, comment.char="#", what="character", blank.lines.skip=TRUE)
+    
+  num_entries <- length(id_list)
+  if( num_entries <= 1 ){
+    stop("There must be two or more metagnomes in your list")
+  }
+  
+  #id_metadata_matrix <- matrix(data=NA, nrow=num_entries, ncol=2) 
+  
+  for ( i in 1:num_entries){
+    
+    api_call <- paste("http://api.metagenomics.anl.gov/1/metadata/export/", id_list[i], sep="")
+    
+    if(debug==TRUE){print(api_call)}
+    
+    if( i == 1 ){ # what to do for the first entry
+      
+      first_call <- fromJSON(httpGET(api_call))
+      flattened_first_call <- unlist(first_call, recursive=TRUE)
+      metadata_matrix <- matrix(flattened_first_call)
+      rownames(metadata_matrix) <- names(flattened_first_call)
+      colnames(metadata_matrix) <- id_list[i]
+      metadata_matrix <- data.frame(metadata_matrix)
+      
+    }else{ # what do do for the second entry
+    
+      next_call <- fromJSON(httpGET(api_call))
+      flattened_next_call <- unlist(next_call, recursive=TRUE)
+      
+      temp_metadata_matrix <- matrix(flattened_next_call)
+      rownames(temp_metadata_matrix) <- names(flattened_next_call)
+      colnames(temp_metadata_matrix) <- id_list[i]
+      temp_metadata_matrix <- data.frame(temp_metadata_matrix)
+      
+      metadata_matrix <- merge(temp_metadata_matrix,metadata_matrix,by="row.names",all=TRUE)
+      rownames(metadata_matrix) <- metadata_matrix$Row.names
+      metadata_matrix$Row.names <- NULL
+    }
+    
+  }
+  
+  # change type back to matrix
+  metadata_matrix <- as.matrix(metadata_matrix)
+  
+  # remove any carriage returns
+  metadata_matrix <- gsub("\n", "", metadata_matrix)
+  metadata_matrix <- gsub("\r", "", metadata_matrix)
+  
+  # print file if option was chosen
+  if( is.na(output_file) == FALSE  ){
+    output_name = paste(output_file, ".txt", sep="")
+    export_data(metadata_matrix, output_name)
+  }
+
+  return(metadata_matrix)  
+
+}
+
+
+# name the output object
+#assign(new_object_name, object)
+
+
