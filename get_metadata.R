@@ -1,9 +1,9 @@
 #setwd("~/Documents/Projects/get_metadata/")
 
-library(RCurl)
-library(RJSONIO)
-
-get_metadata <- function( mgid_list, output_file=NA, debug=FALSE ){ 
+get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=NA ){ 
+  
+  library(RCurl)
+  library(RJSONIO)
   
   # sub to export data
   export_data <- function(data_object, file_name){
@@ -26,8 +26,15 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE ){
   
   for ( i in 1:num_entries){
     
-    api_call <- paste("http://api.metagenomics.anl.gov/1/metadata/export/", id_list[i], sep="")
-    
+    if ( is.na(my_auth_file)==TRUE ){
+      api_call <- paste("http://api.metagenomics.anl.gov/1/metadata/export/", id_list[i], sep="")
+    }else{
+      stop("auth not enabled in this script yet")
+      #library(matR)
+      #auth_key <- my_mgrast_key <- msession$setAuth(file=my_auth_file)
+      #api_call <- paste("http://api.metagenomics.anl.gov/1/metadata/export/", id_list[i], "&auth=", auth_key, sep="")
+    }
+  
     if(debug==TRUE){print(api_call)}
     
     if( i == 1 ){ # what to do for the first entry
