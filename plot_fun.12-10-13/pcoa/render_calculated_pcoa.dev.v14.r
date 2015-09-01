@@ -66,7 +66,7 @@ render_pcoa.v14 <- function(
   if ( argument_test != 2){
     stop(
          paste(
-               "\n\nOnly on of these can have a non NA value:\n",
+               "\n\nOnly one of these can have a non NA value:\n",
                "     metadata_table: ", metadata_table,"\n",
                "     amethst_groups: ", amethst_groups, "\n",
                "     color_list    : ", color_list, "\n\n",
