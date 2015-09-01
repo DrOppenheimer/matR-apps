@@ -4,6 +4,7 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   
   library(RCurl)
   library(RJSONIO)
+  library(matlab)
   
   # sub to export data
   export_data <- function(data_object, file_name){
@@ -73,6 +74,7 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
     export_data(metadata_matrix, output_name)
   }
 
+  metadata_matrix <- rot90(metadata_matrix)
   return(metadata_matrix)  
 
 }
