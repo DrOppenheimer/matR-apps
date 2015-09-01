@@ -420,13 +420,26 @@ render_pcoa.v14 <- function(
     }else if ( use_all_metadata_columns==FALSE ){ # ONLY CREATE A PLOT FOR THE SELECTED COLUMN IN THE METADATA FILE
 
       if(debug==TRUE){print("Rendering with metadata_matrix, single column")}
+      
+      metadata_column <- metadata_matrix[ ,metadata_column_index, drop=FALSE ] # get column i from the metadata matrix
 
-      metadata_column <- metadata_matrix[ ,metadata_column_index,drop=FALSE ] # get column i from the metadata matrix
-      if(debug==TRUE){ test1<<-metadata_column }
+      # name single extracted column correctly
+      if(debug==TRUE){test.metadata_matrix <<- metadata_matrix}
 
+      metadata_column_names <- colnames(metadata_matrix)
+      if(debug==TRUE){print("LINE 430")}
+      
+      if( is.integer(metadata_column_index==FALSE) ){
+        column_name <- metadata_column_index
+      }else{
+        column_name <- colnames(metadata_matrix)[metadata_column_index]
+      }
+
+      if(debug==TRUE){ test.metadata_column <<- metadata_column }
+      
       if ( identical(image_out, "default") ){
-        image_out = paste(PCoA_in,".", metadata_column_index, ".pcoa.png", sep="", collapse="") # generate name for plot file
-        figure_main = paste( PCoA_in,".", metadata_column_index,".PCoA", sep="", collapse="") # generate title for the plot
+        image_out = paste(PCoA_in,".", column_name, ".pcoa.png", sep="", collapse="") # generate name for plot file
+        figure_main = paste( PCoA_in,".", column_name,".PCoA", sep="", collapse="") # generate title for the plot
         #image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
         #figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
       }else{
@@ -436,7 +449,7 @@ render_pcoa.v14 <- function(
       
       suppressWarnings( numericCheck <- as.numeric(metadata_column) ) # check to see if metadata are numeric, and sort accordingly
       if( is.na(numericCheck[1])==FALSE ){
-        column_name = colnames(metadata_column)[1]
+        #column_name = colnames(metadata_column)[1]
         row_names = rownames(metadata_column)
         metadata_column <- matrix(numericCheck, ncol=1)
         colnames(metadata_column) <- column_name
