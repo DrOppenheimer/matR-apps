@@ -425,8 +425,10 @@ render_pcoa.v14 <- function(
       if(debug==TRUE){ test1<<-metadata_column }
 
       if ( identical(image_out, "default") ){
-        image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
-        figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
+        image_out = paste(PCoA_in,".", metadata_column_index, ".pcoa.png", sep="", collapse="") # generate name for plot file
+        figure_main = paste( PCoA_in,".", metadata_column_index,".PCoA", sep="", collapse="") # generate title for the plot
+        #image_out = paste(PCoA_in,".", colnames(metadata_column), ".pcoa.png", sep="", collapse="") # generate name for plot file
+        #figure_main = paste( PCoA_in,".", colnames(metadata_column),".PCoA", sep="", collapse="") # generate title for the plot
       }else{
         image_out = paste(image_out, ".png", sep="", collapse="")
         figure_main = paste( image_out,".PCoA", sep="", collapse="")
