@@ -237,6 +237,44 @@ quickly"
                        ),
                  con=log_file
                  )
+      
+    }
+
+    writeLines(
+                 paste(
+                       "##############################################################\n",
+                       "###################### INPUT PARAMETERS ######################\n",
+                       "data_in:               ", data_in, "\n",
+                       "data_type:             ", data_type, "\n",
+                       "output_object:         ", output_object, "\n",
+                       "output_file:           ", output_file, "\n",
+                       "removeSg:              ", as.character(removeSg),
+                       "removeSg_valueMin:     ", removeSg_valueMin, "\n",
+                       "removeSg_rowMin:       ", removeSg_rowMin, "\n",
+                       "log_transform          ", as.character(log_transform), "\n",
+                       "norm_method:           ", norm_method, "\n",
+                       "DESeq_metadata_table:  ", as.character(DESeq_metadata_table), "\n",
+                       "DESeq_metadata_column: ", DESeq_metadata_column, "\n",
+                       "DESeq_metadata_type:   ", DESeq_metadata_type, "\n",
+                       #"DESeq_method:          ", DESeq_method, "\n",
+                       "DESeq_sharingMode:     ", DESeq_sharingMode, "\n",
+                       "DESeq_fitType:         ", DESeq_fitType, "\n",
+                       "scale_0_to_1:          ", as.character(scale_0_to_1), "\n",
+                       "produce_boxplots:      ", as.character(produce_boxplots), "\n",
+                       "boxplot_height_in:     ", boxplot_height_in, "\n",
+                       "boxplot_width_in:      ", boxplot_width_in, "\n",
+                       "debug as.character:    ", as.character(debug), "\n",
+                       "####################### OUTPUT SUMMARY #######################\n",
+                       "output object:         ", output_object, "\n",
+                       "otuput file:           ", output_file, "\n",
+                       boxplot_message, "\n",
+                       regression_message, "\n",
+                       "##############################################################",
+                       sep="", collapse=""
+                       )
+                 #con=log_file
+                 )
+      
     }
 
 
