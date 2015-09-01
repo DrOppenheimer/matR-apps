@@ -237,10 +237,8 @@ quickly"
                        ),
                  con=log_file
                  )
-      
-    }
 
-    writeLines(
+      writeLines(
                  paste(
                        "##############################################################\n",
                        "###################### INPUT PARAMETERS ######################\n",
@@ -256,7 +254,6 @@ quickly"
                        "DESeq_metadata_table:  ", as.character(DESeq_metadata_table), "\n",
                        "DESeq_metadata_column: ", DESeq_metadata_column, "\n",
                        "DESeq_metadata_type:   ", DESeq_metadata_type, "\n",
-                       #"DESeq_method:          ", DESeq_method, "\n",
                        "DESeq_sharingMode:     ", DESeq_sharingMode, "\n",
                        "DESeq_fitType:         ", DESeq_fitType, "\n",
                        "scale_0_to_1:          ", as.character(scale_0_to_1), "\n",
@@ -277,9 +274,13 @@ quickly"
       
     }
 
+ 
+      
+  }
+
 
     
-  }
+}
 
 
 
