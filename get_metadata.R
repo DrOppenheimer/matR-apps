@@ -64,9 +64,10 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   # change type back to matrix
   metadata_matrix <- as.matrix(metadata_matrix)
   
-  # remove any carriage returns
+  # remove any carriage returns and tabs
   metadata_matrix <- gsub("\n", "", metadata_matrix)
   metadata_matrix <- gsub("\r", "", metadata_matrix)
+  metadata_matrix <- gsub("\t", "", metadata_matrix)
   
   # print file if option was chosen
   if( is.na(output_file) == FALSE  ){
