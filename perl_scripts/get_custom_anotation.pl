@@ -20,12 +20,13 @@ my($mgid_list, $verbose, $debug, $help);
 #my $verbose    = 0 ;
 #my $debug      = 0 ;
 #my $shock_sims_node = "edc3f835-e04b-4d5d-81d3-0928fb2c9188" ;
-my $dbfile     = "f755bf50-4405-476e-a035-3a666da8665a" ; # vita_db.berkeleyDB
+#my $dbfile     = "f755bf50-4405-476e-a035-3a666da8665a" ; # vita_db.berkeleyDB
+my $dbfile     = "fa863953-764b-4386-9f8d-1c49ab6e9775"; # Osterman.BerkeleyDB  
 my $shock_host  = "http://shock.metagenomics.anl.gov/" ;
-my $awe_host    = "http://140.221.67.82" ;
-#my $awe_host    = "http://140.221.67.82:8001" ;
+#my $awe_host    = "http://140.221.67.82" ;
+my $awe_host    = "http://140.221.67.82:8001" ;
 #my $awe_host    = "http://10.1.16.74:8001" ; # try the local ip
-my $clientgroup = "starlord" ;
+my $clientgroup = "kevin_starlord" ;
 my $workflow_name = "KODB";
 my $project_name = "KODB_test";
 my $token       = undef ;
@@ -105,7 +106,8 @@ if( $debug ){ print "\nWorkflow created\n"; }
 # create user attributes
 my $usrattributes = {
 		     "task"
-		     => "M5NR/Mapping.sims2annotation.default",
+		     #=> "M5NR/Mapping.sims2annotation.default",
+		     => "m5nr/Mapping.sims2annotation.default",
 		     "pipeline"
 		     => "M5NR Mapping",
 		     "name"      => $myJobName ,
@@ -121,8 +123,8 @@ while (my $mgid = <FILE_IN>){
   my $api_call = "http://api.metagenomics.anl.gov/download/".$mgid;
   if($debug){ print "\n"."API CALL: ".$api_call."\n"; }
   
-  my $return = `curl $api_call`;
-  
+  my $return = `curl $api_call`;  
+
   my $hash = $json->decode($return) ;
   #print Dumper $hash ;
 
@@ -147,6 +149,7 @@ while (my $mgid = <FILE_IN>){
 				     shock_resource( $config->{shockurl} , $dbfile ) ,
 				     string_resource( 'KODB')
 				    );
+      
       $task1->userattr( %$usrattributes );
       
 

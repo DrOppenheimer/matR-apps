@@ -14,13 +14,13 @@ unless ($filename and -f $filename){
 }
 
 
-tie %h, "BerkeleyDB::Hash",
+tie my %h, "BerkeleyDB::Hash",
                 -Filename => $filename,
                 -Flags    => DB_RDONLY
         or die "Cannot open file $filename: $! $BerkeleyDB::Error\n" ;
 
   
     # print the contents of the file
-    while (($k, $v) = each %h)
+    while ((my $k, my $v) = each %h)
       { print "$k -> $v\n" }
 

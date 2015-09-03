@@ -17,8 +17,9 @@ use AWE::Client;
 my $verbose    = 0 ;
 my $debug      = 0 ;
 my $shock_node = undef; # "edc3f835-e04b-4d5d-81d3-0928fb2c9188" ; Andi's original test file -- owned by awilke
-my $dbfile     = "7ae17089-16cc-4ae1-ac43-ad1ece344d87" ; # vita_db.berkeleyDB
-#my $dbfile     = "b3411bbd-3603-4add-8e54-f7cee078a0b6" ; # Andi's test db
+#my $dbfile     = "7ae17089-16cc-4ae1-ac43-ad1ece344d87" ; # vita_db.berkeleyDB
+#my $dbfile     = "f755bf50-4405-476e-a035-3a666da8665a"; # second version with KODB as source
+my $dbfile     = "b3411bbd-3603-4add-8e54-f7cee078a0b6" ; # Andi's test db
 
 my $shock_host  = "http://shock.metagenomics.anl.gov/" ;
 my $awe_host    = "http://140.221.67.82:8001" ;
@@ -26,10 +27,10 @@ my $clientgroup = "kevin_starlord" ;
 my $token       = undef ;
 my $date        = `date` ; chomp $date ;
 my $myJobName   = $date ;
-my $user        = "Kevin" ;
+my $user        = "thulsadoon" ;
 my $project     = undef ;
 my $file        = undef ; #"test.sim_shock_node_list.andi" ;
-
+my $logfile     = "andi_annotation.log";
 
 GetOptions ( 
 	    "node_url=s"   => \$shock_node ,
@@ -42,7 +43,8 @@ GetOptions (
 	    'project=s'    => \$project,
 	    'node_id=s'    => \$shock_node,
 	    'dbnode=s'     => \$dbfile,
-	    'f|file=s'       => \$file,
+	    'f|file=s'     => \$file,
+	    'l|logfile'    => \$logfile
 	   );
 
 my $config = {
@@ -121,20 +123,20 @@ my $ua          = LWP::UserAgent->new('HMP Download');
 my $json        = new JSON ;
 my $base        = 'http://api.metagenomics.anl.gov';
 my $verbose = 1;
-my $logfile = "submission.log";
+my $id_logfile = "submission.log";
 
 my $list        = [];
 
 
-open(LOG , ">$logfile") or die "Can't open $logfile for writing!\n";
-print STDERR "Retrieving project from ".$base."/project/".$project."?verbosity=full\n" if ($verbose);
+open(ID_LOG , ">", $id_logfile) or die "Can't open $logfile for writing!\n";
+print ID_LOG "Retrieving project from ".$base."/project/".$project."?verbosity=full\n" if ($verbose);
 
 # Project URL
 my $get = $ua->get($base."/project/".$project."?verbosity=full");
 
 # check response status
 unless ( $get->is_success ) {
-       print STDERR join "\t", "ERROR:", $get->code, $get->status_line;
+       print ID_LOG join "\t", "ERROR:", $get->code, $get->status_line;
    exit 1;
 }
 
@@ -144,18 +146,18 @@ my $res         = $json->decode( $get->content );
 my $mglist      = $res->{metagenomes} ;
 
 # print STDERR $mglist, "\n";
-print STDERR "Searching for sims file\n" if ($verbose) ;
+print LOG "Searching for sims file\n" if ($verbose) ;
 
 foreach my $tuple ( @$mglist ) {
    # url for all genome features
    my $mg = $tuple->[0] ;
-print STDERR "Checking download url ". $base."/download/$mg\n";
+print LOG "Checking download url ". $base."/download/$mg\n";
 
    my $get = $ua->get($base."/download/$mg");
 
    # check response status
 unless ( $get->is_success ) {
-print STDERR join "\t", "ERROR:", $get->code, $get->status_line;
+print LOG join "\t", "ERROR:", $get->code, $get->status_line;
        exit 1;
         }
 
@@ -170,9 +172,9 @@ print STDERR join "\t", "ERROR:", $get->code, $get->status_line;
 if ($stage->{stage_name} eq "protein.sims"){
 $download = $stage->{url}; # use shock curl http://shock.metagenomics.anl.gov/node/caab6ef9-8087-4337-a217-54f8e9e40e7a
 $dstage   = $stage;
-print STDERR join "\t" , $dstage->{stage_name} , $dstage->{file_name} , $dstage->{file_format} , $dstage->{node_id} , "\n"  if(defined $dstage);
+print LOG join "\t" , $dstage->{stage_name} , $dstage->{file_name} , $dstage->{file_format} , $dstage->{node_id} , "\n"  if(defined $dstage);
        
-print STDERR Dumper $stage ;
+print LOG Dumper $stage ;
 push @$list , $stage->{node_id}
 }
 
@@ -360,21 +362,12 @@ my $task4 = $workflow->newTask('M5NR/Mapping.hits2summary.md5',
 task_resource($task3->taskid() , 0)
 );  
    
-   
-   
- 
-
-
 $task4->userattr( %$usrattributes );
-
 
 my $task5 = $workflow->newTask('M5NR/Mapping.hits2summary.function',
 task_resource($task3->taskid() , 0)
 );  
-   
-   
-   
- 
+    
 $task5->userattr( %$usrattributes );
 my $task6 = $workflow->newTask('M5NR/Mapping.hits2summary.organism',
 task_resource($task3->taskid() , 0)

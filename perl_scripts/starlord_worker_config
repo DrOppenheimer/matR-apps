@@ -24,6 +24,6 @@ sleep 4
 
 export DATADIR=/mnt/awe-client/
 mkdir -p ${DATADIR}
-/usr/bin/docker run -d --name awe-client -v /var/run/docker.sock:/var/run/docker.sock -v ${DATADIR}:${DATADIR}  mgrast/awe /gopath/bin/awe-client --data=${DATADIR}/data --logs=${DATADIR}/logs --workpath=${DATADIR}/work  --serverurl=http://140.221.67.82:8001 --group=starlord --supported_apps=*
+/usr/bin/docker run -d --name awe-client -v /var/run/docker.sock:/var/run/docker.sock -v ${DATADIR}:${DATADIR}  mgrast/awe /gopath/bin/awe-client --data=${DATADIR}/data --logs=${DATADIR}/logs --workpath=${DATADIR}/work  --serverurl=http://140.221.67.82:8001 --group=kevin_starlord --supported_apps=*
 
 echo "/usr/bin/docker run -d --name awe-client -v /var/run/docker.sock:/var/run/docker.sock -v ${DATADIR}:${DATADIR}  mgrast/awe /gopath/bin/awe-client --data=${DATADIR}/data --logs=${DATADIR}/logs --workpath=${DATADIR}/work  --serverurl=http://140.221.67.82:8001 --group=starlord --supported_apps=*" >> /etc/rc.local
