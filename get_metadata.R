@@ -83,7 +83,7 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   if ( is.na(output_file) ){
     print("DONE retrieving metadata - make sure that you directed it to an output: my_metadata <- get_metadata(...)")
   }else{
-    print(paste("DONE retrieving metadata, you'll find it in: ", output_name))
+    print(paste("DONE retrieving metadata, you'll find it in the object and the file: ", output_name))
   }
 
 }
