@@ -80,7 +80,11 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   metadata_matrix <- rot90(metadata_matrix)
   return(metadata_matrix)
 
-  print(paste("DONE retrieving metadata, you'll find it in: ", output_name))
+  if ( is.na(output_file) ){
+    print("DONE retrieving metadata - make sure that you directed it to an output: my_metadata <- get_metadata(...)")
+  }else{
+    print(paste("DONE retrieving metadata, you'll find it in: ", output_name))
+  }
 
 }
 
