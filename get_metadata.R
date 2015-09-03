@@ -70,6 +70,9 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   metadata_matrix <- gsub("\n", "", metadata_matrix)
   metadata_matrix <- gsub("\r", "", metadata_matrix)
   metadata_matrix <- gsub("\t", "", metadata_matrix)
+
+  metadata_matrix <- rot90(metadata_matrix)
+  return(metadata_matrix)
   
   # print file if option was chosen
   if( is.na(output_file) == FALSE  ){
@@ -77,8 +80,7 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
     export_data(metadata_matrix, output_name)
   }
 
-  metadata_matrix <- rot90(metadata_matrix)
-  return(metadata_matrix)
+  
 
   if ( is.na(output_file) ){
     print("DONE retrieving metadata - make sure that you directed it to an output: my_metadata <- get_metadata(...)")
