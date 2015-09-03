@@ -22,6 +22,8 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   #id_metadata_matrix <- matrix(data=NA, nrow=num_entries, ncol=2) 
   
   for ( i in 1:num_entries){
+
+    print(paste("Retrieving metadata for sample (", i, ") of", num_entries))
     
     # This bit is for auth of private data -- needs work - syntax is not correct
     if ( is.na(my_auth_file)==TRUE ){
