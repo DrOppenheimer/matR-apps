@@ -1,10 +1,15 @@
 #setwd("~/Documents/Projects/get_metadata/")
 
-get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=NA ){ 
+get_metadata <- function( mgid_list, output_name="my_metadata", debug=FALSE, my_auth_file=NA, log_file="default" ){ 
   
   library(RCurl)
   library(RJSONIO)
   library(matlab)
+  
+  if( is.na(my_auth_file)==FALSE ){
+    stop("The my_auth_file option is not support yet" )
+  }
+  
   
   # sub to export data
   export_data <- function(data_object, file_name){
@@ -72,21 +77,59 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   metadata_matrix <- gsub("\t", "", metadata_matrix)
 
   metadata_matrix <- rot90(metadata_matrix)
-  return(metadata_matrix)
+  #return(metadata_matrix)
   
-  # print file if option was chosen
-  if( is.na(output_file) == FALSE  ){
-    output_name = paste(output_file, ".txt", sep="")
-    export_data(metadata_matrix, output_name)
-  }
-
+  # print output to file
+  output_file_name = paste(output_name, ".txt", sep="")
+  export_data(metadata_matrix, output_file_name)
   
-
-  if ( is.na(output_file) ){
-    print("DONE retrieving metadata - make sure that you directed it to an output: my_metadata <- get_metadata(...)")
+  # create output object
+  #assign(x=metadata_matrix, value=output_name)
+  do.call("<<-",list(output_name, metadata_matrix)) 
+  
+  # name the log file
+  if( identical(log_file, "default") ){ 
+    log_file_name = paste(output_name, ".get_metadata.log", sep="") 
   }else{
-    print(paste("DONE retrieving metadata, you'll find it in the object and the file: ", output_name))
+    log_file_name <- log_file
   }
+  
+  writeLines(
+    paste(
+      "##############################################################\n",
+      "#################### get_metadata SUMMARY ####################\n",
+      "mgid_list:        ", mgid_list, "\n",
+      "num_metagenomes   ", num_entries, "\n",
+      "my_auth_file:     ", my_auth_file, "\n",
+      "debug:            ", debug, "\n",
+      "##############################################################\n",
+      "output_object:    ", output_name, "\n",
+      "otuput_file:      ", output_file_name, "\n",
+      "log_file:         ", log_file_name, "\n",
+      "##############################################################",
+      sep="", collapse=""
+    )
+    #con=log_file
+  )
+    
+  writeLines(
+    paste(
+      "##############################################################\n",
+      "#################### get_metadata SUMMARY ####################\n",
+      "mgid_list:        ", mgid_list, "\n",
+      "num_metagenomes   ", num_entries, "\n",
+      "my_auth_file:     ", my_auth_file, "\n",
+      "debug:            ", debug, "\n",
+      "##############################################################\n",
+      "output_object:    ", output_name, "\n",
+      "otuput_file:      ", output_file_name, "\n",
+      "log_file:         ", log_file_name, "\n",
+      "##############################################################",
+      sep="", collapse=""
+    ),
+    con=log_file
+  )
+  
 
 }
 
