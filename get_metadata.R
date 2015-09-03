@@ -78,7 +78,9 @@ get_metadata <- function( mgid_list, output_file=NA, debug=FALSE, my_auth_file=N
   }
 
   metadata_matrix <- rot90(metadata_matrix)
-  return(metadata_matrix)  
+  return(metadata_matrix)
+
+  print(paste("DONE retrieving metadata, you'll find it in: ", output_name))
 
 }
 
