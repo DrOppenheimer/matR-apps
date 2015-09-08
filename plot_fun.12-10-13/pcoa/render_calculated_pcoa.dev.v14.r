@@ -428,11 +428,14 @@ render_pcoa.v14 <- function(
 
       metadata_column_names <- colnames(metadata_matrix)
       if(debug==TRUE){print("LINE 430")}
-      
-      if( is.integer(metadata_column_index==FALSE) ){
-        column_name <- metadata_column_index
-      }else{
+
+      if(debug==TRUE){print(paste("metadata_column_index:", metadata_column_index))}
+      if( is.integer(metadata_column_index)==TRUE){
         column_name <- colnames(metadata_matrix)[metadata_column_index]
+        if(debug==TRUE){print(paste("column_name  (is int):", column_name))}  
+      }else{
+        column_name <- metadata_column_index
+        if(debug==TRUE){print(paste("column_name (not int):", column_name))}
       }
 
       if(debug==TRUE){ test.metadata_column <<- metadata_column }
