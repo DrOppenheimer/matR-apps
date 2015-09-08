@@ -88,7 +88,7 @@ get_metadata <- function( mgid_list, output_name="my_metadata", debug=FALSE, my_
   do.call("<<-",list(output_name, metadata_matrix)) 
   
   # name the log file
-  if( identical(log_file, "default") ){ 
+  if( identical(log_file, "default")==TRUE ){ 
     log_file_name <- paste(output_name, ".get_metadata.log", sep="") 
   }else{
     log_file_name <- log_file
